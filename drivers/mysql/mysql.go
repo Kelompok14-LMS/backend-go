@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/users"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -16,7 +17,7 @@ type ConfigDB struct {
 	MYSQL_PORT     string
 }
 
-func (config *ConfigDB) InitDB() *gorm.DB {
+func (config *ConfigDB) InitMySQLDatabase() *gorm.DB {
 	var err error
 
 	var dsn string = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
@@ -39,5 +40,5 @@ func (config *ConfigDB) InitDB() *gorm.DB {
 }
 
 func DBMigrate(db *gorm.DB) {
-	db.AutoMigrate()
+	db.AutoMigrate(&users.User{})
 }
