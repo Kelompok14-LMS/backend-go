@@ -1,21 +1,21 @@
 package main
 
 import (
-	_dbDriver "github.com/Kelompok14-LMS/backend-go/drivers/mysql"
+	_dbMySQL "github.com/Kelompok14-LMS/backend-go/drivers/mysql"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 )
 
 func main() {
-	configDB := _dbDriver.ConfigDB{
-		DB_USERNAME: utils.GetConfig("DB_USERNAME"),
-		DB_PASSWORD: utils.GetConfig("DB_PASSWORD"),
-		DB_HOST:     utils.GetConfig("DB_HOST"),
-		DB_PORT:     utils.GetConfig("DB_PORT"),
-		DB_NAME:     utils.GetConfig("DB_NAME"),
+	configDB := _dbMySQL.ConfigDB{
+		MYSQL_USERNAME: utils.GetConfig("MYSQL_USERNAME"),
+		MYSQL_PASSWORD: utils.GetConfig("MYSQL_PASSWORD"),
+		MYSQL_HOST:     utils.GetConfig("MYSQL_HOST"),
+		MYSQL_PORT:     utils.GetConfig("MYSQL_PORT"),
+		MYSQL_NAME:     utils.GetConfig("MYSQL_NAME"),
 	}
 
 	db := configDB.InitDB()
 
-	_dbDriver.DBMigrate(db)
+	_dbMySQL.DBMigrate(db)
 
 }
