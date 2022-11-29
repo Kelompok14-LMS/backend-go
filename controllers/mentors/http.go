@@ -1,1 +1,80 @@
 package mentors
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
+	"github.com/Kelompok14-LMS/backend-go/controllers/mentors/request"
+
+	"github.com/Kelompok14-LMS/backend-go/helper"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
+	"github.com/labstack/echo/v4"
+)
+
+type MentorController struct {
+	mentorUsecase mentors.Usecase
+}
+
+func NewMentorController(mentorUsecase mentors.Usecase) *MentorController {
+	return &MentorController{
+		mentorUsecase: mentorUsecase,
+	}
+}
+
+func (ctrl *MentorController) HandlerRegisterMentor(c echo.Context) error {
+	mentorInput := request.MentorRegisterInput{}
+
+	if err := c.Bind(&mentorInput); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+	}
+
+	if err := mentorInput.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
+	}
+
+	err := ctrl.mentorUsecase.Register(mentorInput.ToDomain())
+	if err != nil {
+		if errors.Is(err, pkg.ErrPasswordLengthInvalid) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
+		} else if errors.Is(err, pkg.ErrEmailAlreadyExist) {
+			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrEmailAlreadyExist.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Register success", nil))
+}
+
+func (ctrl *MentorController) HandlerLoginMentor(c echo.Context) error {
+	mentorInput := request.AuthMentorInput{}
+
+	if err := c.Bind(&mentorInput); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+	}
+
+	if err := mentorInput.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
+	}
+
+	token, err := ctrl.mentorUsecase.Login(mentorInput.ToDomain())
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrUserNotFound) {
+			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrUserNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrMenteeNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrPasswordLengthInvalid) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	data := map[string]interface{}{
+		"token": token,
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Login successful", data))
+}
