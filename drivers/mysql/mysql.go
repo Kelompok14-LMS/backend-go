@@ -19,6 +19,7 @@ type ConfigDB struct {
 }
 
 func (config *ConfigDB) InitMySQLDatabase() *gorm.DB {
+func (config *ConfigDB) InitDB() *gorm.DB {
 	var err error
 
 	var dsn string = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
