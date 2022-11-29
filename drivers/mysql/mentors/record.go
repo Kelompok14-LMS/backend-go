@@ -7,7 +7,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/users"
 )
 
-type Mentors struct {
+type Mentor struct {
 	ID             string     `gorm:"primaryKey;" json:"id"`
 	UserId         string     `gorm:"size:200" json:"user_id"`
 	FullName       string     `gorm:"size:255" json:"name"`
@@ -24,8 +24,8 @@ type Mentors struct {
 	UpdatedAt      time.Time  `json:"updated_at"`
 }
 
-func (rec *Mentors) ToDomain() mentors.Domain {
-	return mentors.Domain{
+func (rec *Mentor) ToDomain() *mentors.Domain {
+	return &mentors.Domain{
 		ID:             rec.ID,
 		UserId:         rec.UserId,
 		FullName:       rec.FullName,
@@ -42,8 +42,8 @@ func (rec *Mentors) ToDomain() mentors.Domain {
 	}
 }
 
-func FromDomain(mentor *mentors.Domain) Mentors {
-	return Mentors{
+func FromDomain(mentor *mentors.Domain) *Mentor {
+	return &Mentor{
 		ID:             mentor.ID,
 		UserId:         mentor.UserId,
 		FullName:       mentor.FullName,
