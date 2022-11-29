@@ -6,6 +6,7 @@ import (
 
 type Domain struct {
 	ID             string
+	UserId         string
 	FullName       string
 	Phone          string
 	Role           string
