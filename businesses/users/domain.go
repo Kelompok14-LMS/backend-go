@@ -11,19 +11,20 @@ type Domain struct {
 }
 
 type Repository interface {
+	// Create add new user
 	Create(userDomain *Domain) error
+
+	// FindAll find all users
 	FindAll() (*[]Domain, error)
-	FindByEmail(email string) (*[]Domain, error)
-	FindByID(id string) (*Domain, error)
+
+	// FindByEmail find user by email
+	FindByEmail(email string) (*Domain, error)
+
+	// FindById find user by id
+	FindById(id string) (*Domain, error)
+
+	// Update edit data user
 	Update(id string, userDomain *Domain) error
-	Delete(id string) error
 }
 
-type Usecase interface {
-	Create(userDomain *Domain) error
-	FindAll() (*[]Domain, error)
-	FindByEmail(email string) (*[]Domain, error)
-	FindByID(id string) (*Domain, error)
-	Update(id string, userDomain *Domain) error
-	Delete(id string) error
-}
+type Usecase interface{}
