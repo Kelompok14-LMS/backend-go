@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentees"
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/users"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -16,6 +18,7 @@ type ConfigDB struct {
 	MYSQL_PORT     string
 }
 
+func (config *ConfigDB) InitMySQLDatabase() *gorm.DB {
 func (config *ConfigDB) InitDB() *gorm.DB {
 	var err error
 
@@ -39,5 +42,5 @@ func (config *ConfigDB) InitDB() *gorm.DB {
 }
 
 func DBMigrate(db *gorm.DB) {
-	db.AutoMigrate()
+	db.AutoMigrate(&users.User{}, &mentees.Mentee{})
 }
