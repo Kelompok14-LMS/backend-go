@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/pkg"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -27,6 +29,12 @@ type JWTCustomClaims struct {
 	jwt.StandardClaims
 }
 
+func (jwtConf *JWTConfig) Init() middleware.JWTConfig {
+	return middleware.JWTConfig{
+		Claims:     &JWTCustomClaims{},
+		SigningKey: []byte(jwtConf.JWTSecret),
+	}
+}
 func (config *JWTConfig) GenerateToken(userId string, actorId string, role string) (string, error) {
 	claims := JWTCustomClaims{
 		UserId: userId,
@@ -50,4 +58,11 @@ func (config *JWTConfig) GenerateToken(userId string, actorId string, role strin
 	jwtSecret := config.JWTSecret
 
 	return token.SignedString([]byte(jwtSecret))
+}
+
+func GetUserID(c echo.Context) (*JWTCustomClaims, error) {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JWTCustomClaims)
+
+	return claims, nil
 }

@@ -50,11 +50,12 @@ func main() {
 
 	// init routes config
 	route := routes.RouteConfig{
-		Echo:      e,
-		MySQLDB:   mysqlDB,
-		RedisDB:   redisDB,
-		JWTConfig: jwtConfig,
-		Mailer:    mailerConfig,
+		Echo:          e,
+		MySQLDB:       mysqlDB,
+		RedisDB:       redisDB,
+		JWTConfig:     jwtConfig,
+		JWTMiddleware: jwtConfig.Init(),
+		Mailer:        mailerConfig,
 	}
 
 	route.New()

@@ -26,6 +26,10 @@ func NewMentorUsecase(mentorsRepository Repository, userRepository users.Reposit
 func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 	var err error
 
+	if len(mentorDomain.Password) < 8 {
+		return pkg.ErrPasswordLengthInvalid
+	}
+
 	email, _ := m.userRepository.FindByEmail(mentorDomain.Email)
 
 	if email != nil {
@@ -70,7 +74,7 @@ func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 }
 
 func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
-	if len(mentorAuth.Password) < 6 {
+	if len(mentorAuth.Password) < 8 {
 		return nil, pkg.ErrPasswordLengthInvalid
 	}
 
@@ -103,6 +107,35 @@ func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
 	}
 
 	return &token, nil
+}
+
+func (m mentorUsecase) UpdatePassword(updatePassword *MentorUpdatePassword) error {
+
+	oldPassword, err := m.userRepository.FindById(updatePassword.UserID)
+
+	if err != nil {
+		return pkg.ErrUserNotFound
+	}
+
+	ok := utils.ComparePassword(oldPassword.Password, updatePassword.OldPassword)
+	if !ok {
+		return pkg.ErrUserNotFound
+	}
+
+	hashPassword := utils.HashPassword(updatePassword.NewPassword)
+
+	updatedUser := users.Domain{
+		Password: hashPassword,
+	}
+
+	err = m.userRepository.Update(oldPassword.ID, &updatedUser)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func (m mentorUsecase) FindAll() (*[]Domain, error) {

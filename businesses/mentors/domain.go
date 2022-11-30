@@ -35,6 +35,12 @@ type MentorForgotPassword struct {
 	Email string
 }
 
+type MentorUpdatePassword struct {
+	UserID      string
+	OldPassword string
+	NewPassword string
+}
+
 type Repository interface {
 	// Create repository create mentors
 	Create(mentorDomain *Domain) error
@@ -59,8 +65,8 @@ type Usecase interface {
 	// // ForgotPassword usecase mentor verify forgot password
 	// ForgotPassword(forgotPassword *MentorForgotPassword) error
 
-	// // ChangePassword usecase mentor to chnge password
-	// ChangePassword(id string, changePassword *MentorChangePassword) error
+	// UpdatePassword usecase mentor to chnge password
+	UpdatePassword(updatePassword *MentorUpdatePassword) error
 
 	// Login usecase mentor login
 	Login(mentorAuth *MentorAuth) (*string, error)

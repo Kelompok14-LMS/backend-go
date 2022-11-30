@@ -6,6 +6,7 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
 	"github.com/Kelompok14-LMS/backend-go/controllers/mentors/request"
+	"github.com/Kelompok14-LMS/backend-go/utils"
 
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
@@ -77,4 +78,35 @@ func (ctrl *MentorController) HandlerLoginMentor(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Login successful", data))
+}
+
+func (ctrl *MentorController) HandlerUpdatePassword(c echo.Context) error {
+	mentorInput := request.MentorUpdatePassword{}
+
+	if err := c.Bind(&mentorInput); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+	}
+
+	user, _ := utils.GetUserID(c)
+	mentorInput.UserID = user.UserId
+
+	if err := mentorInput.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
+	}
+
+	err := ctrl.mentorUsecase.UpdatePassword(mentorInput.ToDomain())
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrPasswordLengthInvalid) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
+		} else if errors.Is(err, pkg.ErrPasswordNotMatch) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordNotMatch.Error()))
+		} else if errors.Is(err, pkg.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update password", nil))
 }

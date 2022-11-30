@@ -1,8 +1,11 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 
 	_driverFactory "github.com/Kelompok14-LMS/backend-go/drivers"
@@ -31,6 +34,9 @@ type RouteConfig struct {
 
 	// JWT config
 	JWTConfig *utils.JWTConfig
+
+	// JWT config middleware
+	JWTMiddleware middleware.JWTConfig
 
 	// mail config
 	Mailer *pkg.MailerConfig
@@ -68,6 +74,24 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/check-otp", otpController.HandlerCheckOTP)
 	auth.POST("/mentor/login", mentorController.HandlerLoginMentor)
 	auth.POST("/mentor/register", mentorController.HandlerRegisterMentor)
+
+	mentor := v1.Group("/mentor", middleware.JWTWithConfig(routeConfig.JWTMiddleware))
+
+	mentor.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			userID, _ := utils.GetUserID(c)
+
+			if userID == nil {
+				return c.JSON(http.StatusUnauthorized, map[string]string{
+					"message": "invalid token",
+				})
+			}
+
+			return next(c)
+		}
+	})
+
+	mentor.PUT("/update-password", mentorController.HandlerUpdatePassword)
 
 	// mentee routes
 	// m := v1.Group("/mentees")
