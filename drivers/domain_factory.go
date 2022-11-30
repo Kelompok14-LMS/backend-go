@@ -10,6 +10,9 @@ import (
 	menteeDomain "github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	menteeDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentees"
 
+	mentorsDomain "github.com/Kelompok14-LMS/backend-go/businesses/mentors"
+	mentorsDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentors"
+
 	userDomain "github.com/Kelompok14-LMS/backend-go/businesses/users"
 	userDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/users"
 
@@ -27,6 +30,10 @@ func NewUserRepository(conn *gorm.DB) userDomain.Repository {
 
 func NewMenteeRepository(conn *gorm.DB) menteeDomain.Repository {
 	return menteeDB.NewSQLRepository(conn)
+}
+
+func NewMentorRepository(conn *gorm.DB) mentorsDomain.Repository {
+	return mentorsDB.NewSQLRepository(conn)
 }
 
 func NewCategoryRepository(conn *gorm.DB) categoryDomain.Repository {
