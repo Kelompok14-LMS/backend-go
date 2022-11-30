@@ -26,12 +26,14 @@ func NewMentorUsecase(mentorsRepository Repository, userRepository users.Reposit
 func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 	var err error
 
-	if mentorDomain.Password != mentorDomain.RepeatedPassword {
-		return pkg.ErrPasswordNotMatch
+	email, _ := m.userRepository.FindByEmail(mentorDomain.Email)
+
+	if email != nil {
+		return pkg.ErrEmailAlreadyExist
 	}
 
 	userId := uuid.NewString()
-	hashedPassword := utils.HashPassword(mentorDomain.RepeatedPassword)
+	hashedPassword := utils.HashPassword(mentorDomain.Password)
 
 	user := users.Domain{
 		ID:        userId,

@@ -6,18 +6,16 @@ import (
 )
 
 type MentorRegisterInput struct {
-	FullName         string `json:"fullname" form:"fullname" validate:"required"`
-	Email            string `json:"email" form:"email" validate:"required,email"`
-	Password         string `json:"password" form:"password" validate:"required"`
-	RepeatedPassword string `json:"repeat_password" form:"repeat_password" validate:"required"`
+	FullName string `json:"fullname" form:"fullname" validate:"required"`
+	Email    string `json:"email" form:"email" validate:"required,email"`
+	Password string `json:"password" form:"password" validate:"required"`
 }
 
 func (req *MentorRegisterInput) ToDomain() *mentors.MentorRegister {
 	return &mentors.MentorRegister{
-		FullName:         req.FullName,
-		Email:            req.Email,
-		Password:         req.Password,
-		RepeatedPassword: req.RepeatedPassword,
+		FullName: req.FullName,
+		Email:    req.Email,
+		Password: req.Password,
 	}
 }
 

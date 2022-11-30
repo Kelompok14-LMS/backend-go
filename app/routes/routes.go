@@ -12,6 +12,9 @@ import (
 	_menteeUsecase "github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	_menteeController "github.com/Kelompok14-LMS/backend-go/controllers/mentees"
 
+	_mentorUsecase "github.com/Kelompok14-LMS/backend-go/businesses/mentors"
+	_mentorController "github.com/Kelompok14-LMS/backend-go/controllers/mentors"
+
 	_otpUsecase "github.com/Kelompok14-LMS/backend-go/businesses/otp"
 	_otpController "github.com/Kelompok14-LMS/backend-go/controllers/otp"
 )
@@ -50,6 +53,11 @@ func (routeConfig *RouteConfig) New() {
 	menteeUsecase := _menteeUsecase.NewMenteeUsecase(menteeRepository, userRepository, otpRepository, routeConfig.JWTConfig, routeConfig.Mailer)
 	menteeController := _menteeController.NewMenteeController(menteeUsecase)
 
+	// Inject the dependency to mentor
+	mentorRepository := _driverFactory.NewMentorRepository(routeConfig.MySQLDB)
+	mentorUsecase := _mentorUsecase.NewMentorUsecase(mentorRepository, userRepository, routeConfig.JWTConfig)
+	mentorController := _mentorController.NewMentorController(mentorUsecase)
+
 	// authentication routes
 	auth := v1.Group("/auth")
 	auth.POST("/mentee/login", menteeController.HandlerLoginMentee)
@@ -58,6 +66,8 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/forgot-password", menteeController.HandlerForgotPassword)
 	auth.POST("/send-otp", otpController.HandlerSendOTP)
 	auth.POST("/check-otp", otpController.HandlerCheckOTP)
+	auth.POST("/mentor/login", mentorController.HandlerLoginMentor)
+	auth.POST("/mentor/register", mentorController.HandlerRegisterMentor)
 
 	// mentee routes
 	// m := v1.Group("/mentees")

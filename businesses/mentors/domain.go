@@ -26,10 +26,9 @@ type MentorAuth struct {
 }
 
 type MentorRegister struct {
-	FullName         string
-	Email            string
-	Password         string
-	RepeatedPassword string
+	FullName string
+	Email    string
+	Password string
 }
 
 type MentorForgotPassword struct {
@@ -57,8 +56,11 @@ type Usecase interface {
 	// Register usecase mentors register
 	Register(mentorAuth *MentorRegister) error
 
-	// // ForgotPassword usecase mentee verify forgot password
+	// // ForgotPassword usecase mentor verify forgot password
 	// ForgotPassword(forgotPassword *MentorForgotPassword) error
+
+	// // ChangePassword usecase mentor to chnge password
+	// ChangePassword(id string, changePassword *MentorChangePassword) error
 
 	// Login usecase mentor login
 	Login(mentorAuth *MentorAuth) (*string, error)
