@@ -17,6 +17,9 @@ import (
 
 	_otpUsecase "github.com/Kelompok14-LMS/backend-go/businesses/otp"
 	_otpController "github.com/Kelompok14-LMS/backend-go/controllers/otp"
+
+	_categoryUsecase "github.com/Kelompok14-LMS/backend-go/businesses/categories"
+	_categoryController "github.com/Kelompok14-LMS/backend-go/controllers/categories"
 )
 
 type RouteConfig struct {
@@ -57,6 +60,11 @@ func (routeConfig *RouteConfig) New() {
 	mentorRepository := _driverFactory.NewMentorRepository(routeConfig.MySQLDB)
 	mentorUsecase := _mentorUsecase.NewMentorUsecase(mentorRepository, userRepository, routeConfig.JWTConfig)
 	mentorController := _mentorController.NewMentorController(mentorUsecase)
+  
+	// Inject the dependency to category
+	categoryRepository := _driverFactory.NewCategoryRepository(routeConfig.MySQLDB)
+	categoryUsecase := _categoryUsecase.NewCategoryUsecase(categoryRepository)
+	categoryController := _categoryController.NewCategoryController(categoryUsecase)
 
 	// authentication routes
 	auth := v1.Group("/auth")
@@ -71,4 +79,11 @@ func (routeConfig *RouteConfig) New() {
 
 	// mentee routes
 	// m := v1.Group("/mentees")
+
+	//	category routes
+	cat := v1.Group("/categories")
+	cat.POST("", categoryController.HandlerCreateCategory)
+	cat.GET("", categoryController.HandlerFindAllCategories)
+	cat.GET("/:categoryId", categoryController.HandlerFindByIdCategory)
+	cat.PUT("/:categoryId", categoryController.HandlerUpdateCategory)
 }
