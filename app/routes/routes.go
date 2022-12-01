@@ -92,7 +92,9 @@ func (routeConfig *RouteConfig) New() {
 	})
 
 	mentor.PUT("/update-password", mentorController.HandlerUpdatePassword)
-
+	mentor.PUT("/update-profile", mentorController.HandlerUpdateProfile)
+	mentor.GET("/mentor-profile", mentorController.HandlerFindByID)
+	mentor.GET("", mentorController.HandlerFindAll)
 	// mentee routes
 	// m := v1.Group("/mentees")
 }

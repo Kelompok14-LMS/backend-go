@@ -29,6 +29,7 @@ func (rec *Mentor) ToDomain() *mentors.Domain {
 		ID:             rec.ID,
 		UserId:         rec.UserId,
 		FullName:       rec.FullName,
+		Email:          rec.User.Email,
 		Phone:          rec.Phone,
 		Role:           rec.Role,
 		Jobs:           rec.Jobs,

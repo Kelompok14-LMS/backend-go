@@ -8,6 +8,7 @@ type Domain struct {
 	ID             string
 	UserId         string
 	FullName       string
+	Email          string
 	Phone          string
 	Role           string
 	Jobs           string
@@ -41,6 +42,19 @@ type MentorUpdatePassword struct {
 	NewPassword string
 }
 
+type MentorUpdateProfile struct {
+	ID             string
+	UserID         string
+	FullName       string
+	Email          string
+	Phone          string
+	Jobs           string
+	Gender         string
+	BirthPlace     string
+	BirthDate      time.Time
+	Address        string
+	ProfilePicture string
+}
 type Repository interface {
 	// Create repository create mentors
 	Create(mentorDomain *Domain) error
@@ -78,5 +92,5 @@ type Usecase interface {
 	FindById(id string) (*Domain, error)
 
 	// Update usecase edit data mentors
-	Update(id string, userDomain *Domain) error
+	Update(updateMentor *MentorUpdateProfile) error
 }

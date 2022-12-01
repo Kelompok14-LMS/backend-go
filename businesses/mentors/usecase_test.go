@@ -89,3 +89,15 @@ func TestRegister(t *testing.T) {
 }
 
 // TODO: Create test Login
+
+func TestLogin(t *testing.T) {
+	t.Run("Login | Success", func(t *testing.T) {
+
+		userRepository.Mock.On("FindByEmail", mentorAuth.Email).Return(&userDomain, nil)
+
+		mentorRepository.Mock.On("FindByIdUser", mock.Anything).Return(&mentorDomain, nil)
+
+		token, _ := mentorService.Login(&mentorAuth)
+		assert.NotNil(t, &token)
+	})
+}
