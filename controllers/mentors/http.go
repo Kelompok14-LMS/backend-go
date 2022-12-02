@@ -189,5 +189,5 @@ func (ctrl *MentorController) HandlerFindAll(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Mentor found", allMentor))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("All mentor found", allMentor))
 }

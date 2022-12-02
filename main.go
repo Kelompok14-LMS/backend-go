@@ -4,7 +4,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/app/routes"
 	"github.com/Kelompok14-LMS/backend-go/configs"
 	_dbMySQL "github.com/Kelompok14-LMS/backend-go/drivers/mysql"
-	// _dbRedis "github.com/Kelompok14-LMS/backend-go/drivers/redis"
+	_dbRedis "github.com/Kelompok14-LMS/backend-go/drivers/redis"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/labstack/echo/v4"
@@ -25,14 +25,14 @@ func main() {
 	_dbMySQL.DBMigrate(mysqlDB)
 
 	// init redis config
-	// configRedis := _dbRedis.ConfigDB{
-	// 	REDIS_HOST:     configs.GetConfig("REDIS_HOST"),
-	// 	REDIS_PORT:     configs.GetConfig("REDIS_PORT"),
-	// 	REDIS_PASSWORD: configs.GetConfig("REDIS_PASSWORD"),
-	// 	REDIS_DB:       configs.GetConfig("REDIS_DB"),
-	// }
+	configRedis := _dbRedis.ConfigDB{
+		REDIS_HOST:     configs.GetConfig("REDIS_HOST"),
+		REDIS_PORT:     configs.GetConfig("REDIS_PORT"),
+		REDIS_PASSWORD: configs.GetConfig("REDIS_PASSWORD"),
+		REDIS_DB:       configs.GetConfig("REDIS_DB"),
+	}
 
-	// redisDB := configRedis.InitRedisDatabase()
+	redisDB := configRedis.InitRedisDatabase()
 
 	// init jwt config
 	jwtConfig := utils.NewJWTConfig(configs.GetConfig("JWT_SECRET"))
@@ -50,9 +50,9 @@ func main() {
 
 	// init routes config
 	route := routes.RouteConfig{
-		Echo:    e,
-		MySQLDB: mysqlDB,
-		// RedisDB:       redisDB,
+		Echo:          e,
+		MySQLDB:       mysqlDB,
+		RedisDB:       redisDB,
 		JWTConfig:     jwtConfig,
 		JWTMiddleware: jwtConfig.Init(),
 		Mailer:        mailerConfig,
