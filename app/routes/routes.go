@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 
 	_driverFactory "github.com/Kelompok14-LMS/backend-go/drivers"
+	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 
@@ -20,6 +21,9 @@ import (
 
 	_categoryUsecase "github.com/Kelompok14-LMS/backend-go/businesses/categories"
 	_categoryController "github.com/Kelompok14-LMS/backend-go/controllers/categories"
+
+	_courseUsecase "github.com/Kelompok14-LMS/backend-go/businesses/courses"
+	_courseController "github.com/Kelompok14-LMS/backend-go/controllers/courses"
 )
 
 type RouteConfig struct {
@@ -37,6 +41,9 @@ type RouteConfig struct {
 
 	// mail config
 	Mailer *pkg.MailerConfig
+
+	// cloud storage config
+	StorageConfig *helper.StorageConfig
 }
 
 func (routeConfig *RouteConfig) New() {
@@ -60,11 +67,16 @@ func (routeConfig *RouteConfig) New() {
 	mentorRepository := _driverFactory.NewMentorRepository(routeConfig.MySQLDB)
 	mentorUsecase := _mentorUsecase.NewMentorUsecase(mentorRepository, userRepository, routeConfig.JWTConfig)
 	mentorController := _mentorController.NewMentorController(mentorUsecase)
-  
+
 	// Inject the dependency to category
 	categoryRepository := _driverFactory.NewCategoryRepository(routeConfig.MySQLDB)
 	categoryUsecase := _categoryUsecase.NewCategoryUsecase(categoryRepository)
 	categoryController := _categoryController.NewCategoryController(categoryUsecase)
+
+	// Inject the dependency to course
+	courseRepository := _driverFactory.NewCourseRepository(routeConfig.MySQLDB)
+	courseUsecase := _courseUsecase.NewCourseUsecase(courseRepository, mentorRepository, categoryRepository, routeConfig.StorageConfig)
+	courseController := _courseController.NewCourseController(courseUsecase)
 
 	// authentication routes
 	auth := v1.Group("/auth")
@@ -86,4 +98,13 @@ func (routeConfig *RouteConfig) New() {
 	cat.GET("", categoryController.HandlerFindAllCategories)
 	cat.GET("/:categoryId", categoryController.HandlerFindByIdCategory)
 	cat.PUT("/:categoryId", categoryController.HandlerUpdateCategory)
+
+	// course routes
+	course := v1.Group("/courses")
+	course.POST("", courseController.HandlerCreateCourse)
+	course.GET("", courseController.HandlerFindAllCourses)
+	course.GET("/categories/:categoryId", courseController.HandlerFindByCategory)
+	course.GET("/:courseId", courseController.HandlerFindByIdCourse)
+	course.PUT("/:courseId", courseController.HandlerUpdateCourse)
+	course.DELETE("/:courseId", courseController.HandlerSoftDeleteCourse)
 }
