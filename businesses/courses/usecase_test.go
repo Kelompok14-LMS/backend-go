@@ -22,10 +22,6 @@ var (
 	mentorRepository   _mentorMock.Repository
 	categoryRepository _categoryMock.CategoryRepositoryMock
 	storageClient      helper.StorageConfig
-
-	courseDomain courses.Domain
-
-	birthDate = time.Date(2022, 8, 12, 0, 0, 0, 0, time.Local)
 )
 
 func TestMain(m *testing.M) {

@@ -122,7 +122,7 @@ func (cu courseUsecase) Update(id string, courseDomain *Domain) error {
 
 	var err error
 
-	course := &Domain{}
+	var course *Domain
 	course, err = cu.courseRepository.FindById(id)
 
 	if err != nil {

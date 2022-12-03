@@ -76,7 +76,7 @@ func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
 
 	var err error
 
-	user := &users.Domain{}
+	var user *users.Domain
 	user, err = m.userRepository.FindByEmail(mentorAuth.Email)
 
 	if err != nil {
@@ -88,7 +88,7 @@ func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
 		return nil, pkg.ErrUserNotFound
 	}
 
-	mentor := &Domain{}
+	var mentor *Domain
 	mentor, err = m.mentorsRepository.FindByIdUser(user.ID)
 
 	if err != nil {
