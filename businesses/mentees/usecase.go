@@ -129,7 +129,7 @@ func (m menteeUsecase) ForgotPassword(forgotPassword *MenteeForgotPassword) erro
 		return pkg.ErrPasswordLengthInvalid
 	}
 
-	user := &users.Domain{}
+	var user *users.Domain
 	user, err = m.userRepository.FindByEmail(forgotPassword.Email)
 
 	if err != nil {
@@ -175,7 +175,7 @@ func (m menteeUsecase) Login(menteeAuth *MenteeAuth) (*string, error) {
 
 	var err error
 
-	user := &users.Domain{}
+	var user *users.Domain
 	user, err = m.userRepository.FindByEmail(menteeAuth.Email)
 
 	if err != nil {
@@ -187,7 +187,7 @@ func (m menteeUsecase) Login(menteeAuth *MenteeAuth) (*string, error) {
 		return nil, pkg.ErrUserNotFound
 	}
 
-	mentee := &Domain{}
+	var mentee *Domain
 	mentee, err = m.menteeRepository.FindByIdUser(user.ID)
 
 	if err != nil {

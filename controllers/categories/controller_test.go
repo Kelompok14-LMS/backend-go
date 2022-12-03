@@ -18,15 +18,15 @@ import (
 
 type suiteCategory struct {
 	suite.Suite
-	mock    mocks.CategoryUsecaseMock
+	mock    *mocks.CategoryUsecaseMock
 	handler *CategoryController
 }
 
 func (s *suiteCategory) SetupSuite() {
-	mock := mocks.CategoryUsecaseMock{}
+	var mock *mocks.CategoryUsecaseMock
 	s.mock = mock
 
-	s.handler = NewCategoryController(&s.mock)
+	s.handler = NewCategoryController(s.mock)
 }
 
 func (s *suiteCategory) TestHandlerCreateCategory() {
