@@ -1,0 +1,77 @@
+version: '2.1'
+
+services:
+  mysql_db:
+    image: 'mysql:8.0.31'
+    container_name: 'eduworld-mysql'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_NAME}
+    healthcheck:
+      test: ['CMD', 'mysql', '-u', 'root', '-proot', '-e', 'SHOW SCHEMAS']
+      interval: 5s
+      retries: 3
+    networks:
+      - eduworld-net
+
+  redis_db:
+    image: 'redis/redis-stack:latest'
+    container_name: 'eduworld-redis'
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-volume:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      retries: 3
+    networks:
+      - eduworld-net
+
+  app:
+    image: 'eduworld/eduworld:1.0-beta'
+    container_name: 'eduworld-api'
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./.env:/.env
+    env_file:
+      - /.env
+    environment:
+      BUCKET_NAME: ${BUCKET_NAME}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_NAME: ${MYSQL_NAME}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: ${REDIS_DB}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      EMAIL_SENDER_NAME: ${EMAIL_SENDER_NAME}
+      AUTH_EMAIL: ${AUTH_EMAIL}
+      AUTH_PASSWORD_EMAIL: ${AUTH_PASSWORD_EMAIL}
+      APP_PORT: ${APP_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+    restart: on-failure
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+      redis_db:
+        condition: service_healthy
+    networks:
+      - eduworld-net
+
+volumes:
+  mysql-volume:
+  redis-volume:
+
+networks:
+  eduworld-net:
+    driver: bridge
