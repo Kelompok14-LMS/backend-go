@@ -30,7 +30,7 @@ func NewOTPUsecase(
 func (ou otpUsecase) SendOTP(otpDomain *Domain) error {
 	var err error
 
-	user := &users.Domain{}
+	var user *users.Domain
 	user, err = ou.userRepository.FindByEmail(otpDomain.Key)
 
 	if err != nil {
