@@ -56,7 +56,7 @@ func (mr mentorRepository) FindById(id string) (*mentors.Domain, error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkg.ErrMenteeNotFound
+			return nil, pkg.ErrMentorNotFound
 		}
 
 		return nil, err
@@ -72,7 +72,7 @@ func (mr mentorRepository) FindByIdUser(userId string) (*mentors.Domain, error) 
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkg.ErrMenteeNotFound
+			return nil, pkg.ErrMentorNotFound
 		}
 
 		return nil, err

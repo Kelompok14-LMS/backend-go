@@ -62,10 +62,10 @@ func TestMain(m *testing.M) {
 		ProfilePicture: "https://example.com/to/bucket",
 	}
 
-	mentorAuth = mentors.MentorAuth{
-		Email:    "mentor@gmail.com",
-		Password: "hashedpassword",
-	}
+	// mentorAuth = mentors.MentorAuth{
+	// 	Email:    "mentor@gmail.com",
+	// 	Password: "hashedpassword",
+	// }
 
 	mentorRegister = mentors.MentorRegister{
 		FullName: "Mentor Test",
@@ -73,13 +73,13 @@ func TestMain(m *testing.M) {
 		Password: "hashedpassword",
 	}
 
-	userDomain = users.Domain{
-		ID:        "UID1",
-		Email:     "mentor@gmail.com",
-		Password:  "hashedpassword",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
+	// userDomain = users.Domain{
+	// 	ID:        "UID1",
+	// 	Email:     "mentor@gmail.com",
+	// 	Password:  "hashedpassword",
+	// 	CreatedAt: time.Now(),
+	// 	UpdatedAt: time.Now(),
+	// }
 
 	m.Run()
 }
@@ -104,18 +104,24 @@ func TestRegister(t *testing.T) {
 // func TestLogin(t *testing.T) {
 // 	t.Run("Login | Success", func(t *testing.T) {
 
-// 		mentorLogin := mentors.MentorAuth{
+// 		userDomain = users.Domain{
+// 			ID:        "UID1",
+// 			Email:     "mentor@gmail.com",
+// 			Password:  "hashedpassword",
+// 			CreatedAt: time.Now(),
+// 			UpdatedAt: time.Now(),
+// 		}
+
+// 		mentorAuth = mentors.MentorAuth{
 // 			Email:    "mentor@gmail.com",
 // 			Password: "hashedpassword",
 // 		}
 
-// 		userRepository.Mock.On("FindByEmail", mentorLogin.Email).Return(&userDomain, nil)
+// 		userRepository.Mock.On("FindByEmail", mentorAuth.Email).Return(&userDomain, nil)
 
-// 		mentorRepository.Mock.On("FindByIdUser", userDomain.ID).Return(&mentorDomain, nil)
+// 		token, err := mentorService.Login(&mentorAuth)
 
-// 		token, err := mentorService.Login(&mentorLogin)
-
-// 		assert.NoError(t, err)
+// 		assert.Error(t, err)
 // 		assert.NotNil(t, &token)
 // 	})
 // }
@@ -125,7 +131,7 @@ func TestFindById(t *testing.T) {
 		mentorRepository.On("FindById", "MID1").Return(&mentorDomain, nil).Once()
 
 		result, err := mentorService.FindById("MID1")
-		assert.NoError(t, err)
+		assert.Nil(t, err)
 		assert.NotNil(t, result)
 	})
 
@@ -133,7 +139,7 @@ func TestFindById(t *testing.T) {
 		mentorRepository.On("FindById", "-1").Return(&mentorDomain, nil).Once()
 
 		result, err := mentorService.FindById("-1")
-		assert.NoError(t, err)
+		assert.Nil(t, err)
 		assert.NotNil(t, result)
 	})
 }
@@ -143,7 +149,7 @@ func TestFindAll(t *testing.T) {
 		mentorRepository.On("FindAll").Return(&[]mentors.Domain{mentorDomain}, nil).Once()
 
 		result, err := mentorRepository.FindAll()
-		assert.NoError(t, err)
+		assert.Nil(t, err)
 		assert.Equal(t, 1, len(*result))
 	})
 
@@ -151,7 +157,7 @@ func TestFindAll(t *testing.T) {
 		mentorRepository.On("FindAll").Return(&[]mentors.Domain{}, nil).Once()
 
 		result, err := mentorRepository.FindAll()
-		assert.NoError(t, err)
+		assert.Nil(t, err)
 		assert.Equal(t, 0, len(*result))
 	})
 }
