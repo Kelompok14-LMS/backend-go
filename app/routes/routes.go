@@ -27,6 +27,9 @@ import (
 
 	_moduleUsecase "github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	_moduleController "github.com/Kelompok14-LMS/backend-go/controllers/modules"
+
+	_assignmentUsecase "github.com/Kelompok14-LMS/backend-go/businesses/assignments"
+	_assignmentController "github.com/Kelompok14-LMS/backend-go/controllers/assignments"
 )
 
 type RouteConfig struct {
@@ -86,6 +89,12 @@ func (routeConfig *RouteConfig) New() {
 	moduleUsecase := _moduleUsecase.NewModuleUsecase(moduleRepository, courseRepository)
 	moduleController := _moduleController.NewModuleController(moduleUsecase)
 
+	// Inject the dependency to assignment
+
+	assignmentRepository := _driverFactory.NewAssignmentRepository(routeConfig.MySQLDB)
+	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository)
+	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
+
 	// authentication routes
 	auth := v1.Group("/auth")
 	auth.POST("/mentee/login", menteeController.HandlerLoginMentee)
@@ -122,4 +131,11 @@ func (routeConfig *RouteConfig) New() {
 	module.GET("/:moduleId", moduleController.HandlerFindByIdModule)
 	module.PUT("/:moduleId", moduleController.HandlerUpdateModule)
 	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule)
+
+	// module routes
+	assignment := v1.Group("/assignment")
+	assignment.POST("", assignmentController.HandlerCreateAssignment)
+	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
+	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment)
+	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment)
 }

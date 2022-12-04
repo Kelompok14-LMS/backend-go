@@ -47,7 +47,7 @@ func (ctrl *AssignmentController) HandlerCreateAssignment(c echo.Context) error 
 	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success create assignments", nil))
 }
 
-func (ctrl *AssignmentController) HandlerFindByIdAssignments(c echo.Context) error {
+func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) error {
 	assignmentId := c.Param("assignmentId")
 
 	assignment, err := ctrl.assignmentUsecase.FindById(assignmentId)
@@ -63,7 +63,7 @@ func (ctrl *AssignmentController) HandlerFindByIdAssignments(c echo.Context) err
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by id", response.DetailAssignment(assignment)))
 }
 
-func (ctrl *AssignmentController) HandlerUpdateModule(c echo.Context) error {
+func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error {
 	assignmentId := c.Param("assignmentId")
 	assignmentInput := request.UpdateAssignment{}
 
@@ -90,7 +90,7 @@ func (ctrl *AssignmentController) HandlerUpdateModule(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update assignments", nil))
 }
 
-func (ctrl *AssignmentController) HandlerDeleteModule(c echo.Context) error {
+func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error {
 	assignmentId := c.Param("assignmentId")
 
 	err := ctrl.assignmentUsecase.Delete(assignmentId)
