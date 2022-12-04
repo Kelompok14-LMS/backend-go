@@ -1,6 +1,7 @@
 package assignments
 
 import (
+	"mime/multipart"
 	"time"
 
 	"gorm.io/gorm"
@@ -12,6 +13,7 @@ type Domain struct {
 	Title       string
 	Description string
 	PDF         string
+	PDFfile     *multipart.FileHeader
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt
