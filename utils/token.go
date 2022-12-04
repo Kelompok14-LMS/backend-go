@@ -1,11 +1,11 @@
 package utils
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -29,12 +29,6 @@ type JWTCustomClaims struct {
 	jwt.StandardClaims
 }
 
-func (jwtConf *JWTConfig) Init() middleware.JWTConfig {
-	return middleware.JWTConfig{
-		Claims:     &JWTCustomClaims{},
-		SigningKey: []byte(jwtConf.JWTSecret),
-	}
-}
 func (config *JWTConfig) GenerateToken(userId string, actorId string, role string) (string, error) {
 	claims := JWTCustomClaims{
 		UserId: userId,
@@ -60,9 +54,41 @@ func (config *JWTConfig) GenerateToken(userId string, actorId string, role strin
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func ExtractToken(c echo.Context) (*JWTCustomClaims, error) {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(*JWTCustomClaims)
+func (config *JWTConfig) ExtractToken(c echo.Context) (*JWTCustomClaims, error) {
+	tokenString := c.Request().Header.Get("Authorization")
 
-	return claims, nil
+	sanitizedTokenBearer := strings.Replace(tokenString, "Bearer ", "", 1)
+
+	token, err := jwt.Parse(sanitizedTokenBearer, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, pkg.ErrInvalidTokenHeader
+		}
+
+		jwtSecret := config.JWTSecret
+
+		return []byte(jwtSecret), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if token.Valid {
+		customClaim := JWTCustomClaims{}
+
+		claims := token.Claims.(jwt.MapClaims)
+		customClaim.UserId = claims["user_id"].(string)
+		customClaim.Role = claims["role"].(string)
+
+		switch customClaim.Role {
+		case "mentee":
+			customClaim.MenteeId = claims["mentee_id"].(string)
+		case "mentor":
+			customClaim.MentorId = claims["mentor_id"].(string)
+		}
+
+		return &customClaim, nil
+	}
+
+	return nil, err
 }

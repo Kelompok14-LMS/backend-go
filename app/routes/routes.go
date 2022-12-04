@@ -3,7 +3,6 @@ package routes
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 
 	"github.com/Kelompok14-LMS/backend-go/app/middlewares"
@@ -44,9 +43,6 @@ type RouteConfig struct {
 	// JWT config
 	JWTConfig *utils.JWTConfig
 
-	// JWT config middleware
-	JWTMiddleware middleware.JWTConfig
-
 	// mail config
 	Mailer *pkg.MailerConfig
 
@@ -57,6 +53,9 @@ type RouteConfig struct {
 func (routeConfig *RouteConfig) New() {
 	// setup api v1
 	v1 := routeConfig.Echo.Group("/api/v1")
+
+	// setup auth middleware
+	authMiddleware := middlewares.NewAuthMiddleware(routeConfig.JWTConfig)
 
 	// Inject the dependency to user
 	userRepository := _driverFactory.NewUserRepository(routeConfig.MySQLDB)
@@ -102,11 +101,10 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/mentor/login", mentorController.HandlerLoginMentor)
 	auth.POST("/mentor/register", mentorController.HandlerRegisterMentor)
 
-	mentor := v1.Group("/mentors", middleware.JWTWithConfig(routeConfig.JWTMiddleware))
-	mentor.Use(middlewares.CheckTokenMiddleware)
+	mentor := v1.Group("/mentors", authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	mentor.GET("", mentorController.HandlerFindAll)
-	mentor.PUT("/update-password", mentorController.HandlerUpdatePassword)
-	mentor.GET("/mentor-profile", mentorController.HandlerFindByCurrentMentor)
+	mentor.PUT("/:mentorId/update-password", mentorController.HandlerUpdatePassword)
+	mentor.GET("/:mentorId", mentorController.HandlerFindByCurrentMentor)
 	mentor.GET("/:mentorId", mentorController.HandlerFindByID)
 
 	// mentee routes
