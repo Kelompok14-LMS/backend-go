@@ -89,9 +89,9 @@ func (ctrl *MentorController) HandlerUpdatePassword(c echo.Context) error {
 	}
 
 	user, err := utils.ExtractToken(c)
-	if err != nil {
-		return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-	}
+	// if err != nil {
+	// 	return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+	// }
 
 	mentorInput.UserID = user.UserId
 

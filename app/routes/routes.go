@@ -80,7 +80,7 @@ func (routeConfig *RouteConfig) New() {
 
 	mentor.PUT("/update-password", mentorController.HandlerUpdatePassword)
 	mentor.GET("/mentor-profile", mentorController.HandlerFindByCurrentMentor)
-	mentor.GET("/mentor/:id", mentorController.HandlerFindByCurrentMentor)
+	mentor.GET("/:id", mentorController.HandlerFindByID)
 	mentor.GET("", mentorController.HandlerFindAll)
 
 	// mentee routes

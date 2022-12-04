@@ -111,6 +111,10 @@ func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
 
 func (m mentorUsecase) UpdatePassword(updatePassword *MentorUpdatePassword) error {
 
+	if len(updatePassword.NewPassword) < 8 {
+		return pkg.ErrPasswordLengthInvalid
+	}
+
 	oldPassword, err := m.userRepository.FindById(updatePassword.UserID)
 
 	if err != nil {
@@ -119,7 +123,7 @@ func (m mentorUsecase) UpdatePassword(updatePassword *MentorUpdatePassword) erro
 
 	ok := utils.ComparePassword(oldPassword.Password, updatePassword.OldPassword)
 	if !ok {
-		return pkg.ErrUserNotFound
+		return pkg.ErrPasswordNotMatch
 	}
 
 	hashPassword := utils.HashPassword(updatePassword.NewPassword)
