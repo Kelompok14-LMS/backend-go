@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/assignments"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/categories"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/courses"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentees"
@@ -45,5 +46,5 @@ func (config *ConfigDB) InitMySQLDatabase() *gorm.DB {
 }
 
 func DBMigrate(db *gorm.DB) {
-	_ = db.AutoMigrate(&users.User{}, &mentees.Mentee{}, &mentors.Mentor{}, &categories.Category{}, &courses.Course{}, &modules.Module{})
+	_ = db.AutoMigrate(&users.User{}, &mentees.Mentee{}, &mentors.Mentor{}, &categories.Category{}, &courses.Course{}, &modules.Module{}, &assignments.Assignment{})
 }
