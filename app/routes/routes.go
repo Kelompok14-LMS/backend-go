@@ -24,6 +24,9 @@ import (
 
 	_courseUsecase "github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	_courseController "github.com/Kelompok14-LMS/backend-go/controllers/courses"
+
+	_moduleUsecase "github.com/Kelompok14-LMS/backend-go/businesses/modules"
+	_moduleController "github.com/Kelompok14-LMS/backend-go/controllers/modules"
 )
 
 type RouteConfig struct {
@@ -78,6 +81,11 @@ func (routeConfig *RouteConfig) New() {
 	courseUsecase := _courseUsecase.NewCourseUsecase(courseRepository, mentorRepository, categoryRepository, routeConfig.StorageConfig)
 	courseController := _courseController.NewCourseController(courseUsecase)
 
+	// Inject the dependency to module
+	moduleRepository := _driverFactory.NewModuleRepository(routeConfig.MySQLDB)
+	moduleUsecase := _moduleUsecase.NewModuleUsecase(moduleRepository, courseRepository)
+	moduleController := _moduleController.NewModuleController(moduleUsecase)
+
 	// authentication routes
 	auth := v1.Group("/auth")
 	auth.POST("/mentee/login", menteeController.HandlerLoginMentee)
@@ -107,4 +115,11 @@ func (routeConfig *RouteConfig) New() {
 	course.GET("/:courseId", courseController.HandlerFindByIdCourse)
 	course.PUT("/:courseId", courseController.HandlerUpdateCourse)
 	course.DELETE("/:courseId", courseController.HandlerSoftDeleteCourse)
+
+	// module routes
+	module := v1.Group("/modules")
+	module.POST("", moduleController.HandlerCreateModule)
+	module.GET("/:moduleId", moduleController.HandlerFindByIdModule)
+	module.PUT("/:moduleId", moduleController.HandlerUpdateModule)
+	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule)
 }
