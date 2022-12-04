@@ -1,13 +1,12 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 
+	"github.com/Kelompok14-LMS/backend-go/app/middlewares"
 	_driverFactory "github.com/Kelompok14-LMS/backend-go/drivers"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
@@ -77,24 +76,13 @@ func (routeConfig *RouteConfig) New() {
 
 	mentor := v1.Group("/mentor", middleware.JWTWithConfig(routeConfig.JWTMiddleware))
 
-	mentor.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			userID, _ := utils.GetUserID(c)
-
-			if userID == nil {
-				return c.JSON(http.StatusUnauthorized, map[string]string{
-					"message": "invalid token",
-				})
-			}
-
-			return next(c)
-		}
-	})
+	mentor.Use(middlewares.CheckTokenMiddleware)
 
 	mentor.PUT("/update-password", mentorController.HandlerUpdatePassword)
-	mentor.PUT("/update-profile", mentorController.HandlerUpdateProfile)
-	mentor.GET("/mentor-profile", mentorController.HandlerFindByID)
+	mentor.GET("/mentor-profile", mentorController.HandlerFindByCurrentMentor)
+	mentor.GET("/mentor/:id", mentorController.HandlerFindByCurrentMentor)
 	mentor.GET("", mentorController.HandlerFindAll)
+
 	// mentee routes
 	// m := v1.Group("/mentees")
 }

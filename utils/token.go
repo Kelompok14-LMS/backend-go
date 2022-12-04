@@ -60,7 +60,7 @@ func (config *JWTConfig) GenerateToken(userId string, actorId string, role strin
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func GetUserID(c echo.Context) (*JWTCustomClaims, error) {
+func ExtractToken(c echo.Context) (*JWTCustomClaims, error) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*JWTCustomClaims)
 
