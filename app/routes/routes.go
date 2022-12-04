@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 
+	"github.com/Kelompok14-LMS/backend-go/app/middlewares"
 	_driverFactory "github.com/Kelompok14-LMS/backend-go/drivers"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
@@ -53,6 +54,9 @@ func (routeConfig *RouteConfig) New() {
 	// setup api v1
 	v1 := routeConfig.Echo.Group("/api/v1")
 
+	// setup auth middleware
+	authMiddleware := middlewares.NewAuthMiddleware(routeConfig.JWTConfig)
+
 	// Inject the dependency to user
 	userRepository := _driverFactory.NewUserRepository(routeConfig.MySQLDB)
 
@@ -96,6 +100,12 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/check-otp", otpController.HandlerCheckOTP)
 	auth.POST("/mentor/login", mentorController.HandlerLoginMentor)
 	auth.POST("/mentor/register", mentorController.HandlerRegisterMentor)
+
+	mentor := v1.Group("/mentors", authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	mentor.GET("", mentorController.HandlerFindAll)
+	mentor.PUT("/:mentorId/update-password", mentorController.HandlerUpdatePassword)
+	mentor.GET("/:mentorId", mentorController.HandlerFindByCurrentMentor)
+	mentor.GET("/:mentorId", mentorController.HandlerFindByID)
 
 	// mentee routes
 	// m := v1.Group("/mentees")

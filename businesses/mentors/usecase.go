@@ -26,6 +26,10 @@ func NewMentorUsecase(mentorsRepository Repository, userRepository users.Reposit
 func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 	var err error
 
+	if len(mentorDomain.Password) < 6 {
+		return pkg.ErrPasswordLengthInvalid
+	}
+
 	email, _ := m.userRepository.FindByEmail(mentorDomain.Email)
 
 	if email != nil {
@@ -54,7 +58,7 @@ func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 	mentor := Domain{
 		ID:        mentorId,
 		UserId:    userId,
-		FullName:  mentorDomain.FullName,
+		Fullname:  mentorDomain.Fullname,
 		Role:      "mentor",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -105,17 +109,110 @@ func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
 	return &token, nil
 }
 
+func (m mentorUsecase) UpdatePassword(updatePassword *MentorUpdatePassword) error {
+
+	if len(updatePassword.NewPassword) < 8 {
+		return pkg.ErrPasswordLengthInvalid
+	}
+
+	oldPassword, err := m.userRepository.FindById(updatePassword.UserID)
+
+	if err != nil {
+		return pkg.ErrUserNotFound
+	}
+
+	ok := utils.ComparePassword(oldPassword.Password, updatePassword.OldPassword)
+	if !ok {
+		return pkg.ErrPasswordNotMatch
+	}
+
+	hashPassword := utils.HashPassword(updatePassword.NewPassword)
+
+	updatedUser := users.Domain{
+		Password: hashPassword,
+	}
+
+	err = m.userRepository.Update(oldPassword.ID, &updatedUser)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (m mentorUsecase) FindAll() (*[]Domain, error) {
-	//TODO implement me
-	panic("implement me")
+	var err error
+
+	mentor, err := m.mentorsRepository.FindAll()
+
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			return nil, pkg.ErrMentorNotFound
+		}
+
+		return nil, pkg.ErrInternalServerError
+	}
+
+	return mentor, nil
 }
 
 func (m mentorUsecase) FindById(id string) (*Domain, error) {
-	//TODO implement me
-	panic("implement me")
+
+	mentor, err := m.mentorsRepository.FindById(id)
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			return nil, pkg.ErrMentorNotFound
+		}
+
+		return nil, pkg.ErrInternalServerError
+	}
+
+	return mentor, nil
 }
 
-func (m mentorUsecase) Update(id string, userDomain *Domain) error {
-	//TODO implement me
-	panic("implement me")
+func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
+
+	mentor, _ := m.userRepository.FindById(updateMentor.UserID)
+
+	user := users.Domain{
+		ID:        updateMentor.UserID,
+		Email:     updateMentor.Email,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	err := m.userRepository.Update(mentor.ID, &user)
+
+	if err != nil {
+		return err
+	}
+
+	mentorID, _ := m.mentorsRepository.FindById(updateMentor.ID)
+
+	updatedMentor := Domain{
+
+		Fullname:       updateMentor.Fullname,
+		Phone:          updateMentor.Phone,
+		Jobs:           updateMentor.Jobs,
+		Gender:         updateMentor.Gender,
+		BirthPlace:     updateMentor.BirthPlace,
+		BirthDate:      updateMentor.BirthDate,
+		Address:        updateMentor.Address,
+		ProfilePicture: updateMentor.ProfilePicture,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	err = m.mentorsRepository.Update(mentorID.ID, &updatedMentor)
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			return pkg.ErrMentorNotFound
+		}
+
+		return pkg.ErrInternalServerError
+	}
+
+	return nil
 }

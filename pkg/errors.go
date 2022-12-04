@@ -58,6 +58,9 @@ var (
 	// ErrInvalidJWTPayload error invalid JWT payloads
 	ErrInvalidJWTPayload = errors.New("Invalid JWT payloads")
 
+	// error invalid token header
+	ErrInvalidTokenHeader = errors.New("Invalid token header")
+
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")
 )

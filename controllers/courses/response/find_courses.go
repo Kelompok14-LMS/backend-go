@@ -19,7 +19,7 @@ type FindCourses struct {
 func AllCourses(res *courses.Domain) FindCourses {
 	return FindCourses{
 		CourseId:  res.ID,
-		Mentor:    res.Mentor.FullName,
+		Mentor:    res.Mentor.Fullname,
 		Category:  res.Category.Name,
 		Title:     res.Title,
 		Thumbnail: res.Thumbnail,

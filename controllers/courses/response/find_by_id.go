@@ -20,7 +20,7 @@ type FindByIdCourse struct {
 func DetailCourse(res *courses.Domain) FindByIdCourse {
 	return FindByIdCourse{
 		CourseId:    res.ID,
-		Mentor:      res.Mentor.FullName,
+		Mentor:      res.Mentor.Fullname,
 		Category:    res.Category.Name,
 		Title:       res.Title,
 		Description: res.Description,
