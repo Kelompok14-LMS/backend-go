@@ -3,8 +3,10 @@ package routes
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 
+	"github.com/Kelompok14-LMS/backend-go/app/middlewares"
 	_driverFactory "github.com/Kelompok14-LMS/backend-go/drivers"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
@@ -41,6 +43,9 @@ type RouteConfig struct {
 
 	// JWT config
 	JWTConfig *utils.JWTConfig
+
+	// JWT config middleware
+	JWTMiddleware middleware.JWTConfig
 
 	// mail config
 	Mailer *pkg.MailerConfig
@@ -96,6 +101,13 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/check-otp", otpController.HandlerCheckOTP)
 	auth.POST("/mentor/login", mentorController.HandlerLoginMentor)
 	auth.POST("/mentor/register", mentorController.HandlerRegisterMentor)
+
+	mentor := v1.Group("/mentors", middleware.JWTWithConfig(routeConfig.JWTMiddleware))
+	mentor.Use(middlewares.CheckTokenMiddleware)
+	mentor.GET("", mentorController.HandlerFindAll)
+	mentor.PUT("/update-password", mentorController.HandlerUpdatePassword)
+	mentor.GET("/mentor-profile", mentorController.HandlerFindByCurrentMentor)
+	mentor.GET("/:mentorId", mentorController.HandlerFindByID)
 
 	// mentee routes
 	// m := v1.Group("/mentees")

@@ -95,13 +95,27 @@ func (_m *Usecase) Register(mentorAuth *mentors.MentorRegister) error {
 	return r0
 }
 
-// Update provides a mock function with given fields: id, userDomain
-func (_m *Usecase) Update(id string, userDomain *mentors.Domain) error {
-	ret := _m.Called(id, userDomain)
+// Update provides a mock function with given fields: updateMentor
+func (_m *Usecase) Update(updateMentor *mentors.MentorUpdateProfile) error {
+	ret := _m.Called(updateMentor)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, *mentors.Domain) error); ok {
-		r0 = rf(id, userDomain)
+	if rf, ok := ret.Get(0).(func(*mentors.MentorUpdateProfile) error); ok {
+		r0 = rf(updateMentor)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdatePassword provides a mock function with given fields: updatePassword
+func (_m *Usecase) UpdatePassword(updatePassword *mentors.MentorUpdatePassword) error {
+	ret := _m.Called(updatePassword)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*mentors.MentorUpdatePassword) error); ok {
+		r0 = rf(updatePassword)
 	} else {
 		r0 = ret.Error(0)
 	}

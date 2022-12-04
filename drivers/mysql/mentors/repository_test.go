@@ -1,6 +1,7 @@
 package mentors
 
 import (
+	"database/sql/driver"
 	"regexp"
 	"testing"
 	"time"
@@ -12,6 +13,13 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+type anytime struct{}
+
+func (a anytime) Match(v driver.Value) bool {
+	_, ok := v.(time.Time)
+	return ok
+}
 
 type suiteMentor struct {
 	suite.Suite
@@ -47,7 +55,7 @@ func (s *suiteMentor) TestCreate_Success() {
 	mentor := mentors.Domain{
 		ID:        "MID1",
 		UserId:    "UID1",
-		FullName:  "Mentor 1",
+		Fullname:  "Mentor 1",
 		Role:      "mentor",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

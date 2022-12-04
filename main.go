@@ -71,6 +71,7 @@ func main() {
 		JWTConfig:     jwtConfig,
 		Mailer:        mailerConfig,
 		StorageConfig: storageConfig,
+		JWTMiddleware: jwtConfig.Init(),
 	}
 
 	route.New()

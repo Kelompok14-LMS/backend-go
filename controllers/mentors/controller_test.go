@@ -30,7 +30,7 @@ func (s *suiteMentor) SetupSuite() {
 
 func (s *suiteMentor) TestHandlerRegister() {
 	mentorInput := request.MentorRegisterInput{
-		FullName: "Mentor Test",
+		Fullname: "Mentor Test",
 		Email:    "mentor@gmail.com",
 		Password: "12345678",
 	}
