@@ -1,6 +1,7 @@
 package request
 
 import (
+	"mime/multipart"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
@@ -8,16 +9,16 @@ import (
 )
 
 type MentorUpdateProfile struct {
-	ID             string `json:"id,omitempty" form:"id,omitempty" validate:"required"`
-	UserID         string `json:"user_id,omitempty" form:"user_id,omitempty" validate:"required"`
-	Fullname       string `json:"fullname" form:"fullname" validate:"required"`
-	Email          string `json:"email" form:"fullname" validate:"required"`
-	Phone          string `json:"phone" form:"phone" validate:"required"`
-	Jobs           string `json:"jobs" form:"jobs" validate:"required"`
-	Gender         string `json:"gender" form:"gender" validate:"required"`
-	BirthPlace     string `json:"birth_place" form:"birth_place" validate:"required"`
-	BirthDate      string `json:"birth_date" form:"birth_date" validate:"required"`
-	ProfilePicture string `json:"profile_picture" form:"profile_picture" validate:"required"`
+	ID                 string                `json:"id,omitempty" form:"id,omitempty" validate:"required"`
+	UserID             string                `json:"user_id,omitempty" form:"user_id,omitempty" validate:"required"`
+	Fullname           string                `json:"fullname" form:"fullname" validate:"required"`
+	Email              string                `json:"email" form:"fullname" validate:"required"`
+	Phone              string                `json:"phone" form:"phone" validate:"required"`
+	Jobs               string                `json:"jobs" form:"jobs" validate:"required"`
+	Gender             string                `json:"gender" form:"gender" validate:"required"`
+	BirthPlace         string                `json:"birth_place" form:"birth_place" validate:"required"`
+	BirthDate          string                `json:"birth_date" form:"birth_date" validate:"required"`
+	ProfilePictureFile *multipart.FileHeader `json:"profile_picture" form:"profile_picture" validate:"required"`
 }
 
 func (req *MentorUpdateProfile) ToDomain() *mentors.MentorUpdateProfile {
@@ -26,16 +27,16 @@ func (req *MentorUpdateProfile) ToDomain() *mentors.MentorUpdateProfile {
 
 	return &mentors.MentorUpdateProfile{
 
-		ID:             req.ID,
-		UserID:         req.UserID,
-		Fullname:       req.Fullname,
-		Email:          req.Email,
-		Phone:          req.Phone,
-		Jobs:           req.Jobs,
-		Gender:         req.Gender,
-		BirthPlace:     req.BirthPlace,
-		BirthDate:      birth,
-		ProfilePicture: req.ProfilePicture,
+		ID:                 req.ID,
+		UserID:             req.UserID,
+		Fullname:           req.Fullname,
+		Email:              req.Email,
+		Phone:              req.Phone,
+		Jobs:               req.Jobs,
+		Gender:             req.Gender,
+		BirthPlace:         req.BirthPlace,
+		BirthDate:          birth,
+		ProfilePictureFile: req.ProfilePictureFile,
 	}
 }
 

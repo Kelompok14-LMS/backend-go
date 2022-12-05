@@ -1,6 +1,7 @@
 package mentors
 
 import (
+	"mime/multipart"
 	"time"
 )
 
@@ -43,17 +44,17 @@ type MentorUpdatePassword struct {
 }
 
 type MentorUpdateProfile struct {
-	ID             string
-	UserID         string
-	Fullname       string
-	Email          string
-	Phone          string
-	Jobs           string
-	Gender         string
-	BirthPlace     string
-	BirthDate      time.Time
-	Address        string
-	ProfilePicture string
+	ID                 string
+	UserID             string
+	Fullname           string
+	Email              string
+	Phone              string
+	Jobs               string
+	Gender             string
+	BirthPlace         string
+	BirthDate          time.Time
+	Address            string
+	ProfilePictureFile *multipart.FileHeader
 }
 
 type Repository interface {

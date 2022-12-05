@@ -1,9 +1,11 @@
 package mentors
 
 import (
+	"context"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/users"
+	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/google/uuid"
@@ -13,13 +15,15 @@ type mentorUsecase struct {
 	mentorsRepository Repository
 	userRepository    users.Repository
 	jwtConfig         *utils.JWTConfig
+	storage           *helper.StorageConfig
 }
 
-func NewMentorUsecase(mentorsRepository Repository, userRepository users.Repository, jwtConfig *utils.JWTConfig) Usecase {
+func NewMentorUsecase(mentorsRepository Repository, userRepository users.Repository, jwtConfig *utils.JWTConfig, storage *helper.StorageConfig) Usecase {
 	return mentorUsecase{
 		mentorsRepository: mentorsRepository,
 		userRepository:    userRepository,
 		jwtConfig:         jwtConfig,
+		storage:           storage,
 	}
 }
 
@@ -191,6 +195,23 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 
 	mentorID, _ := m.mentorsRepository.FindById(updateMentor.ID)
 
+	ctx := context.Background()
+	filename := updateMentor.ProfilePictureFile.Filename
+
+	ProfilePicture, err := updateMentor.ProfilePictureFile.Open()
+
+	if err != nil {
+		return err
+	}
+
+	defer ProfilePicture.Close()
+
+	ProfilePictureURL, err := m.storage.UploadImage(ctx, filename, ProfilePicture)
+
+	if err != nil {
+		return err
+	}
+
 	updatedMentor := Domain{
 
 		Fullname:       updateMentor.Fullname,
@@ -200,7 +221,7 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 		BirthPlace:     updateMentor.BirthPlace,
 		BirthDate:      updateMentor.BirthDate,
 		Address:        updateMentor.Address,
-		ProfilePicture: updateMentor.ProfilePicture,
+		ProfilePicture: ProfilePictureURL,
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 	}

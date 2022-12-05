@@ -164,3 +164,36 @@ func (ctrl *MentorController) HandlerFindAll(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentor ", allMentor))
 }
+
+func (ctrl *MentorController) HandlerUpdateProfile(c echo.Context) error {
+	mentorInput := request.MentorUpdateProfile{}
+
+	mentorInput.ProfilePictureFile, _ = c.FormFile("profile_picture")
+
+	if err := c.Bind(&mentorInput); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+	}
+
+	mentorId := c.Param("mentorId")
+	mentorInput.ID = mentorId
+
+	if err := mentorInput.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
+	}
+
+	err := ctrl.mentorUsecase.Update(mentorInput.ToDomain())
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrInvalidRequest) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+		} else if errors.Is(err, pkg.ErrMentorNotFound) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrMentorNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update profile", nil))
+}
