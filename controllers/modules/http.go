@@ -96,7 +96,7 @@ func (ctrl *ModuleController) HandlerDeleteModule(c echo.Context) error {
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrModuleNotFound) {
-			c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
