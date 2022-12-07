@@ -28,6 +28,9 @@ import (
 
 	_moduleUsecase "github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	_moduleController "github.com/Kelompok14-LMS/backend-go/controllers/modules"
+
+	_materialUsecase "github.com/Kelompok14-LMS/backend-go/businesses/materials"
+	_materialController "github.com/Kelompok14-LMS/backend-go/controllers/materials"
 )
 
 type RouteConfig struct {
@@ -85,10 +88,16 @@ func (routeConfig *RouteConfig) New() {
 	courseUsecase := _courseUsecase.NewCourseUsecase(courseRepository, mentorRepository, categoryRepository, routeConfig.StorageConfig)
 	courseController := _courseController.NewCourseController(courseUsecase)
 
+	// Inject the dependency to material
+
 	// Inject the dependency to module
 	moduleRepository := _driverFactory.NewModuleRepository(routeConfig.MySQLDB)
 	moduleUsecase := _moduleUsecase.NewModuleUsecase(moduleRepository, courseRepository)
 	moduleController := _moduleController.NewModuleController(moduleUsecase)
+
+	materialRepository := _driverFactory.NewMaterialRepository(routeConfig.MySQLDB)
+	materialUsecase := _materialUsecase.NewMaterialUsecase(materialRepository, moduleRepository, routeConfig.StorageConfig)
+	materialController := _materialController.NewMaterialController(materialUsecase)
 
 	// authentication routes
 	auth := v1.Group("/auth")
@@ -107,29 +116,34 @@ func (routeConfig *RouteConfig) New() {
 	mentor.GET("/:mentorId", mentorController.HandlerFindByCurrentMentor)
 	mentor.GET("/:mentorId", mentorController.HandlerFindByID)
 
-	// mentee routes
-	// m := v1.Group("/mentees")
-
 	//	category routes
 	cat := v1.Group("/categories")
-	cat.POST("", categoryController.HandlerCreateCategory)
+	cat.POST("", categoryController.HandlerCreateCategory, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	cat.GET("", categoryController.HandlerFindAllCategories)
 	cat.GET("/:categoryId", categoryController.HandlerFindByIdCategory)
-	cat.PUT("/:categoryId", categoryController.HandlerUpdateCategory)
+	cat.PUT("/:categoryId", categoryController.HandlerUpdateCategory, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 
 	// course routes
 	course := v1.Group("/courses")
-	course.POST("", courseController.HandlerCreateCourse)
+	course.POST("", courseController.HandlerCreateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	course.GET("", courseController.HandlerFindAllCourses)
 	course.GET("/categories/:categoryId", courseController.HandlerFindByCategory)
 	course.GET("/:courseId", courseController.HandlerFindByIdCourse)
-	course.PUT("/:courseId", courseController.HandlerUpdateCourse)
-	course.DELETE("/:courseId", courseController.HandlerSoftDeleteCourse)
+	course.PUT("/:courseId", courseController.HandlerUpdateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	course.DELETE("/:courseId", courseController.HandlerSoftDeleteCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 
 	// module routes
 	module := v1.Group("/modules")
-	module.POST("", moduleController.HandlerCreateModule)
+	module.POST("", moduleController.HandlerCreateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	module.GET("/:moduleId", moduleController.HandlerFindByIdModule)
-	module.PUT("/:moduleId", moduleController.HandlerUpdateModule)
-	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule)
+	module.PUT("/:moduleId", moduleController.HandlerUpdateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+
+	// material routes
+	material := v1.Group("/materials")
+	material.POST("", materialController.HandlerCreateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	material.DELETE("/modules/:moduleId", materialController.HandlerSoftDeleteMaterialByModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	material.GET("/:materialId", materialController.HandlerFindByIdMaterial)
+	material.PUT("/:materialId", materialController.HandlerUpdateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	material.DELETE("/:materialId", materialController.HandlerSoftDeleteMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 }
