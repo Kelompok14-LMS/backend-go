@@ -40,6 +40,20 @@ func (_m *Repository) Delete(assignmentId string) error {
 	return r0
 }
 
+// DeleteByModuleId provides a mock function with given fields: moduleId
+func (_m *Repository) DeleteByModuleId(moduleId string) error {
+	ret := _m.Called(moduleId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(moduleId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // FindById provides a mock function with given fields: assignmentId
 func (_m *Repository) FindById(assignmentId string) (*assignments.Domain, error) {
 	ret := _m.Called(assignmentId)

@@ -83,3 +83,13 @@ func (ar assignmentRepository) Delete(assignmentId string) error {
 
 	return nil
 }
+
+func (ar assignmentRepository) DeleteByModuleId(moduleId string) error {
+	err := ar.conn.Model(&Assignment{}).Where("module_id = ?", moduleId).Delete(&Assignment{}).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

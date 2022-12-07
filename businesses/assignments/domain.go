@@ -34,6 +34,9 @@ type Repository interface {
 
 	// Delete repository delete assignment
 	Delete(assignmentId string) error
+
+	// DeleteByModuleId repository delete assignments y id module
+	DeleteByModuleId(moduleId string) error
 }
 
 type Usecase interface {
@@ -51,4 +54,7 @@ type Usecase interface {
 
 	// Delete usecase delete assignment
 	Delete(assignmentId string) error
+
+	// DeleteByModuleId usecase delete assignments y id module
+	DeleteByModuleId(moduleId string) error
 }

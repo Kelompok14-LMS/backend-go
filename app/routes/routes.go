@@ -136,7 +136,8 @@ func (routeConfig *RouteConfig) New() {
 	assignment := v1.Group("/assignments")
 	assignment.POST("", assignmentController.HandlerCreateAssignment)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
-	assignment.GET("/:moduleId", assignmentController.HandlerFindByModuleId)
+	assignment.GET("/modules/:moduleId", assignmentController.HandlerFindByModuleId)
 	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment)
 	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment)
+	assignment.DELETE("/modules/:moduleId", assignmentController.HandlerDeleteAssignmentByModule)
 }

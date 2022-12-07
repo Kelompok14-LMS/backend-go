@@ -178,3 +178,17 @@ func (au assignmentUsecase) Delete(assignmentId string) error {
 
 	return nil
 }
+
+func (au assignmentUsecase) DeleteByModuleId(moduleId string) error {
+	if _, err := au.assignmentRepository.FindById(moduleId); err != nil {
+		return err
+	}
+
+	err := au.assignmentRepository.DeleteByModuleId(moduleId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

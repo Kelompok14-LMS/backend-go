@@ -121,3 +121,19 @@ func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error 
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Assignment deleted", nil))
 }
+
+func (ctrl *AssignmentController) HandlerDeleteAssignmentByModule(c echo.Context) error {
+	moduleId := c.Param("moduleId")
+
+	err := ctrl.assignmentUsecase.DeleteByModuleId(moduleId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrModuleNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Assignments deleted", nil))
+}
