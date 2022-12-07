@@ -58,6 +58,20 @@ func (_m *Usecase) FindById(id string) (*mentors.Domain, error) {
 	return r0, r1
 }
 
+// ForgotPassword provides a mock function with given fields: forgotPassword
+func (_m *Usecase) ForgotPassword(forgotPassword *mentors.MentorForgotPassword) error {
+	ret := _m.Called(forgotPassword)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*mentors.MentorForgotPassword) error); ok {
+		r0 = rf(forgotPassword)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Login provides a mock function with given fields: mentorAuth
 func (_m *Usecase) Login(mentorAuth *mentors.MentorAuth) (*string, error) {
 	ret := _m.Called(mentorAuth)
