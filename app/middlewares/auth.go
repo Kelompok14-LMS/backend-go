@@ -25,7 +25,7 @@ func (mid *AuthMiddleware) IsMentor(next echo.HandlerFunc) echo.HandlerFunc {
 		payloads, err := mid.jwtConfig.ExtractToken(c)
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, helper.UnauthorizedResponse(err.Error()))
+			return c.JSON(http.StatusUnauthorized, helper.UnauthorizedResponse(err.Error()))
 		}
 
 		if payloads.Role == "mentee" {
