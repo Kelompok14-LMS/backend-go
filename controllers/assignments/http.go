@@ -63,6 +63,22 @@ func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) erro
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by id", response.DetailAssignment(assignment)))
 }
 
+func (ctrl *AssignmentController) HandlerFindByModuleId(c echo.Context) error {
+	moduleId := c.Param("moduleId")
+
+	assignment, err := ctrl.assignmentUsecase.FindById(moduleId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrAssignmentNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by module id", response.DetailAssignment(assignment)))
+}
+
 func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error {
 	assignmentId := c.Param("assignmentId")
 	assignmentInput := request.UpdateAssignment{}

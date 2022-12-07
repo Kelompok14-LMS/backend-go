@@ -12,7 +12,7 @@ type Domain struct {
 	ModuleID    string
 	Title       string
 	Description string
-	PDF         string
+	PDFurl      string
 	PDFfile     *multipart.FileHeader
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -25,6 +25,9 @@ type Repository interface {
 
 	// FindById repository find assignment by id
 	FindById(assignmentId string) (*Domain, error)
+
+	// FindByModuleId repository find assignment by moduleid
+	FindByModuleId(moduleId string) (*Domain, error)
 
 	// Update repository update assignment
 	Update(assignmentId string, assignmentDomain *Domain) error
@@ -39,6 +42,9 @@ type Usecase interface {
 
 	// FindById usecase findfind assignment by id
 	FindById(assignmentId string) (*Domain, error)
+
+	// FindByModuleId usecase find assignment by moduleid
+	FindByModuleId(moduleId string) (*Domain, error)
 
 	// Update usecase update assignment
 	Update(assignmentId string, assignmentDomain *Domain) error

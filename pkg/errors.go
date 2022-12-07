@@ -58,6 +58,8 @@ var (
 	// ErrInvalidJWTPayload error invalid JWT payloads
 	ErrInvalidJWTPayload = errors.New("Invalid JWT payloads")
 
+	// error unsupported file upload
+	ErrUnsupportedAssignmentFile = errors.New("Unsupported assignment file. Acceptable file format: .pdf")
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")
 )

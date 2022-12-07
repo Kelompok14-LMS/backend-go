@@ -22,7 +22,7 @@ func DetailAssignment(assignmentDomain *assignments.Domain) *FindByIdAssignments
 		ModuleID:    assignmentDomain.ModuleID,
 		Title:       assignmentDomain.Title,
 		Description: assignmentDomain.Description,
-		PDF:         assignmentDomain.PDF,
+		PDF:         assignmentDomain.PDFurl,
 		CreatedAt:   assignmentDomain.CreatedAt,
 		UpdatedAt:   assignmentDomain.UpdatedAt,
 	}

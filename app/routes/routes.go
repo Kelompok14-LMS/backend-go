@@ -92,7 +92,7 @@ func (routeConfig *RouteConfig) New() {
 	// Inject the dependency to assignment
 
 	assignmentRepository := _driverFactory.NewAssignmentRepository(routeConfig.MySQLDB)
-	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository)
+	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository, routeConfig.StorageConfig)
 	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
 
 	// authentication routes
@@ -132,10 +132,11 @@ func (routeConfig *RouteConfig) New() {
 	module.PUT("/:moduleId", moduleController.HandlerUpdateModule)
 	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule)
 
-	// module routes
-	assignment := v1.Group("/assignment")
+	// assignment routes
+	assignment := v1.Group("/assignments")
 	assignment.POST("", assignmentController.HandlerCreateAssignment)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
+	assignment.GET("/:moduleId", assignmentController.HandlerFindByModuleId)
 	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment)
 	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment)
 }

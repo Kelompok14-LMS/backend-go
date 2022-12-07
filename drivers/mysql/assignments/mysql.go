@@ -46,6 +46,22 @@ func (ar assignmentRepository) FindById(assignmentId string) (*assignments.Domai
 	return rec.ToDomain(), nil
 }
 
+func (ar assignmentRepository) FindByModuleId(moduleId string) (*assignments.Domain, error) {
+	rec := Assignment{}
+
+	err := ar.conn.Model(&Assignment{}).Where("module_id = ?", moduleId).First(&rec).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkg.ErrModuleNotFound
+		}
+
+		return nil, err
+	}
+
+	return rec.ToDomain(), nil
+}
+
 func (ar assignmentRepository) Update(assignmentId string, assignmentDomain *assignments.Domain) error {
 	rec := FromDomain(assignmentDomain)
 
