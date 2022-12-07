@@ -144,7 +144,7 @@ func (ctrl *MentorController) HandlerFindByID(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success ge Mentor by id", response.FromDomainUser(mentor)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get Mentor by id", response.FromDomainUser(mentor)))
 }
 
 func (ctrl *MentorController) HandlerFindAll(c echo.Context) error {
