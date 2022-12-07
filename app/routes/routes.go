@@ -105,7 +105,6 @@ func (routeConfig *RouteConfig) New() {
 	mentor := v1.Group("/mentors", authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	mentor.GET("", mentorController.HandlerFindAll)
 	mentor.PUT("/:mentorId/update-password", mentorController.HandlerUpdatePassword)
-	// mentor.GET("/:mentorId", mentorController.HandlerFindByCurrentMentor)
 	mentor.GET("/:mentorId", mentorController.HandlerFindByID)
 	mentor.PUT("/:mentorId", mentorController.HandlerUpdateProfile)
 

@@ -110,24 +110,6 @@ func (ctrl *MentorController) HandlerUpdatePassword(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update password", nil))
 }
 
-// HandlerFindByCurrentMentor get mentor login
-// func (ctrl *MentorController) HandlerFindByCurrentMentor(c echo.Context) error {
-
-// 	 utils.
-
-// 	mentor, err := ctrl.mentorUsecase.FindById(mentorId)
-
-// 	if err != nil {
-// 		if errors.Is(err, pkg.ErrUserNotFound) {
-// 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-// 		} else {
-// 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
-// 		}
-// 	}
-
-// 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get Mentor ", response.FromDomainUser(mentor)))
-// }
-
 func (ctrl *MentorController) HandlerFindByID(c echo.Context) error {
 
 	var id string = c.Param("mentorId")
