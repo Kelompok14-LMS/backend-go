@@ -47,7 +47,7 @@ func (au assignmentUsecase) Create(assignmentDomain *Domain) error {
 
 	filetype := PDFmime.String()
 
-	// only .mp4 and .mkv format are acceptable
+	// only pdf format are acceptable
 	if filetype != "application/pdf" {
 		return pkg.ErrUnsupportedAssignmentFile
 	}
@@ -136,7 +136,7 @@ func (au assignmentUsecase) Update(assignmentId string, assignmentDomain *Domain
 
 		filetype := PDFmime.String()
 
-		// only .mp4 and .mkv format are acceptable
+		// only pdf format are acceptable
 		if filetype != "application/pdf" {
 			return pkg.ErrUnsupportedAssignmentFile
 		}
