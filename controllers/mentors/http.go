@@ -111,30 +111,33 @@ func (ctrl *MentorController) HandlerUpdatePassword(c echo.Context) error {
 }
 
 // HandlerFindByCurrentMentor get mentor login
-func (ctrl *MentorController) HandlerFindByCurrentMentor(c echo.Context) error {
-	mentorId := c.Param("mentorId")
+// func (ctrl *MentorController) HandlerFindByCurrentMentor(c echo.Context) error {
 
-	mentor, err := ctrl.mentorUsecase.FindById(mentorId)
+// 	 utils.
 
-	if err != nil {
-		if errors.Is(err, pkg.ErrUserNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
-		}
-	}
+// 	mentor, err := ctrl.mentorUsecase.FindById(mentorId)
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get Mentor ", response.FromDomainUser(mentor)))
-}
+// 	if err != nil {
+// 		if errors.Is(err, pkg.ErrUserNotFound) {
+// 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+// 		} else {
+// 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+// 		}
+// 	}
+
+// 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get Mentor ", response.FromDomainUser(mentor)))
+// }
 
 func (ctrl *MentorController) HandlerFindByID(c echo.Context) error {
 
-	var id string = c.Param("id")
+	var id string = c.Param("mentorId")
 
 	mentor, err := ctrl.mentorUsecase.FindById(id)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrUserNotFound) {
+		if errors.Is(err, pkg.ErrMentorNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
@@ -155,7 +158,9 @@ func (ctrl *MentorController) HandlerFindAll(c echo.Context) error {
 	}
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrUserNotFound) {
+		if errors.Is(err, pkg.ErrMentorNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
@@ -196,4 +201,30 @@ func (ctrl *MentorController) HandlerUpdateProfile(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update profile", nil))
+}
+
+func (ctrl *MentorController) HandlerForgotPassword(c echo.Context) error {
+	mentorInput := request.ForgotPasswordInput{}
+
+	if err := c.Bind(&mentorInput); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+	}
+
+	if err := mentorInput.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
+	}
+
+	err := ctrl.mentorUsecase.ForgotPassword(mentorInput.ToDomain())
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrOTPExpired) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrOTPExpired.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success reset password", nil))
 }

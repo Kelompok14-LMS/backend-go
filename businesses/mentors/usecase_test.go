@@ -7,6 +7,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
 	_mentorMock "github.com/Kelompok14-LMS/backend-go/businesses/mentors/mocks"
 	"github.com/Kelompok14-LMS/backend-go/helper"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -22,6 +23,7 @@ var (
 	userRepository _userMock.UserRepositoryMock
 	jwtConfig      utils.JWTConfig
 	storageClient  helper.StorageConfig
+	mailerConfig   pkg.MailerConfig
 
 	mentorDomain   mentors.Domain
 	mentorAuth     mentors.MentorAuth
@@ -37,7 +39,7 @@ func TestMain(m *testing.M) {
 	jwtConfig = utils.JWTConfig{JWTSecret: "secret"}
 	storageClient = helper.StorageConfig{}
 
-	mentorService = mentors.NewMentorUsecase(&mentorRepository, &userRepository, &jwtConfig, &storageClient)
+	mentorService = mentors.NewMentorUsecase(&mentorRepository, &userRepository, &jwtConfig, &storageClient, &mailerConfig)
 
 	// birth date
 	birthDate := time.Date(2021, 8, 11, 0, 0, 0, 0, time.Local)

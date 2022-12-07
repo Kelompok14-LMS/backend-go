@@ -72,7 +72,7 @@ func (routeConfig *RouteConfig) New() {
 
 	// Inject the dependency to mentor
 	mentorRepository := _driverFactory.NewMentorRepository(routeConfig.MySQLDB)
-	mentorUsecase := _mentorUsecase.NewMentorUsecase(mentorRepository, userRepository, routeConfig.JWTConfig, routeConfig.StorageConfig)
+	mentorUsecase := _mentorUsecase.NewMentorUsecase(mentorRepository, userRepository, routeConfig.JWTConfig, routeConfig.StorageConfig, routeConfig.Mailer)
 	mentorController := _mentorController.NewMentorController(mentorUsecase)
 
 	// Inject the dependency to category
@@ -100,11 +100,12 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/check-otp", otpController.HandlerCheckOTP)
 	auth.POST("/mentor/login", mentorController.HandlerLoginMentor)
 	auth.POST("/mentor/register", mentorController.HandlerRegisterMentor)
+	auth.POST("/mentor/forgot-password", mentorController.HandlerForgotPassword)
 
 	mentor := v1.Group("/mentors", authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	mentor.GET("", mentorController.HandlerFindAll)
 	mentor.PUT("/:mentorId/update-password", mentorController.HandlerUpdatePassword)
-	mentor.GET("/:mentorId", mentorController.HandlerFindByCurrentMentor)
+	// mentor.GET("/:mentorId", mentorController.HandlerFindByCurrentMentor)
 	mentor.GET("/:mentorId", mentorController.HandlerFindByID)
 	mentor.PUT("/:mentorId", mentorController.HandlerUpdateProfile)
 

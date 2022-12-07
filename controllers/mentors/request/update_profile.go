@@ -9,10 +9,10 @@ import (
 )
 
 type MentorUpdateProfile struct {
-	ID                 string                `json:"id,omitempty" form:"id,omitempty" validate:"required"`
-	UserID             string                `json:"user_id,omitempty" form:"user_id,omitempty" validate:"required"`
+	ID                 string                `json:"id" form:"id" validate:"required"`
+	UserID             string                `json:"user_id" form:"user_id" validate:"required"`
 	Fullname           string                `json:"fullname" form:"fullname" validate:"required"`
-	Email              string                `json:"email" form:"fullname" validate:"required"`
+	Email              string                `json:"email" form:"email" validate:"required,email"`
 	Phone              string                `json:"phone" form:"phone" validate:"required"`
 	Jobs               string                `json:"jobs" form:"jobs" validate:"required"`
 	Gender             string                `json:"gender" form:"gender" validate:"required"`

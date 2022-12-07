@@ -79,7 +79,7 @@ type Usecase interface {
 	Register(mentorAuth *MentorRegister) error
 
 	// // ForgotPassword usecase mentor verify forgot password
-	// ForgotPassword(forgotPassword *MentorForgotPassword) error
+	ForgotPassword(forgotPassword *MentorForgotPassword) error
 
 	// UpdatePassword usecase mentor to chnge password
 	UpdatePassword(updatePassword *MentorUpdatePassword) error

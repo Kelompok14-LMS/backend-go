@@ -2,6 +2,7 @@ package mentors
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/users"
@@ -16,14 +17,16 @@ type mentorUsecase struct {
 	userRepository    users.Repository
 	jwtConfig         *utils.JWTConfig
 	storage           *helper.StorageConfig
+	mailerConfig      *pkg.MailerConfig
 }
 
-func NewMentorUsecase(mentorsRepository Repository, userRepository users.Repository, jwtConfig *utils.JWTConfig, storage *helper.StorageConfig) Usecase {
+func NewMentorUsecase(mentorsRepository Repository, userRepository users.Repository, jwtConfig *utils.JWTConfig, storage *helper.StorageConfig, mailerConfig *pkg.MailerConfig) Usecase {
 	return mentorUsecase{
 		mentorsRepository: mentorsRepository,
 		userRepository:    userRepository,
 		jwtConfig:         jwtConfig,
 		storage:           storage,
+		mailerConfig:      mailerConfig,
 	}
 }
 
@@ -152,7 +155,7 @@ func (m mentorUsecase) FindAll() (*[]Domain, error) {
 	mentor, err := m.mentorsRepository.FindAll()
 
 	if err != nil {
-		if err == pkg.ErrUserNotFound {
+		if err == pkg.ErrMentorNotFound {
 			return nil, pkg.ErrMentorNotFound
 		}
 
@@ -166,7 +169,7 @@ func (m mentorUsecase) FindById(id string) (*Domain, error) {
 
 	mentor, err := m.mentorsRepository.FindById(id)
 	if err != nil {
-		if err == pkg.ErrUserNotFound {
+		if err == pkg.ErrMentorNotFound {
 			return nil, pkg.ErrMentorNotFound
 		}
 
@@ -178,8 +181,11 @@ func (m mentorUsecase) FindById(id string) (*Domain, error) {
 
 func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 
-	mentor, _ := m.userRepository.FindById(updateMentor.UserID)
+	_, err := m.userRepository.FindById(updateMentor.UserID)
 
+	if err != nil {
+		return err
+	}
 	user := users.Domain{
 		ID:        updateMentor.UserID,
 		Email:     updateMentor.Email,
@@ -187,29 +193,41 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 		UpdatedAt: time.Now(),
 	}
 
-	err := m.userRepository.Update(mentor.ID, &user)
+	err = m.userRepository.Update(user.ID, &user)
+	if err != nil {
+		return err
+	}
+
+	mentor, err := m.mentorsRepository.FindById(updateMentor.ID)
 
 	if err != nil {
 		return err
 	}
 
-	mentorID, _ := m.mentorsRepository.FindById(updateMentor.ID)
+	var ProfilePictureURL string
 
-	ctx := context.Background()
-	filename := updateMentor.ProfilePictureFile.Filename
+	if updateMentor.ProfilePictureFile != nil {
+		ctx := context.Background()
 
-	ProfilePicture, err := updateMentor.ProfilePictureFile.Open()
+		if err := m.storage.DeleteObject(ctx, mentor.ProfilePicture); err != nil {
+			return err
+		}
 
-	if err != nil {
-		return err
-	}
+		filename := updateMentor.ProfilePictureFile.Filename
 
-	defer ProfilePicture.Close()
+		ProfilePicture, err := updateMentor.ProfilePictureFile.Open()
 
-	ProfilePictureURL, err := m.storage.UploadImage(ctx, filename, ProfilePicture)
+		if err != nil {
+			return err
+		}
 
-	if err != nil {
-		return err
+		defer ProfilePicture.Close()
+
+		ProfilePictureURL, err = m.storage.UploadImage(ctx, filename, ProfilePicture)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	updatedMentor := Domain{
@@ -226,14 +244,44 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 		UpdatedAt:      time.Now(),
 	}
 
-	err = m.mentorsRepository.Update(mentorID.ID, &updatedMentor)
+	err = m.mentorsRepository.Update(updateMentor.ID, &updatedMentor)
 	if err != nil {
-		if err == pkg.ErrUserNotFound {
+		if err == pkg.ErrMentorNotFound {
 			return pkg.ErrMentorNotFound
 		}
 
 		return pkg.ErrInternalServerError
 	}
+
+	return nil
+}
+
+func (m mentorUsecase) ForgotPassword(forgotPassword *MentorForgotPassword) error {
+	var err error
+
+	user, err := m.userRepository.FindByEmail(forgotPassword.Email)
+
+	if err != nil {
+		return err
+	}
+
+	randomPassword := pkg.GenerateOTP(8)
+	hashPassword := utils.HashPassword(randomPassword)
+
+	updatedUser := users.Domain{
+		Password: hashPassword,
+	}
+
+	err = m.userRepository.Update(user.ID, &updatedUser)
+
+	if err != nil {
+		return err
+	}
+
+	message := fmt.Sprintf("Password baru anda: %s", randomPassword)
+	subject := "Reset Password Eduworld"
+
+	_ = m.mailerConfig.SendMail(user.Email, subject, message)
 
 	return nil
 }

@@ -10,7 +10,7 @@ import (
 type Mentor struct {
 	ID             string     `gorm:"primaryKey;" json:"id"`
 	UserId         string     `gorm:"size:200" json:"user_id"`
-	Fullname       string     `gorm:"size:255" json:"name"`
+	Fullname       string     `gorm:"size:255" json:"fullname"`
 	Phone          string     `gorm:"size:15" json:"phone"`
 	Role           string     `gorm:"size:50" json:"role"`
 	Jobs           string     `json:"jobs"`
