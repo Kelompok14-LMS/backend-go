@@ -23,18 +23,18 @@ type suiteCategory struct {
 }
 
 func (s *suiteCategory) SetupSuite() {
-	var mock *mocks.CategoryUsecaseMock
-	s.mock = mock
+	mock := mocks.CategoryUsecaseMock{}
+	s.mock = &mock
 
 	s.handler = NewCategoryController(s.mock)
 }
 
 func (s *suiteCategory) TestHandlerCreateCategory() {
-	categoryInput := request.Category{
+	mockCategory := categories.Domain{
 		Name: "Programming",
 	}
 
-	s.mock.Mock.On("Create", categoryInput.ToDomain()).Return(nil)
+	s.mock.Mock.On("Create", &mockCategory).Return(nil)
 
 	testCases := []struct {
 		Name               string
