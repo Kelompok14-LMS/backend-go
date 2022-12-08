@@ -37,6 +37,9 @@ type Repository interface {
 	// FindByCategory repository find by id category
 	FindByCategory(categoryId string) (*[]Domain, error)
 
+	// FindByMentee repository find by mentee
+	FindByMentee(menteeId string, title string, status string) (*[]Domain, error)
+
 	// Update repository update course
 	Update(id string, courseDomain *Domain) error
 
