@@ -3,6 +3,3 @@
 .env.development
 cover.out
 gcp_key.json
-gcp_key2.json
-gcp_key3.json
-gcp_key4.json
