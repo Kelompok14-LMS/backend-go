@@ -44,7 +44,6 @@ type MentorUpdatePassword struct {
 }
 
 type MentorUpdateProfile struct {
-	ID                 string
 	UserID             string
 	Fullname           string
 	Email              string
@@ -94,5 +93,5 @@ type Usecase interface {
 	FindById(id string) (*Domain, error)
 
 	// Update usecase edit data mentors
-	Update(updateMentor *MentorUpdateProfile) error
+	Update(id string, updateMentor *MentorUpdateProfile) error
 }

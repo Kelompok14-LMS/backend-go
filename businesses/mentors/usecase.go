@@ -179,7 +179,7 @@ func (m mentorUsecase) FindById(id string) (*Domain, error) {
 	return mentor, nil
 }
 
-func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
+func (m mentorUsecase) Update(id string, updateMentor *MentorUpdateProfile) error {
 
 	_, err := m.userRepository.FindById(updateMentor.UserID)
 
@@ -198,7 +198,7 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 		return err
 	}
 
-	mentor, err := m.mentorsRepository.FindById(updateMentor.ID)
+	mentor, err := m.mentorsRepository.FindById(id)
 
 	if err != nil {
 		return err
@@ -214,6 +214,7 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 				return err
 			}
 		}
+
 		filename := updateMentor.ProfilePictureFile.Filename
 
 		ProfilePicture, err := updateMentor.ProfilePictureFile.Open()
@@ -222,37 +223,34 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 			return err
 		}
 
-		defer ProfilePicture.Close()
-
 		ProfilePictureURL, err = m.storage.UploadImage(ctx, filename, ProfilePicture)
 
 		if err != nil {
 			return err
 		}
+	}
 
-		updatedMentor := Domain{
+	updatedMentor := Domain{
 
-			Fullname:       updateMentor.Fullname,
-			Phone:          updateMentor.Phone,
-			Jobs:           updateMentor.Jobs,
-			Gender:         updateMentor.Gender,
-			BirthPlace:     updateMentor.BirthPlace,
-			BirthDate:      updateMentor.BirthDate,
-			Address:        updateMentor.Address,
-			ProfilePicture: ProfilePictureURL,
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
+		Fullname:       updateMentor.Fullname,
+		Phone:          updateMentor.Phone,
+		Jobs:           updateMentor.Jobs,
+		Gender:         updateMentor.Gender,
+		BirthPlace:     updateMentor.BirthPlace,
+		BirthDate:      updateMentor.BirthDate,
+		Address:        updateMentor.Address,
+		ProfilePicture: ProfilePictureURL,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	err = m.mentorsRepository.Update(id, &updatedMentor)
+	if err != nil {
+		if err == pkg.ErrMentorNotFound {
+			return pkg.ErrMentorNotFound
 		}
 
-		err = m.mentorsRepository.Update(updateMentor.ID, &updatedMentor)
-		if err != nil {
-			if err == pkg.ErrMentorNotFound {
-				return pkg.ErrMentorNotFound
-			}
-
-			return pkg.ErrInternalServerError
-		}
-
+		return pkg.ErrInternalServerError
 	}
 
 	return nil

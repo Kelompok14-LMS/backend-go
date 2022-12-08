@@ -155,20 +155,33 @@ func (ctrl *MentorController) HandlerFindAll(c echo.Context) error {
 func (ctrl *MentorController) HandlerUpdateProfile(c echo.Context) error {
 	mentorInput := request.MentorUpdateProfile{}
 
-	mentorInput.ProfilePictureFile, _ = c.FormFile("profile_picture")
-
-	if err := c.Bind(&mentorInput); err != nil {
-		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
-	}
-
 	mentorId := c.Param("mentorId")
-	mentorInput.ID = mentorId
+
+	ProfilePictureFile, _ := c.FormFile("profile_picture")
+
+	if ProfilePictureFile != nil {
+		mentorInput.ProfilePictureFile = ProfilePictureFile
+
+		if err := c.Bind(&mentorInput); err != nil {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+		}
+	} else {
+		mentorInput.UserID = c.FormValue("user_id")
+		mentorInput.Fullname = c.FormValue("fullname")
+		mentorInput.Email = c.FormValue("email")
+		mentorInput.Phone = c.FormValue("phone")
+		mentorInput.Jobs = c.FormValue("jobs")
+		mentorInput.Gender = c.FormValue("gender")
+		mentorInput.BirthDate = c.FormValue("birth_date")
+		mentorInput.BirthPlace = c.FormValue("birth_place")
+		mentorInput.ProfilePictureFile = nil
+	}
 
 	if err := mentorInput.Validate(); err != nil {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.mentorUsecase.Update(mentorInput.ToDomain())
+	err := ctrl.mentorUsecase.Update(mentorId, mentorInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrInvalidRequest) {
