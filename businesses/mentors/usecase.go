@@ -209,10 +209,11 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 	if updateMentor.ProfilePictureFile != nil {
 		ctx := context.Background()
 
-		if err := m.storage.DeleteObject(ctx, mentor.ProfilePicture); err != nil {
-			return err
+		if mentor.ProfilePicture != "" {
+			if err := m.storage.DeleteObject(ctx, mentor.ProfilePicture); err != nil {
+				return err
+			}
 		}
-
 		filename := updateMentor.ProfilePictureFile.Filename
 
 		ProfilePicture, err := updateMentor.ProfilePictureFile.Open()
@@ -228,29 +229,30 @@ func (m mentorUsecase) Update(updateMentor *MentorUpdateProfile) error {
 		if err != nil {
 			return err
 		}
-	}
 
-	updatedMentor := Domain{
+		updatedMentor := Domain{
 
-		Fullname:       updateMentor.Fullname,
-		Phone:          updateMentor.Phone,
-		Jobs:           updateMentor.Jobs,
-		Gender:         updateMentor.Gender,
-		BirthPlace:     updateMentor.BirthPlace,
-		BirthDate:      updateMentor.BirthDate,
-		Address:        updateMentor.Address,
-		ProfilePicture: ProfilePictureURL,
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
-	}
-
-	err = m.mentorsRepository.Update(updateMentor.ID, &updatedMentor)
-	if err != nil {
-		if err == pkg.ErrMentorNotFound {
-			return pkg.ErrMentorNotFound
+			Fullname:       updateMentor.Fullname,
+			Phone:          updateMentor.Phone,
+			Jobs:           updateMentor.Jobs,
+			Gender:         updateMentor.Gender,
+			BirthPlace:     updateMentor.BirthPlace,
+			BirthDate:      updateMentor.BirthDate,
+			Address:        updateMentor.Address,
+			ProfilePicture: ProfilePictureURL,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
 		}
 
-		return pkg.ErrInternalServerError
+		err = m.mentorsRepository.Update(updateMentor.ID, &updatedMentor)
+		if err != nil {
+			if err == pkg.ErrMentorNotFound {
+				return pkg.ErrMentorNotFound
+			}
+
+			return pkg.ErrInternalServerError
+		}
+
 	}
 
 	return nil
