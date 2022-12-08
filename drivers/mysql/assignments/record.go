@@ -14,7 +14,6 @@ type Assignment struct {
 	Module      modules.Module
 	Title       string         `gorm:"size:225" json:"title"`
 	Description string         `json:"description"`
-	PDF         string         `json:"pdf"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
@@ -25,7 +24,6 @@ func (rec *Assignment) ToDomain() *assignments.Domain {
 		ID:          rec.ID,
 		ModuleID:    rec.ModuleID,
 		Title:       rec.Title,
-		PDFurl:      rec.PDF,
 		Description: rec.Description,
 		CreatedAt:   rec.CreatedAt,
 		UpdatedAt:   rec.UpdatedAt,
@@ -39,7 +37,6 @@ func FromDomain(assignmentDomain *assignments.Domain) *Assignment {
 		ModuleID:    assignmentDomain.ModuleID,
 		Title:       assignmentDomain.Title,
 		Description: assignmentDomain.Description,
-		PDF:         assignmentDomain.PDFurl,
 		CreatedAt:   assignmentDomain.CreatedAt,
 		UpdatedAt:   assignmentDomain.UpdatedAt,
 		DeletedAt:   assignmentDomain.DeletedAt,

@@ -92,7 +92,7 @@ func (routeConfig *RouteConfig) New() {
 	// Inject the dependency to assignment
 
 	assignmentRepository := _driverFactory.NewAssignmentRepository(routeConfig.MySQLDB)
-	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository, routeConfig.StorageConfig)
+	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository)
 	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
 
 	// authentication routes

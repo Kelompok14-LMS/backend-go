@@ -25,9 +25,8 @@ var (
 func TestMain(m *testing.M) {
 	assignmentRepository = _assignmentMock.Repository{Mock: mock.Mock{}}
 	moduleRepository = _moduleMock.Repository{Mock: mock.Mock{}}
-	storageClient = helper.StorageConfig{}
 
-	assignmentService = assignments.NewAssignmentUsecase(&assignmentRepository, &moduleRepository, &storageClient)
+	assignmentService = assignments.NewAssignmentUsecase(&assignmentRepository, &moduleRepository)
 
 	m.Run()
 }
@@ -37,7 +36,6 @@ func TestFindById(t *testing.T) {
 		ID:          "Assignment_1",
 		ModuleID:    "Module_1",
 		Title:       "Title test",
-		PDFurl:      "https://storage.com/to/bucket/test.pdf",
 		Description: "Description test",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
@@ -68,7 +66,6 @@ func TestUpdate(t *testing.T) {
 		ID:          "Assignment_1",
 		ModuleID:    "Module_1",
 		Title:       "Title test",
-		PDFurl:      "https://storage.com/to/bucket/test.pdf",
 		Description: "Description test",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
@@ -80,7 +77,6 @@ func TestUpdate(t *testing.T) {
 	assignmentDomain := assignments.Domain{
 		ModuleID:    "MODULE_1",
 		Title:       "Title test",
-		PDFurl:      "",
 		Description: "Description test",
 	}
 
@@ -90,7 +86,6 @@ func TestUpdate(t *testing.T) {
 		ID:          "Assignment_1",
 		ModuleID:    "MODULE_1",
 		Title:       "Title test",
-		PDFfile:     nil,
 		Description: "Description test",
 	}
 
@@ -104,7 +99,6 @@ func TestDelete(t *testing.T) {
 		ID:          "Assignment_1",
 		ModuleID:    "MODULE_1",
 		Title:       "Title test",
-		PDFurl:      "https://storage.com/to/bucket/test.pdf",
 		Description: "Description test",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),

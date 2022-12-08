@@ -32,7 +32,6 @@ func (s *suiteAssignment) TestHandlerFindById() {
 		ModuleID:    "MODULE_1",
 		Title:       "Title test",
 		Description: "Description test",
-		PDFurl:      "https://storage.com/to/bucket/test.pdf",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}

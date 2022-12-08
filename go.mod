@@ -5,7 +5,6 @@ go 1.18
 require (
 	cloud.google.com/go/storage v1.28.0
 	github.com/DATA-DOG/go-sqlmock v1.5.0
-	github.com/gabriel-vasile/mimetype v1.4.1
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/go-redis/redismock/v8 v8.0.6
 	github.com/spf13/viper v1.14.0

@@ -11,7 +11,6 @@ type FindByIdAssignments struct {
 	ModuleID    string    `json:"module_id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	PDF         string    `json:"pdf"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -22,7 +21,6 @@ func DetailAssignment(assignmentDomain *assignments.Domain) *FindByIdAssignments
 		ModuleID:    assignmentDomain.ModuleID,
 		Title:       assignmentDomain.Title,
 		Description: assignmentDomain.Description,
-		PDF:         assignmentDomain.PDFurl,
 		CreatedAt:   assignmentDomain.CreatedAt,
 		UpdatedAt:   assignmentDomain.UpdatedAt,
 	}
