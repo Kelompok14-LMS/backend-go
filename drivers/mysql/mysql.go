@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/assignments"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/categories"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/courses"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/materials"
@@ -55,6 +56,7 @@ func DBMigrate(db *gorm.DB) {
 		&courses.Course{},
 		&modules.Module{},
 		&materials.Material{},
+		&assignments.Assignment{},
 		&menteeCourses.MenteeCourse{},
 	)
 }

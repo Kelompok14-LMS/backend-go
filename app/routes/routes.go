@@ -29,6 +29,9 @@ import (
 	_moduleUsecase "github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	_moduleController "github.com/Kelompok14-LMS/backend-go/controllers/modules"
 
+	_assignmentUsecase "github.com/Kelompok14-LMS/backend-go/businesses/assignments"
+	_assignmentController "github.com/Kelompok14-LMS/backend-go/controllers/assignments"
+  
 	_materialUsecase "github.com/Kelompok14-LMS/backend-go/businesses/materials"
 	_materialController "github.com/Kelompok14-LMS/backend-go/controllers/materials"
 
@@ -96,6 +99,11 @@ func (routeConfig *RouteConfig) New() {
 	moduleUsecase := _moduleUsecase.NewModuleUsecase(moduleRepository, courseRepository)
 	moduleController := _moduleController.NewModuleController(moduleUsecase)
 
+	// Inject the dependency to assignment
+	assignmentRepository := _driverFactory.NewAssignmentRepository(routeConfig.MySQLDB)
+	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository)
+	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
+  
 	// Inject the dependency to material
 	materialRepository := _driverFactory.NewMaterialRepository(routeConfig.MySQLDB)
 	materialUsecase := _materialUsecase.NewMaterialUsecase(materialRepository, moduleRepository, routeConfig.StorageConfig)
@@ -151,6 +159,17 @@ func (routeConfig *RouteConfig) New() {
 	module := v1.Group("/modules")
 	module.POST("", moduleController.HandlerCreateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	module.GET("/:moduleId", moduleController.HandlerFindByIdModule)
+	module.PUT("/:moduleId", moduleController.HandlerUpdateModule)
+	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule)
+
+	// assignment routes
+	assignment := v1.Group("/assignments")
+	assignment.POST("", assignmentController.HandlerCreateAssignment)
+	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
+	assignment.GET("/modules/:moduleId", assignmentController.HandlerFindByModuleId)
+	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment)
+	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment)
+	assignment.DELETE("/modules/:moduleId", assignmentController.HandlerDeleteAssignmentByModule)
 	module.PUT("/:moduleId", moduleController.HandlerUpdateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 

@@ -25,6 +25,9 @@ import (
 	moduleDomain "github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	moduleDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/modules"
 
+	assignmentDomain "github.com/Kelompok14-LMS/backend-go/businesses/assignments"
+	assignmentDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/assignments"
+
 	materialDomain "github.com/Kelompok14-LMS/backend-go/businesses/materials"
 	materialDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/materials"
 
@@ -58,6 +61,10 @@ func NewCourseRepository(conn *gorm.DB) courseDomain.Repository {
 
 func NewModuleRepository(conn *gorm.DB) moduleDomain.Repository {
 	return moduleDB.NewSQLRepository(conn)
+}
+
+func NewAssignmentRepository(conn *gorm.DB) assignmentDomain.Repository {
+	return assignmentDB.NewSQLRepository(conn)
 }
 
 func NewMaterialRepository(conn *gorm.DB) materialDomain.Repository {

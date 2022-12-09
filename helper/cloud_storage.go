@@ -78,8 +78,27 @@ func (s *StorageConfig) UploadVideo(ctx context.Context, objName string, file mu
 }
 
 // UploadAsset helper to upload asset (i.e pdf, etc) into cloud storage
-func (s *StorageConfig) UploadAsset(ctx context.Context, objName string) (string, error) {
-	panic("implement me")
+func (s *StorageConfig) UploadAsset(ctx context.Context, objName string, file multipart.File) (string, error) {
+	bucket := s.StorageClient.Bucket(s.BucketName)
+
+	assignmentDir := fmt.Sprintf("%s/%s", constants.ASSIGNMENTS_DIR, objName)
+
+	object := bucket.Object(assignmentDir)
+	wc := object.NewWriter(ctx)
+
+	wc.ObjectAttrs.CacheControl = "Chace-Control:no-cache, max-age=0"
+
+	if _, err := io.Copy(wc, file); err != nil {
+		return "", err
+	}
+
+	if err := wc.Close(); err != nil {
+		return "", err
+	}
+
+	assignmentUrl := fmt.Sprintf("%s/%s/%s", constants.STORAGE_URL, s.BucketName, assignmentDir)
+
+	return assignmentUrl, nil
 }
 
 // DeleteObject helper to delete object from cloud storage
