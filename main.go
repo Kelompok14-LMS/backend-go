@@ -8,6 +8,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/app/routes"
 	"github.com/Kelompok14-LMS/backend-go/configs"
 	_dbMySQL "github.com/Kelompok14-LMS/backend-go/drivers/mysql"
+
 	_dbRedis "github.com/Kelompok14-LMS/backend-go/drivers/redis"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"

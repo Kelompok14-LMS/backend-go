@@ -6,6 +6,8 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
 	_mentorMock "github.com/Kelompok14-LMS/backend-go/businesses/mentors/mocks"
+	"github.com/Kelompok14-LMS/backend-go/helper"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -19,6 +21,8 @@ var (
 
 	userRepository _userMock.UserRepositoryMock
 	jwtConfig      utils.JWTConfig
+	storageClient  helper.StorageConfig
+	mailerConfig   pkg.MailerConfig
 
 	mentorDomain   mentors.Domain
 	mentorRegister mentors.MentorRegister
@@ -29,8 +33,9 @@ func TestMain(m *testing.M) {
 	mentorRepository = _mentorMock.Repository{Mock: mock.Mock{}}
 	userRepository = _userMock.UserRepositoryMock{Mock: mock.Mock{}}
 	jwtConfig = utils.JWTConfig{JWTSecret: "secret"}
+	storageClient = helper.StorageConfig{}
 
-	mentorService = mentors.NewMentorUsecase(&mentorRepository, &userRepository, &jwtConfig)
+	mentorService = mentors.NewMentorUsecase(&mentorRepository, &userRepository, &jwtConfig, &storageClient, &mailerConfig)
 
 	// birth date
 	birthDate := time.Date(2021, 8, 11, 0, 0, 0, 0, time.Local)
@@ -48,15 +53,10 @@ func TestMain(m *testing.M) {
 		UpdatedAt:      time.Now(),
 	}
 
-	mentorUpdate = mentors.MentorUpdateProfile{
-		ID:             "MID1",
-		UserID:         "UID1",
-		Fullname:       "Mentors Test",
-		Phone:          "0857654378",
-		BirthDate:      birthDate,
-		Address:        "Jl Ahmad Yani",
-		ProfilePicture: "https://example.com/to/bucket",
-	}
+	// mentorAuth = mentors.MentorAuth{
+	// 	Email:    "mentor@gmail.com",
+	// 	Password: "hashedpassword",
+	// }
 
 	mentorRegister = mentors.MentorRegister{
 		Fullname: "Mentor Test",

@@ -1,6 +1,7 @@
 package mentors
 
 import (
+	"mime/multipart"
 	"time"
 )
 
@@ -43,17 +44,16 @@ type MentorUpdatePassword struct {
 }
 
 type MentorUpdateProfile struct {
-	ID             string
-	UserID         string
-	Fullname       string
-	Email          string
-	Phone          string
-	Jobs           string
-	Gender         string
-	BirthPlace     string
-	BirthDate      time.Time
-	Address        string
-	ProfilePicture string
+	UserID             string
+	Fullname           string
+	Email              string
+	Phone              string
+	Jobs               string
+	Gender             string
+	BirthPlace         string
+	BirthDate          time.Time
+	Address            string
+	ProfilePictureFile *multipart.FileHeader
 }
 
 type Repository interface {
@@ -78,7 +78,7 @@ type Usecase interface {
 	Register(mentorAuth *MentorRegister) error
 
 	// // ForgotPassword usecase mentor verify forgot password
-	// ForgotPassword(forgotPassword *MentorForgotPassword) error
+	ForgotPassword(forgotPassword *MentorForgotPassword) error
 
 	// UpdatePassword usecase mentor to chnge password
 	UpdatePassword(updatePassword *MentorUpdatePassword) error
@@ -93,5 +93,5 @@ type Usecase interface {
 	FindById(id string) (*Domain, error)
 
 	// Update usecase edit data mentors
-	Update(updateMentor *MentorUpdateProfile) error
+	Update(id string, updateMentor *MentorUpdateProfile) error
 }
