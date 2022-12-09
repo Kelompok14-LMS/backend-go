@@ -52,29 +52,19 @@ func (m menteeCourseUsecase) Enroll(menteeCourseDomain *Domain) error {
 }
 
 func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, status string) (*[]Domain, error) {
-	coursesDomain, err := m.courseRepository.FindByMentee(menteeId, title, status)
+	menteeCourses, err := m.menteeCourseRepository.FindCoursesByMentee(menteeId, title, status)
 
 	if err != nil {
 		return nil, err
 	}
 
-	menteeCoursesDomain := make([]Domain, len(*coursesDomain))
-
-	for i := range *coursesDomain {
-		menteeCoursesDomain[i].Course = (*coursesDomain)[i]
-	}
-
-	return &menteeCoursesDomain, nil
+	return menteeCourses, nil
 }
 
 func (m menteeCourseUsecase) CheckEnrollment(menteeId string, courseId string) (bool, error) {
-	menteeCourseDomain, err := m.menteeCourseRepository.CheckEnrollment(menteeId, courseId)
+	menteeCourseDomain, _ := m.menteeCourseRepository.CheckEnrollment(menteeId, courseId)
 
-	if err != nil {
-		return false, err
-	}
-
-	isEnrolled := menteeCourseDomain == nil
+	isEnrolled := menteeCourseDomain != nil
 
 	return isEnrolled, nil
 }

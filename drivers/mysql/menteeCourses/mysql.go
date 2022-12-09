@@ -27,6 +27,27 @@ func (m menteeCourseRepository) Enroll(menteeCourseDomain *menteeCourses.Domain)
 	return nil
 }
 
+func (m menteeCourseRepository) FindCoursesByMentee(menteeId string, title string, status string) (*[]menteeCourses.Domain, error) {
+	var rec []MenteeCourse
+
+	err := m.conn.Model(&MenteeCourse{}).Preload("Course.Mentor").
+		Joins("INNER JOIN courses ON courses.id = mentee_courses.course_id").
+		Where("mentee_courses.mentee_id = ? AND courses.title LIKE ? AND status = ?", menteeId, "%"+title+"%", status).
+		Find(&rec).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	var courses []menteeCourses.Domain
+
+	for _, course := range rec {
+		courses = append(courses, *course.ToDomain())
+	}
+
+	return &courses, nil
+}
+
 func (m menteeCourseRepository) CheckEnrollment(menteeId string, courseId string) (*menteeCourses.Domain, error) {
 	rec := MenteeCourse{}
 

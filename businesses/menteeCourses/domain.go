@@ -22,6 +22,9 @@ type Repository interface {
 	// Enroll repository enroll a course
 	Enroll(menteeCourseDomain *Domain) error
 
+	// FindCoursesByMentee repository find by mentee
+	FindCoursesByMentee(menteeId string, title string, status string) (*[]Domain, error)
+
 	// CheckEnrollment repository check enrollment course mentee
 	CheckEnrollment(menteeId string, courseId string) (*Domain, error)
 }

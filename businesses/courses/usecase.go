@@ -2,11 +2,12 @@ package courses
 
 import (
 	"context"
-	"mime/multipart"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/categories"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
 	"github.com/Kelompok14-LMS/backend-go/helper"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
+	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/google/uuid"
 )
 
@@ -40,22 +41,23 @@ func (cu courseUsecase) Create(courseDomain *Domain) error {
 		return err
 	}
 
-	var err error
-
-	ctx := context.Background()
-	filename := courseDomain.ThumbnailFileHeader.Filename
-
-	var thumbnailFile multipart.File
-	thumbnailFile, err = courseDomain.ThumbnailFileHeader.Open()
+	file, err := courseDomain.File.Open()
 
 	if err != nil {
 		return err
 	}
 
-	defer thumbnailFile.Close()
+	defer file.Close()
 
-	var thumbnailUrl string
-	thumbnailUrl, err = cu.storage.UploadImage(ctx, filename, thumbnailFile)
+	filename, err := utils.GetFilename(courseDomain.File.Filename)
+
+	if err != nil {
+		return pkg.ErrUnsupportedImageFile
+	}
+
+	ctx := context.Background()
+
+	url, err := cu.storage.UploadImage(ctx, filename, file)
 
 	if err != nil {
 		return err
@@ -69,7 +71,7 @@ func (cu courseUsecase) Create(courseDomain *Domain) error {
 		CategoryId:  courseDomain.CategoryId,
 		Title:       courseDomain.Title,
 		Description: courseDomain.Description,
-		Thumbnail:   thumbnailUrl,
+		Thumbnail:   url,
 	}
 
 	err = cu.courseRepository.Create(&course)
@@ -129,26 +131,31 @@ func (cu courseUsecase) Update(id string, courseDomain *Domain) error {
 		return err
 	}
 
-	var thumbnailUrl string
+	var url string
 
 	// check if user update the image, do the process
-	if courseDomain.ThumbnailFileHeader != nil {
+	if courseDomain.File != nil {
 		ctx := context.Background()
 
 		if err := cu.storage.DeleteObject(ctx, course.Thumbnail); err != nil {
 			return err
 		}
 
-		filename := courseDomain.ThumbnailFileHeader.Filename
-
-		var thumbnailFile multipart.File
-		thumbnailFile, err = courseDomain.ThumbnailFileHeader.Open()
+		file, err := courseDomain.File.Open()
 
 		if err != nil {
 			return err
 		}
 
-		thumbnailUrl, err = cu.storage.UploadImage(ctx, filename, thumbnailFile)
+		defer file.Close()
+
+		filename, err := utils.GetFilename(courseDomain.File.Filename)
+
+		if err != nil {
+			return pkg.ErrUnsupportedImageFile
+		}
+
+		url, err = cu.storage.UploadImage(ctx, filename, file)
 
 		if err != nil {
 			return err
@@ -159,7 +166,7 @@ func (cu courseUsecase) Update(id string, courseDomain *Domain) error {
 		CategoryId:  courseDomain.CategoryId,
 		Title:       courseDomain.Title,
 		Description: courseDomain.Description,
-		Thumbnail:   thumbnailUrl,
+		Thumbnail:   url,
 	}
 
 	err = cu.courseRepository.Update(id, &updatedCourse)

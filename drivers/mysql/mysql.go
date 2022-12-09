@@ -47,7 +47,8 @@ func (config *ConfigDB) InitMySQLDatabase() *gorm.DB {
 }
 
 func DBMigrate(db *gorm.DB) {
-	_ = db.AutoMigrate(&users.User{},
+	_ = db.AutoMigrate(
+		&users.User{},
 		&mentees.Mentee{},
 		&mentors.Mentor{},
 		&categories.Category{},

@@ -108,21 +108,21 @@ func TestEnroll(t *testing.T) {
 
 func TestFindMenteeCourses(t *testing.T) {
 	t.Run("Test Find Mentee Courses | Success get mentee courses", func(t *testing.T) {
-		courseRepository.Mock.On("FindByMentee", menteeDomain.ID, "test", "test").Return(&[]courses.Domain{courseDomain}, nil).Once()
+		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, "test", "test").Return(&[]menteeCourses.Domain{menteeCourseDomain}, nil).Once()
 
 		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, "test", "test")
 
 		assert.Nil(t, err)
-		assert.NotNil(t, results)
+		assert.NotEmpty(t, results)
 	})
 
 	t.Run("Test Find Mentee Courses | Failed get mentee courses", func(t *testing.T) {
-		courseRepository.Mock.On("FindByMentee", menteeDomain.ID, "test", "test").Return(&[]courses.Domain{}, pkg.ErrCourseNotFound).Once()
+		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, "test", "test").Return(&[]menteeCourses.Domain{}, pkg.ErrCourseNotFound).Once()
 
 		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, "test", "test")
 
 		assert.NotNil(t, err)
-		assert.Nil(t, results)
+		assert.Empty(t, results)
 	})
 }
 
@@ -133,15 +133,6 @@ func TestCheckEnrollment(t *testing.T) {
 		result, err := menteeCourseService.CheckEnrollment(menteeCourseDomain.MenteeId, menteeCourseDomain.CourseId)
 
 		assert.Nil(t, err)
-		assert.NotNil(t, result)
-	})
-
-	t.Run("Test Check Enrollment | Failed check enrollment", func(t *testing.T) {
-		menteeCourseRepository.Mock.On("CheckEnrollment", menteeCourseDomain.MenteeId, menteeCourseDomain.CourseId).Return(&menteeCourses.Domain{}, errors.New("record not found")).Once()
-
-		result, err := menteeCourseService.CheckEnrollment(menteeCourseDomain.MenteeId, menteeCourseDomain.CourseId)
-
-		assert.NotNil(t, err)
-		assert.False(t, result)
+		assert.True(t, result)
 	})
 }

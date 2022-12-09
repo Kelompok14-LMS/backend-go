@@ -125,7 +125,7 @@ func (routeConfig *RouteConfig) New() {
 	mentor.GET("/:mentorId", mentorController.HandlerFindByID)
 
 	// mentee routes
-	mentee := v1.Group("/mentees")
+	mentee := v1.Group("/mentees", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	mentee.GET("/:menteeId/courses", menteeCourseController.HandlerFindMenteeCourses)
 	mentee.GET("/:menteeId/courses/:courseId", menteeCourseController.HandlerCheckEnrollmentCourse)
 
@@ -140,7 +140,7 @@ func (routeConfig *RouteConfig) New() {
 	course := v1.Group("/courses")
 	course.POST("", courseController.HandlerCreateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	course.GET("", courseController.HandlerFindAllCourses)
-	course.POST("/enroll", menteeCourseController.HandlerEnrollCourse)
+	course.POST("/enroll-course", menteeCourseController.HandlerEnrollCourse, authMiddleware.IsAuthenticated())
 	course.GET("/categories/:categoryId", courseController.HandlerFindByCategory)
 	course.GET("/:courseId", courseController.HandlerFindByIdCourse)
 	course.PUT("/:courseId", courseController.HandlerUpdateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)

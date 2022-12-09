@@ -1,7 +1,6 @@
 package courses
 
 import (
-	menteeCourses "github.com/Kelompok14-LMS/backend-go/drivers/mysql/menteeCourses"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
@@ -11,18 +10,17 @@ import (
 )
 
 type Course struct {
-	ID            string `gorm:"primaryKey;size:200" json:"id"`
-	MentorId      string `gorm:"size:200" json:"mentor_id"`
-	CategoryId    string `gorm:"size:200" json:"category_id"`
-	Title         string `gorm:"size:255" json:"title"`
-	Description   string `json:"description"`
-	Thumbnail     string `gorm:"size:255" json:"thumbnail"`
-	Category      categories.Category
-	Mentor        mentors.Mentor
-	MenteeCourses []menteeCourses.MenteeCourse
-	CreatedAt     time.Time      `json:"created_at"`
-	UpdatedAt     time.Time      `json:"updated_at"`
-	DeletedAt     gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	ID          string `gorm:"primaryKey;size:200" json:"id"`
+	MentorId    string `gorm:"size:200" json:"mentor_id"`
+	CategoryId  string `gorm:"size:200" json:"category_id"`
+	Title       string `gorm:"size:255" json:"title"`
+	Description string `json:"description"`
+	Thumbnail   string `gorm:"size:255" json:"thumbnail"`
+	Category    categories.Category
+	Mentor      mentors.Mentor
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 }
 
 func (rec *Course) ToDomain() *courses.Domain {

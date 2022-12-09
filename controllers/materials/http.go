@@ -42,6 +42,8 @@ func (ctrl *MaterialController) HandlerCreateMaterial(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
 		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
+		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
@@ -96,6 +98,8 @@ func (ctrl *MaterialController) HandlerUpdateMaterial(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialNotFound.Error()))
 		} else if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
 		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
 		} else {

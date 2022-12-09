@@ -42,6 +42,8 @@ func (ctrl *CourseController) HandlerCreateCourse(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
 		} else if errors.Is(err, pkg.ErrCategoryNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUnsupportedImageFile) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
@@ -140,6 +142,8 @@ func (ctrl *CourseController) HandlerUpdateCourse(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
 		} else if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUnsupportedImageFile) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
