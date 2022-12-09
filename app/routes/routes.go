@@ -102,6 +102,7 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/mentor/register", mentorController.HandlerRegisterMentor)
 	auth.POST("/mentor/forgot-password", mentorController.HandlerForgotPassword)
 
+	//Mentor
 	mentor := v1.Group("/mentors", authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	mentor.GET("", mentorController.HandlerFindAll)
 	mentor.PUT("/:mentorId/update-password", mentorController.HandlerUpdatePassword)
