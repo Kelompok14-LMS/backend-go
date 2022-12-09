@@ -152,10 +152,10 @@ func TestUpdate(t *testing.T) {
 		courseRepository.Mock.On("Update", "COURSE_1", &courseDomain).Return(nil)
 
 		updatedCourse := courses.Domain{
-			CategoryId:          "CAT_1",
-			Title:               "Updated Title",
-			Description:         "Updated Description",
-			ThumbnailFileHeader: nil,
+			CategoryId:  "CAT_1",
+			Title:       "Updated Title",
+			Description: "Updated Description",
+			File:        nil,
 		}
 
 		err := courseUsecase.Update("COURSE_1", &updatedCourse)

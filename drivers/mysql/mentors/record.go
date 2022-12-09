@@ -10,7 +10,7 @@ import (
 type Mentor struct {
 	ID             string     `gorm:"primaryKey;" json:"id"`
 	UserId         string     `gorm:"size:200" json:"user_id"`
-	FullName       string     `gorm:"size:255" json:"name"`
+	Fullname       string     `gorm:"size:255" json:"fullname"`
 	Phone          string     `gorm:"size:15" json:"phone"`
 	Role           string     `gorm:"size:50" json:"role"`
 	Jobs           string     `json:"jobs"`
@@ -28,7 +28,8 @@ func (rec *Mentor) ToDomain() *mentors.Domain {
 	return &mentors.Domain{
 		ID:             rec.ID,
 		UserId:         rec.UserId,
-		FullName:       rec.FullName,
+		Fullname:       rec.Fullname,
+		Email:          rec.User.Email,
 		Phone:          rec.Phone,
 		Role:           rec.Role,
 		Jobs:           rec.Jobs,
@@ -46,7 +47,7 @@ func FromDomain(mentor *mentors.Domain) *Mentor {
 	return &Mentor{
 		ID:             mentor.ID,
 		UserId:         mentor.UserId,
-		FullName:       mentor.FullName,
+		Fullname:       mentor.Fullname,
 		Phone:          mentor.Phone,
 		Role:           mentor.Role,
 		Jobs:           mentor.Jobs,

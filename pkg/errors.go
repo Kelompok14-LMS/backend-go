@@ -60,6 +60,16 @@ var (
 
 	// error unsupported file upload
 	ErrUnsupportedAssignmentFile = errors.New("Unsupported assignment file. Acceptable file format: .pdf")
+
+	// error invalid token header
+	ErrInvalidTokenHeader = errors.New("Invalid token header")
+
+	// error unsupported video file
+	ErrUnsupportedVideoFile = errors.New("Unsupported video file. Acceptable file format: .mp4 or .mkv")
+
+	// error unsupported image file
+	ErrUnsupportedImageFile = errors.New("Unsupported image file. Acceptable file format: .jpeg, .jpg, and .png")
+
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")
 )

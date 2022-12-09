@@ -1,9 +1,12 @@
 package mentors
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/users"
+	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/google/uuid"
@@ -13,18 +16,26 @@ type mentorUsecase struct {
 	mentorsRepository Repository
 	userRepository    users.Repository
 	jwtConfig         *utils.JWTConfig
+	storage           *helper.StorageConfig
+	mailerConfig      *pkg.MailerConfig
 }
 
-func NewMentorUsecase(mentorsRepository Repository, userRepository users.Repository, jwtConfig *utils.JWTConfig) Usecase {
+func NewMentorUsecase(mentorsRepository Repository, userRepository users.Repository, jwtConfig *utils.JWTConfig, storage *helper.StorageConfig, mailerConfig *pkg.MailerConfig) Usecase {
 	return mentorUsecase{
 		mentorsRepository: mentorsRepository,
 		userRepository:    userRepository,
 		jwtConfig:         jwtConfig,
+		storage:           storage,
+		mailerConfig:      mailerConfig,
 	}
 }
 
 func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 	var err error
+
+	if len(mentorDomain.Password) < 6 {
+		return pkg.ErrPasswordLengthInvalid
+	}
 
 	email, _ := m.userRepository.FindByEmail(mentorDomain.Email)
 
@@ -54,7 +65,7 @@ func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 	mentor := Domain{
 		ID:        mentorId,
 		UserId:    userId,
-		FullName:  mentorDomain.FullName,
+		Fullname:  mentorDomain.Fullname,
 		Role:      "mentor",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -105,17 +116,172 @@ func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
 	return &token, nil
 }
 
+func (m mentorUsecase) UpdatePassword(updatePassword *MentorUpdatePassword) error {
+
+	if len(updatePassword.NewPassword) < 8 {
+		return pkg.ErrPasswordLengthInvalid
+	}
+
+	oldPassword, err := m.userRepository.FindById(updatePassword.UserID)
+
+	if err != nil {
+		return pkg.ErrUserNotFound
+	}
+
+	ok := utils.ComparePassword(oldPassword.Password, updatePassword.OldPassword)
+	if !ok {
+		return pkg.ErrPasswordNotMatch
+	}
+
+	hashPassword := utils.HashPassword(updatePassword.NewPassword)
+
+	updatedUser := users.Domain{
+		Password: hashPassword,
+	}
+
+	err = m.userRepository.Update(oldPassword.ID, &updatedUser)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (m mentorUsecase) FindAll() (*[]Domain, error) {
-	//TODO implement me
-	panic("implement me")
+	var err error
+
+	mentor, err := m.mentorsRepository.FindAll()
+
+	if err != nil {
+		if err == pkg.ErrMentorNotFound {
+			return nil, pkg.ErrMentorNotFound
+		}
+
+		return nil, pkg.ErrInternalServerError
+	}
+
+	return mentor, nil
 }
 
 func (m mentorUsecase) FindById(id string) (*Domain, error) {
-	//TODO implement me
-	panic("implement me")
+
+	mentor, err := m.mentorsRepository.FindById(id)
+	if err != nil {
+		if err == pkg.ErrMentorNotFound {
+			return nil, pkg.ErrMentorNotFound
+		}
+
+		return nil, pkg.ErrInternalServerError
+	}
+
+	return mentor, nil
 }
 
-func (m mentorUsecase) Update(id string, userDomain *Domain) error {
-	//TODO implement me
-	panic("implement me")
+func (m mentorUsecase) Update(id string, updateMentor *MentorUpdateProfile) error {
+
+	_, err := m.userRepository.FindById(updateMentor.UserID)
+
+	if err != nil {
+		return err
+	}
+	user := users.Domain{
+		ID:        updateMentor.UserID,
+		Email:     updateMentor.Email,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	err = m.userRepository.Update(user.ID, &user)
+	if err != nil {
+		return err
+	}
+
+	mentor, err := m.mentorsRepository.FindById(id)
+
+	if err != nil {
+		return err
+	}
+
+	var ProfilePictureURL string
+
+	if updateMentor.ProfilePictureFile != nil {
+		ctx := context.Background()
+
+		if mentor.ProfilePicture != "" {
+			if err := m.storage.DeleteObject(ctx, mentor.ProfilePicture); err != nil {
+				return err
+			}
+		}
+
+		filename := updateMentor.ProfilePictureFile.Filename
+
+		ProfilePicture, err := updateMentor.ProfilePictureFile.Open()
+
+		if err != nil {
+			return err
+		}
+
+		ProfilePictureURL, err = m.storage.UploadImage(ctx, filename, ProfilePicture)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	updatedMentor := Domain{
+
+		Fullname:       updateMentor.Fullname,
+		Phone:          updateMentor.Phone,
+		Jobs:           updateMentor.Jobs,
+		Gender:         updateMentor.Gender,
+		BirthPlace:     updateMentor.BirthPlace,
+		BirthDate:      updateMentor.BirthDate,
+		Address:        updateMentor.Address,
+		ProfilePicture: ProfilePictureURL,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	err = m.mentorsRepository.Update(id, &updatedMentor)
+	if err != nil {
+		if err == pkg.ErrMentorNotFound {
+			return pkg.ErrMentorNotFound
+		}
+
+		return pkg.ErrInternalServerError
+	}
+
+	return nil
+}
+
+func (m mentorUsecase) ForgotPassword(forgotPassword *MentorForgotPassword) error {
+	var err error
+
+	user, err := m.userRepository.FindByEmail(forgotPassword.Email)
+
+	if err != nil {
+		return err
+	}
+
+	randomPassword := pkg.GenerateOTP(8)
+	hashPassword := utils.HashPassword(randomPassword)
+
+	updatedUser := users.Domain{
+		Password: hashPassword,
+	}
+
+	err = m.userRepository.Update(user.ID, &updatedUser)
+
+	if err != nil {
+		return err
+	}
+
+	message := fmt.Sprintf("Password baru anda: %s", randomPassword)
+	subject := "Reset Password Eduworld"
+
+	_ = m.mailerConfig.SendMail(user.Email, subject, message)
+
+	return nil
 }

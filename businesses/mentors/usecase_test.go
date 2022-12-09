@@ -6,11 +6,12 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
 	_mentorMock "github.com/Kelompok14-LMS/backend-go/businesses/mentors/mocks"
+	"github.com/Kelompok14-LMS/backend-go/helper"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/Kelompok14-LMS/backend-go/businesses/users"
 	_userMock "github.com/Kelompok14-LMS/backend-go/businesses/users/mocks"
 )
 
@@ -20,20 +21,21 @@ var (
 
 	userRepository _userMock.UserRepositoryMock
 	jwtConfig      utils.JWTConfig
+	storageClient  helper.StorageConfig
+	mailerConfig   pkg.MailerConfig
 
 	mentorDomain   mentors.Domain
-	mentorAuth     mentors.MentorAuth
 	mentorRegister mentors.MentorRegister
-
-	userDomain users.Domain
+	mentorUpdate   mentors.MentorUpdateProfile
 )
 
 func TestMain(m *testing.M) {
 	mentorRepository = _mentorMock.Repository{Mock: mock.Mock{}}
 	userRepository = _userMock.UserRepositoryMock{Mock: mock.Mock{}}
 	jwtConfig = utils.JWTConfig{JWTSecret: "secret"}
+	storageClient = helper.StorageConfig{}
 
-	mentorService = mentors.NewMentorUsecase(&mentorRepository, &userRepository, &jwtConfig)
+	mentorService = mentors.NewMentorUsecase(&mentorRepository, &userRepository, &jwtConfig, &storageClient, &mailerConfig)
 
 	// birth date
 	birthDate := time.Date(2021, 8, 11, 0, 0, 0, 0, time.Local)
@@ -41,7 +43,7 @@ func TestMain(m *testing.M) {
 	mentorDomain = mentors.Domain{
 		ID:             "MID1",
 		UserId:         "UID1",
-		FullName:       "Mentors Test",
+		Fullname:       "Mentors Test",
 		Phone:          "0857654378",
 		Role:           "mentor",
 		BirthDate:      birthDate,
@@ -51,23 +53,15 @@ func TestMain(m *testing.M) {
 		UpdatedAt:      time.Now(),
 	}
 
-	mentorAuth = mentors.MentorAuth{
-		Email:    "mentor@gmail.com",
-		Password: "hashedpassword",
-	}
+	// mentorAuth = mentors.MentorAuth{
+	// 	Email:    "mentor@gmail.com",
+	// 	Password: "hashedpassword",
+	// }
 
 	mentorRegister = mentors.MentorRegister{
-		FullName: "Mentor Test",
+		Fullname: "Mentor Test",
 		Email:    "mentor@gmail.com",
 		Password: "hashedpassword",
-	}
-
-	userDomain = users.Domain{
-		ID:        "UID1",
-		Email:     "mentor@gmail.com",
-		Password:  "hashedpassword",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 
 	m.Run()
@@ -89,3 +83,64 @@ func TestRegister(t *testing.T) {
 }
 
 // TODO: Create test Login
+
+// func TestLogin(t *testing.T) {
+// 	t.Run("Login | Success", func(t *testing.T) {
+
+// 		userDomain = users.Domain{
+// 			ID:        "UID1",
+// 			Email:     "mentor@gmail.com",
+// 			Password:  "hashedpassword",
+// 			CreatedAt: time.Now(),
+// 			UpdatedAt: time.Now(),
+// 		}
+
+// 		mentorAuth = mentors.MentorAuth{
+// 			Email:    "mentor@gmail.com",
+// 			Password: "hashedpassword",
+// 		}
+
+// 		userRepository.Mock.On("FindByEmail", mentorAuth.Email).Return(&userDomain, nil)
+
+// 		token, err := mentorService.Login(&mentorAuth)
+
+// 		assert.Error(t, err)
+// 		assert.NotNil(t, &token)
+// 	})
+// }
+
+func TestFindById(t *testing.T) {
+	t.Run("Find By ID | Valid", func(t *testing.T) {
+		mentorRepository.On("FindById", "MID1").Return(&mentorDomain, nil).Once()
+
+		result, err := mentorService.FindById("MID1")
+		assert.Nil(t, err)
+		assert.NotNil(t, result)
+	})
+
+	t.Run("Find By ID | InValid", func(t *testing.T) {
+		mentorRepository.On("FindById", "-1").Return(&mentorDomain, nil).Once()
+
+		result, err := mentorService.FindById("-1")
+		assert.Nil(t, err)
+		assert.NotNil(t, result)
+	})
+}
+
+func TestFindAll(t *testing.T) {
+	t.Run("Find All | Valid", func(t *testing.T) {
+		mentorRepository.On("FindAll").Return(&[]mentors.Domain{mentorDomain}, nil).Once()
+
+		result, err := mentorRepository.FindAll()
+		assert.Nil(t, err)
+		assert.Equal(t, 1, len(*result))
+	})
+
+	t.Run("Find All | InValid", func(t *testing.T) {
+		mentorRepository.On("FindAll").Return(&[]mentors.Domain{}, nil).Once()
+
+		result, err := mentorRepository.FindAll()
+		assert.Nil(t, err)
+		assert.Equal(t, 0, len(*result))
+	})
+}

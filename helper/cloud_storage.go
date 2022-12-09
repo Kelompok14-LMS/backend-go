@@ -26,18 +26,19 @@ func NewCloudStorage(storageClient *storage.Client, bucketName string) *StorageC
 // UploadImage helper to upload image into cloud storage
 func (s *StorageConfig) UploadImage(ctx context.Context, objName string, file multipart.File) (string, error) {
 	// bucket name to store the images
-	imgBucket := s.StorageClient.Bucket(s.BucketName)
+	bucket := s.StorageClient.Bucket(s.BucketName)
 
 	imageDir := fmt.Sprintf("%s/%s", constants.IMAGES_DIR, objName)
 
 	// object to be stored in cloud storage
-	object := imgBucket.Object(imageDir)
+	object := bucket.Object(imageDir)
+
+	// upload the object with storage.Writer
 	wc := object.NewWriter(ctx)
 
 	// skip the object cache, always retrieve fresh object
-	wc.ObjectAttrs.CacheControl = "Chace-Control:no-cache, max-age=0"
+	wc.ObjectAttrs.CacheControl = "Cache-Control:no-cache, max-age=0"
 
-	// upload the object with storage.Writer
 	if _, err := io.Copy(wc, file); err != nil {
 		return "", err
 	}
@@ -53,8 +54,27 @@ func (s *StorageConfig) UploadImage(ctx context.Context, objName string, file mu
 }
 
 // UploadVideo helper to upload video into cloud storage
-func (s *StorageConfig) UploadVideo(ctx context.Context, objName string) (string, error) {
-	panic("implement me")
+func (s *StorageConfig) UploadVideo(ctx context.Context, objName string, file multipart.File) (string, error) {
+	bucket := s.StorageClient.Bucket(s.BucketName)
+
+	videoDir := fmt.Sprintf("%s/%s", constants.VIDEOS_DIR, objName)
+
+	object := bucket.Object(videoDir)
+	wc := object.NewWriter(ctx)
+
+	wc.ObjectAttrs.CacheControl = "Cache-Control:no-cache, max-age=0"
+
+	if _, err := io.Copy(wc, file); err != nil {
+		return "", err
+	}
+
+	if err := wc.Close(); err != nil {
+		return "", err
+	}
+
+	videoUrl := fmt.Sprintf("%s/%s/%s", constants.STORAGE_URL, s.BucketName, videoDir)
+
+	return videoUrl, nil
 }
 
 // UploadAsset helper to upload asset (i.e pdf, etc) into cloud storage

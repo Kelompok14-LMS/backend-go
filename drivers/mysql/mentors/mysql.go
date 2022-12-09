@@ -34,7 +34,7 @@ func (mr mentorRepository) Create(mentorDomain *mentors.Domain) error {
 func (mr mentorRepository) FindAll() (*[]mentors.Domain, error) {
 	var rec []Mentor
 
-	err := mr.conn.Model(&Mentor{}).Find(&rec).Error
+	err := mr.conn.Model(&Mentor{}).Preload("User").Find(&rec).Error
 
 	if err != nil {
 		return nil, err
@@ -52,11 +52,11 @@ func (mr mentorRepository) FindAll() (*[]mentors.Domain, error) {
 func (mr mentorRepository) FindById(id string) (*mentors.Domain, error) {
 	rec := Mentor{}
 
-	err := mr.conn.Model(&Mentor{}).Where("id = ?", id).First(&rec).Error
+	err := mr.conn.Model(&Mentor{}).Where("id = ?", id).Preload("User").First(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkg.ErrMenteeNotFound
+			return nil, pkg.ErrMentorNotFound
 		}
 
 		return nil, err
@@ -72,7 +72,7 @@ func (mr mentorRepository) FindByIdUser(userId string) (*mentors.Domain, error) 
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkg.ErrMenteeNotFound
+			return nil, pkg.ErrMentorNotFound
 		}
 
 		return nil, err

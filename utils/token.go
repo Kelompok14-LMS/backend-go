@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/pkg"
+	"github.com/labstack/echo/v4"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -50,4 +52,43 @@ func (config *JWTConfig) GenerateToken(userId string, actorId string, role strin
 	jwtSecret := config.JWTSecret
 
 	return token.SignedString([]byte(jwtSecret))
+}
+
+func (config *JWTConfig) ExtractToken(c echo.Context) (*JWTCustomClaims, error) {
+	tokenString := c.Request().Header.Get("Authorization")
+
+	sanitizedTokenBearer := strings.Replace(tokenString, "Bearer ", "", 1)
+
+	token, err := jwt.Parse(sanitizedTokenBearer, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, pkg.ErrInvalidTokenHeader
+		}
+
+		jwtSecret := config.JWTSecret
+
+		return []byte(jwtSecret), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if token.Valid {
+		customClaim := JWTCustomClaims{}
+
+		claims := token.Claims.(jwt.MapClaims)
+		customClaim.UserId = claims["user_id"].(string)
+		customClaim.Role = claims["role"].(string)
+
+		switch customClaim.Role {
+		case "mentee":
+			customClaim.MenteeId = claims["mentee_id"].(string)
+		case "mentor":
+			customClaim.MentorId = claims["mentor_id"].(string)
+		}
+
+		return &customClaim, nil
+	}
+
+	return nil, err
 }

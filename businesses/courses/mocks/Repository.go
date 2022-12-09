@@ -40,13 +40,13 @@ func (_m *Repository) Delete(id string) error {
 	return r0
 }
 
-// FindAll provides a mock function with given fields: title
-func (_m *Repository) FindAll(title string) (*[]courses.Domain, error) {
-	ret := _m.Called(title)
+// FindAll provides a mock function with given fields: keyword
+func (_m *Repository) FindAll(keyword string) (*[]courses.Domain, error) {
+	ret := _m.Called(keyword)
 
 	var r0 *[]courses.Domain
 	if rf, ok := ret.Get(0).(func(string) *[]courses.Domain); ok {
-		r0 = rf(title)
+		r0 = rf(keyword)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*[]courses.Domain)
@@ -55,7 +55,7 @@ func (_m *Repository) FindAll(title string) (*[]courses.Domain, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(title)
+		r1 = rf(keyword)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -102,6 +102,29 @@ func (_m *Repository) FindById(id string) (*courses.Domain, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FindByMentee provides a mock function with given fields: menteeId, title, status
+func (_m *Repository) FindByMentee(menteeId string, title string, status string) (*[]courses.Domain, error) {
+	ret := _m.Called(menteeId, title, status)
+
+	var r0 *[]courses.Domain
+	if rf, ok := ret.Get(0).(func(string, string, string) *[]courses.Domain); ok {
+		r0 = rf(menteeId, title, status)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]courses.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
+		r1 = rf(menteeId, title, status)
 	} else {
 		r1 = ret.Error(1)
 	}
