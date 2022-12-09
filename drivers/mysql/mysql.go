@@ -56,7 +56,7 @@ func DBMigrate(db *gorm.DB) {
 		&courses.Course{},
 		&modules.Module{},
 		&materials.Material{},
-    &assignments.Assignment{}
+		&assignments.Assignment{},
 		&menteeCourses.MenteeCourse{},
 	)
 }
