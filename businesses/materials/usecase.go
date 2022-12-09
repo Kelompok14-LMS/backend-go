@@ -2,12 +2,11 @@ package materials
 
 import (
 	"context"
-	"strings"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
-	"github.com/gabriel-vasile/mimetype"
+	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/google/uuid"
 )
 
@@ -42,18 +41,10 @@ func (mu materialUsecase) Create(materialDomain *Domain) error {
 
 	defer file.Close()
 
-	filename := strings.Replace(materialDomain.File.Filename, " ", "", -1)
-	filemime, err := mimetype.DetectReader(file)
+	filename, err := utils.GetFilename(materialDomain.File.Filename)
 
 	if err != nil {
-		return err
-	}
-
-	filetype := filemime.String()
-
-	// only .mp4 and .mkv format are acceptable
-	if filetype != "video/mp4" && filetype != "video/x-matroska" {
-		return pkg.ErrUnsupportedVideoFile
+		return pkg.ErrUnsupportedImageFile
 	}
 
 	ctx := context.Background()
@@ -78,6 +69,7 @@ func (mu materialUsecase) Create(materialDomain *Domain) error {
 
 	return nil
 }
+
 func (mu materialUsecase) FindById(materialId string) (*Domain, error) {
 	material, err := mu.materialRepository.FindById(materialId)
 
@@ -93,10 +85,7 @@ func (mu materialUsecase) Update(materialId string, materialDomain *Domain) erro
 		return err
 	}
 
-	var err error
-
-	var material *Domain
-	material, err = mu.materialRepository.FindById(materialId)
+	material, err := mu.materialRepository.FindById(materialId)
 
 	if err != nil {
 		return err
@@ -107,7 +96,7 @@ func (mu materialUsecase) Update(materialId string, materialDomain *Domain) erro
 	if materialDomain.File != nil {
 		ctx := context.Background()
 
-		err = mu.storage.DeleteObject(ctx, material.URL)
+		err := mu.storage.DeleteObject(ctx, material.URL)
 
 		if err != nil {
 			return err
@@ -119,17 +108,12 @@ func (mu materialUsecase) Update(materialId string, materialDomain *Domain) erro
 			return err
 		}
 
-		filename := strings.Replace(materialDomain.File.Filename, " ", "", -1)
-		filemime, err := mimetype.DetectReader(file)
+		defer file.Close()
+
+		filename, err := utils.GetFilename(materialDomain.File.Filename)
 
 		if err != nil {
-			return err
-		}
-
-		filetype := filemime.String()
-
-		if filetype != "video/mp4" && filetype != "video/x-matroska" {
-			return pkg.ErrUnsupportedVideoFile
+			return pkg.ErrUnsupportedImageFile
 		}
 
 		url, err = mu.storage.UploadVideo(ctx, filename, file)
