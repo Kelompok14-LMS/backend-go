@@ -1,7 +1,6 @@
 package mentees
 
 import (
-	menteeCourses "github.com/Kelompok14-LMS/backend-go/drivers/mysql/menteeCourses"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
@@ -17,9 +16,8 @@ type Mentee struct {
 	BirthDate      time.Time  `json:"birth_date"`
 	ProfilePicture string     `json:"profile_picture"`
 	User           users.User `json:"user"`
-	MenteeCourses  []menteeCourses.MenteeCourse
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
 }
 
 func FromDomain(mentee *mentees.Domain) *Mentee {

@@ -4,13 +4,17 @@ import (
 	"time"
 
 	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/courses"
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentees"
 )
 
 type MenteeCourse struct {
-	ID        string    `json:"id" gorm:"primaryKey;size:200"`
-	MenteeId  string    `json:"mentee_id" gorm:"size:200"`
-	CourseId  string    `json:"course_id" gorm:"size:200"`
-	Status    string    `json:"status" gorm:"size:50"`
+	ID        string `json:"id" gorm:"primaryKey;size:200"`
+	MenteeId  string `json:"mentee_id" gorm:"size:200"`
+	CourseId  string `json:"course_id" gorm:"size:200"`
+	Status    string `json:"status" gorm:"size:50"`
+	Mentee    mentees.Mentee
+	Course    courses.Course
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -21,6 +25,8 @@ func (rec *MenteeCourse) ToDomain() *menteeCourses.Domain {
 		MenteeId:  rec.MenteeId,
 		CourseId:  rec.CourseId,
 		Status:    rec.Status,
+		Mentee:    *rec.Mentee.ToDomain(),
+		Course:    *rec.Course.ToDomain(),
 		CreatedAt: rec.CreatedAt,
 		UpdatedAt: rec.UpdatedAt,
 	}
