@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/Kelompok14-LMS/backend-go/businesses/users"
 	_userMock "github.com/Kelompok14-LMS/backend-go/businesses/users/mocks"
 )
 
@@ -26,11 +25,8 @@ var (
 	mailerConfig   pkg.MailerConfig
 
 	mentorDomain   mentors.Domain
-	mentorAuth     mentors.MentorAuth
 	mentorRegister mentors.MentorRegister
 	mentorUpdate   mentors.MentorUpdateProfile
-
-	userDomain users.Domain
 )
 
 func TestMain(m *testing.M) {
@@ -67,14 +63,6 @@ func TestMain(m *testing.M) {
 		Email:    "mentor@gmail.com",
 		Password: "hashedpassword",
 	}
-
-	// userDomain = users.Domain{
-	// 	ID:        "UID1",
-	// 	Email:     "mentor@gmail.com",
-	// 	Password:  "hashedpassword",
-	// 	CreatedAt: time.Now(),
-	// 	UpdatedAt: time.Now(),
-	// }
 
 	m.Run()
 }

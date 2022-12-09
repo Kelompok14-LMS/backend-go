@@ -33,7 +33,11 @@ func (cr courseRepository) Create(courseDomain *courses.Domain) error {
 func (cr courseRepository) FindAll(keyword string) (*[]courses.Domain, error) {
 	var rec []Course
 
-	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").Joins("INNER JOIN categories ON categories.id = courses.category_id").Where("courses.title LIKE ? OR categories.name LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Find(&rec).Error
+	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
+		Joins("INNER JOIN categories ON categories.id = courses.category_id").
+		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
+		Where("courses.title LIKE ? OR categories.name LIKE ?", "%"+keyword+"%", "%"+keyword+"%").
+		Find(&rec).Error
 
 	if err != nil {
 		return nil, err
@@ -51,7 +55,10 @@ func (cr courseRepository) FindAll(keyword string) (*[]courses.Domain, error) {
 func (cr courseRepository) FindById(id string) (*courses.Domain, error) {
 	rec := Course{}
 
-	err := cr.conn.Model(&Course{}).Where("id = ?", id).Preload("Category").Preload("Mentor").First(&rec).Error
+	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
+		Joins("INNER JOIN categories ON categories.id = courses.category_id").
+		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
+		Where("courses.id = ?", id).First(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -67,7 +74,10 @@ func (cr courseRepository) FindById(id string) (*courses.Domain, error) {
 func (cr courseRepository) FindByCategory(categoryId string) (*[]courses.Domain, error) {
 	var rec []Course
 
-	err := cr.conn.Model(&Course{}).Where("category_id = ?", categoryId).Preload("Category").Preload("Mentor").Find(&rec).Error
+	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
+		Joins("INNER JOIN categories ON categories.id = courses.category_id").
+		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
+		Where("courses.category_id = ?", categoryId).Find(&rec).Error
 
 	if err != nil {
 		return nil, err

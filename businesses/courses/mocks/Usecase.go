@@ -40,13 +40,13 @@ func (_m *Usecase) Delete(id string) error {
 	return r0
 }
 
-// FindAll provides a mock function with given fields: title
-func (_m *Usecase) FindAll(title string) (*[]courses.Domain, error) {
-	ret := _m.Called(title)
+// FindAll provides a mock function with given fields: keyword
+func (_m *Usecase) FindAll(keyword string) (*[]courses.Domain, error) {
+	ret := _m.Called(keyword)
 
 	var r0 *[]courses.Domain
 	if rf, ok := ret.Get(0).(func(string) *[]courses.Domain); ok {
-		r0 = rf(title)
+		r0 = rf(keyword)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*[]courses.Domain)
@@ -55,7 +55,7 @@ func (_m *Usecase) FindAll(title string) (*[]courses.Domain, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(title)
+		r1 = rf(keyword)
 	} else {
 		r1 = ret.Error(1)
 	}

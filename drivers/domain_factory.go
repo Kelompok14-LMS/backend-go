@@ -24,6 +24,12 @@ import (
 
 	moduleDomain "github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	moduleDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/modules"
+
+	materialDomain "github.com/Kelompok14-LMS/backend-go/businesses/materials"
+	materialDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/materials"
+
+	menteeCoursesDomain "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
+	menteeCoursesDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/menteeCourses"
 )
 
 func NewOTPRepository(client *redis.Client) otpDomain.Repository {
@@ -52,4 +58,12 @@ func NewCourseRepository(conn *gorm.DB) courseDomain.Repository {
 
 func NewModuleRepository(conn *gorm.DB) moduleDomain.Repository {
 	return moduleDB.NewSQLRepository(conn)
+}
+
+func NewMaterialRepository(conn *gorm.DB) materialDomain.Repository {
+	return materialDB.NewSQLRepository(conn)
+}
+
+func NewMenteeCourseRepository(conn *gorm.DB) menteeCoursesDomain.Repository {
+	return menteeCoursesDB.NewSQLRepository(conn)
 }

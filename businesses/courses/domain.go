@@ -10,18 +10,18 @@ import (
 )
 
 type Domain struct {
-	ID                  string
-	MentorId            string
-	CategoryId          string
-	Title               string
-	Description         string
-	Thumbnail           string
-	ThumbnailFileHeader *multipart.FileHeader
-	Category            categories.Domain
-	Mentor              mentors.Domain
-	CreatedAt           time.Time
-	UpdatedAt           time.Time
-	DeletedAt           gorm.DeletedAt
+	ID          string
+	MentorId    string
+	CategoryId  string
+	Title       string
+	Description string
+	Thumbnail   string
+	File        *multipart.FileHeader
+	Category    categories.Domain
+	Mentor      mentors.Domain
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
 }
 
 type Repository interface {

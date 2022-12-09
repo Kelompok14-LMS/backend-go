@@ -16,10 +16,10 @@ type UpdateCourseInput struct {
 
 func (req *UpdateCourseInput) ToDomain() *courses.Domain {
 	return &courses.Domain{
-		CategoryId:          req.CategoryId,
-		Title:               req.Title,
-		Description:         req.Description,
-		ThumbnailFileHeader: req.Thumbnail,
+		CategoryId:  req.CategoryId,
+		Title:       req.Title,
+		Description: req.Description,
+		File:        req.Thumbnail,
 	}
 }
 
