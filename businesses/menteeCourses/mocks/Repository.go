@@ -49,6 +49,29 @@ func (_m *Repository) Enroll(menteeCourseDomain *mentee_courses.Domain) error {
 	return r0
 }
 
+// FindCoursesByMentee provides a mock function with given fields: menteeId, title, status
+func (_m *Repository) FindCoursesByMentee(menteeId string, title string, status string) (*[]mentee_courses.Domain, error) {
+	ret := _m.Called(menteeId, title, status)
+
+	var r0 *[]mentee_courses.Domain
+	if rf, ok := ret.Get(0).(func(string, string, string) *[]mentee_courses.Domain); ok {
+		r0 = rf(menteeId, title, status)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]mentee_courses.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
+		r1 = rf(menteeId, title, status)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewRepository interface {
 	mock.TestingT
 	Cleanup(func())
