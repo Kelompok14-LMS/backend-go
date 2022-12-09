@@ -17,11 +17,11 @@ type CreateCourseInput struct {
 
 func (req *CreateCourseInput) ToDomain() *courses.Domain {
 	return &courses.Domain{
-		MentorId:            req.MentorId,
-		CategoryId:          req.CategoryId,
-		Title:               req.Title,
-		Description:         req.Description,
-		ThumbnailFileHeader: req.Thumbnail,
+		MentorId:    req.MentorId,
+		CategoryId:  req.CategoryId,
+		Title:       req.Title,
+		Description: req.Description,
+		File:        req.Thumbnail,
 	}
 }
 
