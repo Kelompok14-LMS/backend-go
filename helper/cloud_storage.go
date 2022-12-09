@@ -32,12 +32,13 @@ func (s *StorageConfig) UploadImage(ctx context.Context, objName string, file mu
 
 	// object to be stored in cloud storage
 	object := bucket.Object(imageDir)
+
+	// upload the object with storage.Writer
 	wc := object.NewWriter(ctx)
 
 	// skip the object cache, always retrieve fresh object
-	wc.ObjectAttrs.CacheControl = "Chace-Control:no-cache, max-age=0"
+	wc.ObjectAttrs.CacheControl = "Cache-Control:no-cache, max-age=0"
 
-	// upload the object with storage.Writer
 	if _, err := io.Copy(wc, file); err != nil {
 		return "", err
 	}
@@ -61,7 +62,7 @@ func (s *StorageConfig) UploadVideo(ctx context.Context, objName string, file mu
 	object := bucket.Object(videoDir)
 	wc := object.NewWriter(ctx)
 
-	wc.ObjectAttrs.CacheControl = "Chace-Control:no-cache, max-age=0"
+	wc.ObjectAttrs.CacheControl = "Cache-Control:no-cache, max-age=0"
 
 	if _, err := io.Copy(wc, file); err != nil {
 		return "", err
