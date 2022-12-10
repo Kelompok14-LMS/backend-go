@@ -8,6 +8,7 @@ import (
 
 type FindByIdMaterial struct {
 	ID          string    `json:"id"`
+	CourseId    string    `json:"course_id"`
 	ModuleId    string    `json:"module_id"`
 	Title       string    `json:"title"`
 	URL         string    `json:"url"`
@@ -19,6 +20,7 @@ type FindByIdMaterial struct {
 func MaterialDetail(res *materials.Domain) *FindByIdMaterial {
 	return &FindByIdMaterial{
 		ID:          res.ID,
+		CourseId:    res.Module.CourseId,
 		ModuleId:    res.ModuleId,
 		Title:       res.Title,
 		URL:         res.URL,
