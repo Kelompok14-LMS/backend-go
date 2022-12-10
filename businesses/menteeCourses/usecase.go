@@ -2,25 +2,33 @@ package mentee_courses
 
 import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
+	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
+	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/google/uuid"
 )
 
 type menteeCourseUsecase struct {
-	menteeCourseRepository Repository
-	menteeRepository       mentees.Repository
-	courseRepository       courses.Repository
+	menteeCourseRepository   Repository
+	menteeRepository         mentees.Repository
+	courseRepository         courses.Repository
+	materialRepository       materials.Repository
+	menteeProgressRepository menteeProgresses.Repository
 }
 
 func NewMenteeCourseUsecase(
 	menteeCourseRepository Repository,
 	menteeRepository mentees.Repository,
 	courseRepository courses.Repository,
+	materialRepository materials.Repository,
+	menteeProgressRepository menteeProgresses.Repository,
 ) Usecase {
 	return menteeCourseUsecase{
-		menteeCourseRepository: menteeCourseRepository,
-		menteeRepository:       menteeRepository,
-		courseRepository:       courseRepository,
+		menteeCourseRepository:   menteeCourseRepository,
+		menteeRepository:         menteeRepository,
+		courseRepository:         courseRepository,
+		materialRepository:       materialRepository,
+		menteeProgressRepository: menteeProgressRepository,
 	}
 }
 
@@ -56,6 +64,32 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 
 	if err != nil {
 		return nil, err
+	}
+
+	progresses, err := m.menteeProgressRepository.Count(menteeId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	courseIds := []string{}
+
+	for _, course := range *menteeCourses {
+		courseIds = append(courseIds, course.CourseId)
+	}
+
+	totalMaterials, err := m.materialRepository.CountByCourse(courseIds)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i, progress := range progresses {
+		(*menteeCourses)[i].ProgressCount = progress
+	}
+
+	for i, material := range totalMaterials {
+		(*menteeCourses)[i].TotalMaterials = material
 	}
 
 	return menteeCourses, nil
