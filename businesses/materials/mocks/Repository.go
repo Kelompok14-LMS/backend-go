@@ -12,6 +12,29 @@ type Repository struct {
 	mock.Mock
 }
 
+// CountByCourse provides a mock function with given fields: courseIds
+func (_m *Repository) CountByCourse(courseIds []string) ([]int64, error) {
+	ret := _m.Called(courseIds)
+
+	var r0 []int64
+	if rf, ok := ret.Get(0).(func([]string) []int64); ok {
+		r0 = rf(courseIds)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int64)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]string) error); ok {
+		r1 = rf(courseIds)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Create provides a mock function with given fields: materialDomain
 func (_m *Repository) Create(materialDomain *materials.Domain) error {
 	ret := _m.Called(materialDomain)
