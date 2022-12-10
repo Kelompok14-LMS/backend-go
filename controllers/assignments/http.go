@@ -113,7 +113,7 @@ func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error 
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentNotFound) {
-			c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
