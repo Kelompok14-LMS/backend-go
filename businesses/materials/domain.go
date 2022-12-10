@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 	"time"
 
+	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	"gorm.io/gorm"
 )
 
@@ -14,6 +15,7 @@ type Domain struct {
 	URL         string
 	Description string
 	File        *multipart.FileHeader
+	Module      modules.Domain
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt
@@ -25,6 +27,9 @@ type Repository interface {
 
 	// FindById repository find materials by id
 	FindById(materialId string) (*Domain, error)
+
+	// CountByCourse repository find total materials by course
+	CountByCourse(courseIds []string) ([]int64, error)
 
 	// Update repository update material
 	Update(materialId string, materialDomain *Domain) error

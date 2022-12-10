@@ -33,6 +33,7 @@ func (m menteeCourseRepository) FindCoursesByMentee(menteeId string, title strin
 	err := m.conn.Model(&MenteeCourse{}).Preload("Course.Mentor").
 		Joins("INNER JOIN courses ON courses.id = mentee_courses.course_id").
 		Where("mentee_courses.mentee_id = ? AND courses.title LIKE ? AND status = ?", menteeId, "%"+title+"%", status).
+		Order("mentee_courses.course_id ASC").
 		Find(&rec).Error
 
 	if err != nil {

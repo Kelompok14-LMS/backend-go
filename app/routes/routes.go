@@ -31,12 +31,15 @@ import (
 
 	_assignmentUsecase "github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	_assignmentController "github.com/Kelompok14-LMS/backend-go/controllers/assignments"
-  
+
 	_materialUsecase "github.com/Kelompok14-LMS/backend-go/businesses/materials"
 	_materialController "github.com/Kelompok14-LMS/backend-go/controllers/materials"
 
 	_menteeCoursesUsecase "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 	_menteeCoursesController "github.com/Kelompok14-LMS/backend-go/controllers/menteeCourses"
+
+	_menteeProgressesUsecase "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
+	_menteeProgressController "github.com/Kelompok14-LMS/backend-go/controllers/menteeProgresses"
 )
 
 type RouteConfig struct {
@@ -103,15 +106,20 @@ func (routeConfig *RouteConfig) New() {
 	assignmentRepository := _driverFactory.NewAssignmentRepository(routeConfig.MySQLDB)
 	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository)
 	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
-  
+
 	// Inject the dependency to material
 	materialRepository := _driverFactory.NewMaterialRepository(routeConfig.MySQLDB)
 	materialUsecase := _materialUsecase.NewMaterialUsecase(materialRepository, moduleRepository, routeConfig.StorageConfig)
 	materialController := _materialController.NewMaterialController(materialUsecase)
 
+	// Inject the dependency to menteeProgress
+	menteeProgressRepository := _driverFactory.NewMenteeProgressRepository(routeConfig.MySQLDB)
+	menteeProgressUsecase := _menteeProgressesUsecase.NewMenteeProgressUsecase(menteeProgressRepository, menteeRepository, courseRepository, materialRepository)
+	menteeProgressController := _menteeProgressController.NewMenteeProgressController(menteeProgressUsecase)
+
 	// Inject the dependency to menteeCourse
 	menteeCourseRepository := _driverFactory.NewMenteeCourseRepository(routeConfig.MySQLDB)
-	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository)
+	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
 	// authentication routes
@@ -135,6 +143,7 @@ func (routeConfig *RouteConfig) New() {
 
 	// mentee routes
 	mentee := v1.Group("/mentees", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	mentee.POST("/progress", menteeProgressController.HandlerAddProgress, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	mentee.GET("/:menteeId/courses", menteeCourseController.HandlerFindMenteeCourses)
 	mentee.GET("/:menteeId/courses/:courseId", menteeCourseController.HandlerCheckEnrollmentCourse)
 
@@ -161,6 +170,8 @@ func (routeConfig *RouteConfig) New() {
 	module.GET("/:moduleId", moduleController.HandlerFindByIdModule)
 	module.PUT("/:moduleId", moduleController.HandlerUpdateModule)
 	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule)
+	module.PUT("/:moduleId", moduleController.HandlerUpdateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 
 	// assignment routes
 	assignment := v1.Group("/assignments")
@@ -170,8 +181,6 @@ func (routeConfig *RouteConfig) New() {
 	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment)
 	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment)
 	assignment.DELETE("/modules/:moduleId", assignmentController.HandlerDeleteAssignmentByModule)
-	module.PUT("/:moduleId", moduleController.HandlerUpdateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 
 	// material routes
 	material := v1.Group("/materials")

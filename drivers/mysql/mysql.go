@@ -9,6 +9,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/courses"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/materials"
 	menteeCourses "github.com/Kelompok14-LMS/backend-go/drivers/mysql/menteeCourses"
+	menteeProgresses "github.com/Kelompok14-LMS/backend-go/drivers/mysql/menteeProgresses"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentees"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentors"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/modules"
@@ -58,5 +59,6 @@ func DBMigrate(db *gorm.DB) {
 		&materials.Material{},
 		&assignments.Assignment{},
 		&menteeCourses.MenteeCourse{},
+		&menteeProgresses.MenteeProgress{},
 	)
 }

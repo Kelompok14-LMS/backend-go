@@ -1,6 +1,7 @@
 package materials_test
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -9,9 +10,10 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	_moduleMock "github.com/Kelompok14-LMS/backend-go/businesses/modules/mocks"
 	"github.com/Kelompok14-LMS/backend-go/helper"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"gorm.io/gorm"
 )
 
 var (
@@ -20,121 +22,182 @@ var (
 
 	moduleRepository _moduleMock.Repository
 	storageClient    helper.StorageConfig
+
+	moduleDomain    modules.Domain
+	materialDomain  materials.Domain
+	createdMaterial materials.Domain
+	updatedMaterial materials.Domain
 )
 
 func TestMain(m *testing.M) {
-	materialRepository = _materialMock.Repository{Mock: mock.Mock{}}
-	moduleRepository = _moduleMock.Repository{Mock: mock.Mock{}}
-	storageClient = helper.StorageConfig{}
-
 	materialService = materials.NewMaterialUsecase(&materialRepository, &moduleRepository, &storageClient)
+
+	moduleDomain = modules.Domain{
+		ID:        uuid.NewString(),
+		CourseId:  uuid.NewString(),
+		Title:     "test",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	materialDomain = materials.Domain{
+		ID:          uuid.NewString(),
+		ModuleId:    moduleDomain.ID,
+		Title:       "test",
+		URL:         "test.com",
+		Description: "test",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	createdMaterial = materials.Domain{
+		ModuleId:    moduleDomain.ID,
+		Title:       "test",
+		URL:         "test.com",
+		Description: "test",
+	}
+
+	updatedMaterial = materials.Domain{
+		ModuleId:    moduleDomain.ID,
+		Title:       "test",
+		URL:         "test.com",
+		Description: "test",
+		File:        nil,
+	}
 
 	m.Run()
 }
 
+func TestCreate(t *testing.T) {
+	t.Run("Test Create | Failed create material | Module not found", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&modules.Domain{}, pkg.ErrModuleNotFound).Once()
+
+		err := materialService.Create(&createdMaterial)
+
+		assert.Error(t, err)
+	})
+}
+
 func TestFindById(t *testing.T) {
-	mockMaterial := materials.Domain{
-		ID:          "MATERIAL_1",
-		ModuleId:    "MODULE_1",
-		Title:       "Title test",
-		URL:         "https://storage.com/to/bucket/object.mp4",
-		Description: "Description test",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		DeletedAt:   gorm.DeletedAt{},
-	}
+	t.Run("Test Find By Id | Success get material by id", func(t *testing.T) {
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materialDomain, nil).Once()
 
-	materialRepository.Mock.On("FindById", "MATERIAL_1").Return(&mockMaterial, nil)
+		result, err := materialService.FindById(materialDomain.ID)
 
-	result, err := materialService.FindById("MATERIAL_1")
+		assert.NoError(t, err)
+		assert.NotEmpty(t, result)
+	})
 
-	assert.Nil(t, err)
-	assert.NotNil(t, result)
+	t.Run("Test Find By Id | Failed material not found", func(t *testing.T) {
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materials.Domain{}, pkg.ErrMaterialAssetNotFound).Once()
+
+		result, err := materialService.FindById(materialDomain.ID)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
 }
 
 func TestUpdate(t *testing.T) {
-	moduleDomain := modules.Domain{
-		ID:        "MODULE_1",
-		CourseId:  "COURSE_1",
-		Title:     "Course Title",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		DeletedAt: gorm.DeletedAt{},
-	}
+	t.Run("Test Update | Success update material", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&moduleDomain, nil).Once()
 
-	moduleRepository.Mock.On("FindById", "MODULE_1").Return(&moduleDomain, nil)
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materialDomain, nil).Once()
 
-	mockMaterial := materials.Domain{
-		ID:          "MATERIAL_1",
-		ModuleId:    "MODULE_1",
-		Title:       "Title test",
-		URL:         "https://storage.com/to/bucket/object.mp4",
-		Description: "Description test",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		DeletedAt:   gorm.DeletedAt{},
-	}
+		materialRepository.Mock.On("Update", materialDomain.ID, mock.Anything).Return(nil).Once()
 
-	materialRepository.Mock.On("FindById", "MATERIAL_1").Return(&mockMaterial, nil)
+		err := materialService.Update(materialDomain.ID, &updatedMaterial)
 
-	materialDomain := materials.Domain{
-		ModuleId:    "MODULE_1",
-		Title:       "Title test",
-		URL:         "",
-		Description: "Description test",
-	}
+		assert.NoError(t, err)
+	})
 
-	materialRepository.Mock.On("Update", "MATERIAL_1", &materialDomain).Return(nil)
+	t.Run("Test Update | Failed update material | Module not found", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&modules.Domain{}, pkg.ErrModuleNotFound).Once()
 
-	updatedMaterial := materials.Domain{
-		ID:          "MATERIAL_1",
-		ModuleId:    "MODULE_1",
-		Title:       "Title test",
-		File:        nil,
-		Description: "Description test",
-	}
+		err := materialService.Update(materialDomain.ID, &updatedMaterial)
 
-	err := materialService.Update("MATERIAL_1", &updatedMaterial)
+		assert.Error(t, err)
+	})
 
-	assert.Nil(t, err)
+	t.Run("Test Update | Failed update material | Material not found", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&moduleDomain, nil).Once()
+
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materials.Domain{}, pkg.ErrMaterialNotFound).Once()
+
+		err := materialService.Update(materialDomain.ID, &updatedMaterial)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Update | Failed update material | error occurred", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&moduleDomain, nil).Once()
+
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materialDomain, nil).Once()
+
+		materialRepository.Mock.On("Update", materialDomain.ID, mock.Anything).Return(errors.New("error occurred"))
+
+		err := materialService.Update(materialDomain.ID, &updatedMaterial)
+
+		assert.Error(t, err)
+	})
 }
 
 func TestDelete(t *testing.T) {
-	mockMaterial := materials.Domain{
-		ID:          "MATERIAL_1",
-		ModuleId:    "MODULE_1",
-		Title:       "Title test",
-		URL:         "https://storage.com/to/bucket/object.mp4",
-		Description: "Description test",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		DeletedAt:   gorm.DeletedAt{},
-	}
+	t.Run("Test Delete | Success delete material", func(t *testing.T) {
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materialDomain, nil).Once()
 
-	materialRepository.Mock.On("FindById", "MATERIAL_1").Return(&mockMaterial, nil)
+		materialRepository.Mock.On("Delete", materialDomain.ID).Return(nil).Once()
 
-	materialRepository.Mock.On("Delete", "MATERIAL_1").Return(nil)
+		err := materialService.Delete(materialDomain.ID)
 
-	err := materialService.Delete("MATERIAL_1")
+		assert.NoError(t, err)
+	})
 
-	assert.Nil(t, err)
+	t.Run("Test Delete | Failed delete material | Material not found", func(t *testing.T) {
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materials.Domain{}, pkg.ErrMaterialNotFound).Once()
+
+		err := materialService.Delete(materialDomain.ID)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Delete | Failed delete material | Gorm error occurred", func(t *testing.T) {
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materialDomain, nil).Once()
+
+		materialRepository.Mock.On("Delete", materialDomain.ID).Return(errors.New("error occurred")).Once()
+
+		err := materialService.Delete(materialDomain.ID)
+
+		assert.Error(t, err)
+	})
 }
 
 func TestDeletes(t *testing.T) {
-	moduleDomain := modules.Domain{
-		ID:        "MODULE_1",
-		CourseId:  "COURSE_1",
-		Title:     "Course Title",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		DeletedAt: gorm.DeletedAt{},
-	}
+	t.Run("Test Deletes | Success delete materials", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&moduleDomain, nil).Once()
 
-	moduleRepository.Mock.On("FindById", "MODULE_1").Return(&moduleDomain, nil)
+		materialRepository.Mock.On("Deletes", moduleDomain.ID).Return(nil).Once()
 
-	materialRepository.Mock.On("Deletes", "MODULE_1").Return(nil)
+		err := materialService.Deletes(moduleDomain.ID)
 
-	err := materialService.Deletes("MODULE_1")
+		assert.NoError(t, err)
+	})
 
-	assert.Nil(t, err)
+	t.Run("Test Deletes | Failed delete materials | Module not found", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&modules.Domain{}, pkg.ErrModuleNotFound).Once()
+
+		err := materialService.Deletes(moduleDomain.ID)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Deletes | Failed delete materials | Error occurred", func(t *testing.T) {
+		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&moduleDomain, nil).Once()
+
+		materialRepository.Mock.On("Deletes", moduleDomain.ID).Return(errors.New("error occurred"))
+
+		err := materialService.Deletes(moduleDomain.ID)
+
+		assert.Error(t, err)
+	})
 }

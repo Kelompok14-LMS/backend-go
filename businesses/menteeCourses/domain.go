@@ -8,14 +8,16 @@ import (
 )
 
 type Domain struct {
-	ID        string
-	MenteeId  string
-	CourseId  string
-	Status    string
-	Mentee    mentees.Domain
-	Course    courses.Domain
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID             string
+	MenteeId       string
+	CourseId       string
+	Status         string
+	Mentee         mentees.Domain
+	Course         courses.Domain
+	ProgressCount  int64
+	TotalMaterials int64
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 type Repository interface {
