@@ -33,7 +33,8 @@ func (mr materialRepository) Create(materialDomain *materials.Domain) error {
 func (mr materialRepository) FindById(materialId string) (*materials.Domain, error) {
 	rec := Material{}
 
-	err := mr.conn.Model(&Material{}).Where("id = ?", materialId).First(&rec).Error
+	err := mr.conn.Model(&Material{}).Preload("Module").
+		Where("id = ?", materialId).First(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -44,6 +45,23 @@ func (mr materialRepository) FindById(materialId string) (*materials.Domain, err
 	}
 
 	return rec.ToDomain(), nil
+}
+
+func (mr materialRepository) CountByCourse(courseIds []string) ([]int64, error) {
+	rec := []int64{}
+
+	err := mr.conn.Model(&Material{}).Select("COUNT(materials.id)").
+		Joins("INNER JOIN modules ON modules.id = materials.module_id").
+		Where("modules.course_id IN ?", courseIds).
+		Group("modules.course_id").
+		Order("modules.course_id ASC").
+		Find(&rec).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rec, nil
 }
 
 func (mr materialRepository) Update(materialId string, materialDomain *materials.Domain) error {
