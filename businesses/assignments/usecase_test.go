@@ -8,7 +8,6 @@ import (
 	_assignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/assignments/mocks"
 	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	_moduleMock "github.com/Kelompok14-LMS/backend-go/businesses/modules/mocks"
-	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
@@ -19,7 +18,7 @@ var (
 	assignmentService    assignments.Usecase
 
 	moduleRepository _moduleMock.Repository
-	storageClient    helper.StorageConfig
+	// storageClient    helper.StorageConfig
 )
 
 func TestMain(m *testing.M) {
