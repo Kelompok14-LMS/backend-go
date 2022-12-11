@@ -46,6 +46,26 @@ func (mr moduleRepository) FindById(moduleId string) (*modules.Domain, error) {
 	return rec.ToDomain(), nil
 }
 
+func (mr moduleRepository) FindByCourse(courseId string) ([]modules.Domain, error) {
+	rec := []Module{}
+
+	err := mr.conn.Model(&Module{}).Where("course_id = ?", courseId).
+		Order("created_at ASC").
+		First(&rec).Error
+
+	if err != nil {
+		return nil, pkg.ErrModuleNotFound
+	}
+
+	modulesDomain := []modules.Domain{}
+
+	for _, module := range rec {
+		modulesDomain = append(modulesDomain, *module.ToDomain())
+	}
+
+	return modulesDomain, nil
+}
+
 func (mr moduleRepository) Update(moduleId string, moduleDomain *modules.Domain) error {
 	rec := FromDomain(moduleDomain)
 
