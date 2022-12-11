@@ -84,7 +84,7 @@ func (ctrl *MenteeController) HandlerLoginMentee(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	token, err := ctrl.menteeUsecase.Login(menteeInput.ToDomain())
+	res, err := ctrl.menteeUsecase.Login(menteeInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrUserNotFound) {
@@ -98,11 +98,7 @@ func (ctrl *MenteeController) HandlerLoginMentee(c echo.Context) error {
 		}
 	}
 
-	data := map[string]interface{}{
-		"token": token,
-	}
-
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Login successful", data))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Login successful", res))
 }
 
 func (ctrl *MenteeController) HandlerForgotPassword(c echo.Context) error {

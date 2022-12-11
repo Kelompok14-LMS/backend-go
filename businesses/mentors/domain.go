@@ -77,14 +77,14 @@ type Usecase interface {
 	// Register usecase mentors register
 	Register(mentorAuth *MentorRegister) error
 
-	// // ForgotPassword usecase mentor verify forgot password
+	// ForgotPassword usecase mentor verify forgot password
 	ForgotPassword(forgotPassword *MentorForgotPassword) error
 
 	// UpdatePassword usecase mentor to chnge password
 	UpdatePassword(updatePassword *MentorUpdatePassword) error
 
 	// Login usecase mentor login
-	Login(mentorAuth *MentorAuth) (*string, error)
+	Login(mentorAuth *MentorAuth) (interface{}, error)
 
 	// FindAll usecase find all mentors
 	FindAll() (*[]Domain, error)
