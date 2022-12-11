@@ -7,6 +7,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
 	"github.com/Kelompok14-LMS/backend-go/controllers/mentors/request"
 	"github.com/Kelompok14-LMS/backend-go/controllers/mentors/response"
+	"github.com/Kelompok14-LMS/backend-go/utils"
 
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
@@ -15,11 +16,13 @@ import (
 
 type MentorController struct {
 	mentorUsecase mentors.Usecase
+	jwtConfig     *utils.JWTConfig
 }
 
-func NewMentorController(mentorUsecase mentors.Usecase) *MentorController {
+func NewMentorController(mentorUsecase mentors.Usecase, jwtConfig *utils.JWTConfig) *MentorController {
 	return &MentorController{
 		mentorUsecase: mentorUsecase,
+		jwtConfig:     jwtConfig,
 	}
 }
 
@@ -111,10 +114,27 @@ func (ctrl *MentorController) HandlerUpdatePassword(c echo.Context) error {
 }
 
 func (ctrl *MentorController) HandlerFindByID(c echo.Context) error {
-
 	var id string = c.Param("mentorId")
 
 	mentor, err := ctrl.mentorUsecase.FindById(id)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrMentorNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get Mentor by id", response.FromDomainUser(mentor)))
+}
+
+func (ctrl *MentorController) HandlerProfileMentor(c echo.Context) error {
+	token, _ := ctrl.jwtConfig.ExtractToken(c)
+
+	mentor, err := ctrl.mentorUsecase.FindById(token.MentorId)
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrMentorNotFound) {
