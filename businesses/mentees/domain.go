@@ -63,7 +63,7 @@ type Usecase interface {
 	ForgotPassword(forgotPassword *MenteeForgotPassword) error
 
 	// Login usecase mentee login
-	Login(menteeAuth *MenteeAuth) (*string, error)
+	Login(menteeAuth *MenteeAuth) (interface{}, error)
 
 	// FindAll usecase find all mentees
 	FindAll() (*[]Domain, error)

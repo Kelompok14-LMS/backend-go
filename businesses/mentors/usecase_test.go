@@ -26,7 +26,7 @@ var (
 
 	mentorDomain   mentors.Domain
 	mentorRegister mentors.MentorRegister
-	mentorUpdate   mentors.MentorUpdateProfile
+	// mentorUpdate   mentors.MentorUpdateProfile
 )
 
 func TestMain(m *testing.M) {

@@ -168,7 +168,7 @@ func (m menteeUsecase) ForgotPassword(forgotPassword *MenteeForgotPassword) erro
 	return nil
 }
 
-func (m menteeUsecase) Login(menteeAuth *MenteeAuth) (*string, error) {
+func (m menteeUsecase) Login(menteeAuth *MenteeAuth) (interface{}, error) {
 	if len(menteeAuth.Password) < 6 {
 		return nil, pkg.ErrPasswordLengthInvalid
 	}
@@ -195,13 +195,20 @@ func (m menteeUsecase) Login(menteeAuth *MenteeAuth) (*string, error) {
 	}
 
 	var token string
-	token, err = m.jwtConfig.GenerateToken(user.ID, mentee.ID, mentee.Role)
+	exp := time.Now().Add(6 * time.Hour)
+
+	token, err = m.jwtConfig.GenerateToken(user.ID, mentee.ID, mentee.Role, exp)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &token, nil
+	data := map[string]interface{}{
+		"token":   token,
+		"expires": exp,
+	}
+
+	return data, nil
 }
 
 func (m menteeUsecase) FindAll() (*[]Domain, error) {

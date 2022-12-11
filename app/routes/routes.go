@@ -40,6 +40,9 @@ import (
 
 	_menteeProgressesUsecase "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	_menteeProgressController "github.com/Kelompok14-LMS/backend-go/controllers/menteeProgresses"
+
+	_detailCourseUsecase "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
+	_detailCourseController "github.com/Kelompok14-LMS/backend-go/controllers/detailCourse"
 )
 
 type RouteConfig struct {
@@ -122,6 +125,9 @@ func (routeConfig *RouteConfig) New() {
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
+	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(courseRepository, moduleRepository, materialRepository)
+	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
+
 	// authentication routes
 	auth := v1.Group("/auth")
 	auth.POST("/mentee/login", menteeController.HandlerLoginMentee)
@@ -161,6 +167,8 @@ func (routeConfig *RouteConfig) New() {
 	course.GET("", courseController.HandlerFindAllCourses)
 	course.POST("/enroll-course", menteeCourseController.HandlerEnrollCourse, authMiddleware.IsAuthenticated())
 	course.GET("/categories/:categoryId", courseController.HandlerFindByCategory)
+	course.GET("/mentors/:mentorId", courseController.HandlerFindByMentor)
+	course.GET("/:courseId/details", detailCourseController.HandlerDetailCourse)
 	course.GET("/:courseId", courseController.HandlerFindByIdCourse)
 	course.PUT("/:courseId", courseController.HandlerUpdateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	course.DELETE("/:courseId", courseController.HandlerSoftDeleteCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)

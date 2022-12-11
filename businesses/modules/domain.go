@@ -3,7 +3,6 @@ package modules
 import (
 	"time"
 
-	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/courses"
 	"gorm.io/gorm"
 )
 
@@ -11,7 +10,6 @@ type Domain struct {
 	ID        string
 	CourseId  string
 	Title     string
-	Course    courses.Course
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
@@ -23,6 +21,9 @@ type Repository interface {
 
 	// FindById repository find module by id
 	FindById(moduleId string) (*Domain, error)
+
+	// FindByCourse repository find modules by course
+	FindByCourse(courseId string) ([]Domain, error)
 
 	// Update repository update module
 	Update(moduleId string, moduleDomain *Domain) error

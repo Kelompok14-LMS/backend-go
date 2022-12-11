@@ -111,6 +111,30 @@ func (ctrl *CourseController) HandlerFindByCategory(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get courses by category", coursesResponse))
 }
 
+func (ctrl *CourseController) HandlerFindByMentor(c echo.Context) error {
+	mentorId := c.Param("mentorId")
+
+	coursesDomain, err := ctrl.courseUsecase.FindByMentor(mentorId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrCategoryNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrCourseNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	var coursesResponse []response.FindCourses
+
+	for _, course := range *coursesDomain {
+		coursesResponse = append(coursesResponse, response.AllCourses(&course))
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get courses by mentor", coursesResponse))
+}
+
 func (ctrl *CourseController) HandlerUpdateCourse(c echo.Context) error {
 	courseId := c.Param("courseId")
 	courseInput := request.UpdateCourseInput{}

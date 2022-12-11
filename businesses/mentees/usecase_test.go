@@ -1,6 +1,7 @@
 package mentees_test
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/constants"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -22,7 +24,7 @@ var (
 	menteeRepository _menteeMock.MenteeRepositoryMock
 	menteeService    mentees.Usecase
 
-	otpRepository  _otpMock.OTPRepositoryMock
+	otpRepository  _otpMock.Repository
 	userRepository _userMock.UserRepositoryMock
 	jwtConfig      utils.JWTConfig
 	mailerConfig   pkg.MailerConfig
@@ -36,90 +38,130 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	menteeRepository = _menteeMock.MenteeRepositoryMock{Mock: mock.Mock{}}
-	userRepository = _userMock.UserRepositoryMock{Mock: mock.Mock{}}
-	otpRepository = _otpMock.OTPRepositoryMock{Mock: mock.Mock{}}
-	jwtConfig = utils.JWTConfig{JWTSecret: "secret"}
-	mailerConfig = pkg.MailerConfig{}
-
 	menteeService = mentees.NewMenteeUsecase(&menteeRepository, &userRepository, &otpRepository, &jwtConfig, &mailerConfig)
 
-	// birth date
-	birthDate := time.Date(2022, 8, 12, 0, 0, 0, 0, time.Local)
+	userDomain = users.Domain{
+		ID:        uuid.NewString(),
+		Email:     "test@gmail.com",
+		Password:  "testtest",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 
 	menteeDomain = mentees.Domain{
-		ID:             "MID1",
-		UserId:         "UID1",
-		Fullname:       "Mentee Test",
-		Phone:          "0987654321",
+		ID:             uuid.NewString(),
+		UserId:         userDomain.ID,
+		Fullname:       "test",
+		Phone:          "test",
 		Role:           "mentee",
-		BirthDate:      birthDate,
-		Address:        "Jl Sengon",
-		ProfilePicture: "https://example.com/to/bucket",
+		BirthDate:      time.Now(),
+		Address:        "test",
+		ProfilePicture: "test.com",
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 	}
 
 	menteeAuth = mentees.MenteeAuth{
-		Email:    "mentee@gmail.com",
-		Password: "hashedpassword",
+		Email:    userDomain.Email,
+		Password: userDomain.Password,
 	}
 
 	menteeRegister = mentees.MenteeRegister{
-		Fullname: "Mentee Test",
-		Phone:    "0987654321",
-		Email:    "mentee@gmail.com",
-		Password: "hashedpassword",
-		OTP:      "7339",
+		Fullname: menteeDomain.Fullname,
+		Phone:    menteeDomain.Phone,
+		Email:    userDomain.Email,
+		Password: userDomain.Password,
+		OTP:      "0000",
 	}
 
 	menteeForgotPassword = mentees.MenteeForgotPassword{
-		Email:            "mentee@gmail.com",
-		Password:         "updatedhashedpassword",
-		RepeatedPassword: "updatedhashedpassword",
-		OTP:              "7339",
-	}
-
-	userDomain = users.Domain{
-		ID:        "UID1",
-		Email:     "mentee@gmail.com",
-		Password:  "hashedpassword",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Email:            userDomain.Email,
+		Password:         userDomain.Password,
+		RepeatedPassword: userDomain.Password,
+		OTP:              "0000",
 	}
 
 	m.Run()
 }
 
-// FIXME: error init get env
 func TestRegister(t *testing.T) {
-	t.Run("Register | Success", func(t *testing.T) {
-		userRepository.Mock.On("FindByEmail", menteeAuth.Email).Return(nil, nil)
+	t.Run("Test Register | Success register", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeAuth.Email).Return(nil, nil).Once()
 
-		otpRepository.Mock.On("Save", mock.Anything, menteeAuth.Email, mock.Anything, constants.TIME_TO_LIVE).Return(nil)
+		otpRepository.Mock.On("Save", mock.Anything, menteeAuth.Email, mock.Anything, constants.TIME_TO_LIVE).Return(nil).Once()
 
 		err := menteeService.Register(&menteeAuth)
 
 		assert.NoError(t, err)
 	})
+
+	t.Run("Test Register | Failed register | Invalid password length", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeAuth.Email).Return(nil, nil).Once()
+
+		otpRepository.Mock.On("Save", mock.Anything, menteeAuth.Email, mock.Anything, constants.TIME_TO_LIVE).Return(nil).Once()
+
+		menteeAuth.Password = "test"
+
+		err := menteeService.Register(&menteeAuth)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Register | Failed register | Error set otp", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeAuth.Email).Return(nil, nil).Once()
+
+		otpRepository.Mock.On("Save", mock.Anything, menteeAuth.Email, mock.Anything, constants.TIME_TO_LIVE).Return(errors.New("error occured")).Once()
+
+		err := menteeService.Register(&menteeAuth)
+
+		assert.Error(t, err)
+	})
 }
 
 func TestVerifyRegister(t *testing.T) {
-	t.Run("VerifyRegister | Success", func(t *testing.T) {
-		otpRepository.Mock.On("Get", mock.Anything, menteeRegister.Email).Return("7339", nil)
+	t.Run("Test VerifyRegister | Success register verified", func(t *testing.T) {
+		otpRepository.Mock.On("Get", mock.Anything, menteeRegister.Email).Return(menteeRegister.OTP, nil).Once()
 
-		userRepository.Mock.On("Create", mock.Anything).Return(nil)
+		userRepository.Mock.On("Create", mock.Anything).Return(nil).Once()
 
-		menteeRepository.Mock.On("Create", mock.Anything).Return(nil)
+		menteeRepository.Mock.On("Create", mock.Anything).Return(nil).Once()
 
 		err := menteeService.VerifyRegister(&menteeRegister)
 
 		assert.NoError(t, err)
 	})
+
+	t.Run("Test VerifyRegister | Failed register | OTP not match", func(t *testing.T) {
+		otpRepository.Mock.On("Get", mock.Anything, menteeRegister.Email).Return("9999", pkg.ErrOTPNotMatch).Once()
+
+		err := menteeService.VerifyRegister(&menteeRegister)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test VerifyRegister | Failed register verified | Error on create user", func(t *testing.T) {
+		otpRepository.Mock.On("Get", mock.Anything, menteeRegister.Email).Return(menteeRegister.OTP, nil).Once()
+
+		userRepository.Mock.On("Create", mock.Anything).Return(errors.New("error occurred")).Once()
+
+		err := menteeService.VerifyRegister(&menteeRegister)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test VerifyRegister | Failed register verified | Error on create mentee", func(t *testing.T) {
+		otpRepository.Mock.On("Get", mock.Anything, menteeRegister.Email).Return(menteeRegister.OTP, nil).Once()
+
+		userRepository.Mock.On("Create", mock.Anything).Return(nil).Once()
+
+		menteeRepository.Mock.On("Create", mock.Anything).Return(errors.New("error occurred"))
+
+		err := menteeService.VerifyRegister(&menteeRegister)
+
+		assert.Error(t, err)
+	})
 }
 
-// TODO: Create test ForgotPassword
 // func TestForgotPassword(t *testing.T) {}
 
-// TODO: Create test Login
 // func TestLogin(t *testing.T) {}

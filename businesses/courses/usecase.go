@@ -63,10 +63,8 @@ func (cu courseUsecase) Create(courseDomain *Domain) error {
 		return err
 	}
 
-	id := uuid.NewString()
-
 	course := Domain{
-		ID:          id,
+		ID:          uuid.NewString(),
 		MentorId:    courseDomain.MentorId,
 		CategoryId:  courseDomain.CategoryId,
 		Title:       courseDomain.Title,
@@ -109,6 +107,20 @@ func (cu courseUsecase) FindByCategory(categoryId string) (*[]Domain, error) {
 	}
 
 	courses, err := cu.courseRepository.FindByCategory(categoryId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return courses, nil
+}
+
+func (cu courseUsecase) FindByMentor(mentorId string) (*[]Domain, error) {
+	if _, err := cu.mentorRepository.FindById(mentorId); err != nil {
+		return nil, err
+	}
+
+	courses, err := cu.courseRepository.FindByMentor(mentorId)
 
 	if err != nil {
 		return nil, err

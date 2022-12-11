@@ -80,7 +80,7 @@ func (m mentorUsecase) Register(mentorDomain *MentorRegister) error {
 	return nil
 }
 
-func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
+func (m mentorUsecase) Login(mentorAuth *MentorAuth) (interface{}, error) {
 	if len(mentorAuth.Password) < 6 {
 		return nil, pkg.ErrPasswordLengthInvalid
 	}
@@ -107,13 +107,20 @@ func (m mentorUsecase) Login(mentorAuth *MentorAuth) (*string, error) {
 	}
 
 	var token string
-	token, err = m.jwtConfig.GenerateToken(user.ID, mentor.ID, mentor.Role)
+	exp := time.Now().Add(6 * time.Hour)
+
+	token, err = m.jwtConfig.GenerateToken(user.ID, mentor.ID, mentor.Role, exp)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &token, nil
+	data := map[string]interface{}{
+		"token":   token,
+		"expires": exp,
+	}
+
+	return data, nil
 }
 
 func (m mentorUsecase) UpdatePassword(updatePassword *MentorUpdatePassword) error {

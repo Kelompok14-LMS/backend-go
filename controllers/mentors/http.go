@@ -62,7 +62,7 @@ func (ctrl *MentorController) HandlerLoginMentor(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	token, err := ctrl.mentorUsecase.Login(mentorInput.ToDomain())
+	res, err := ctrl.mentorUsecase.Login(mentorInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrUserNotFound) {
@@ -76,11 +76,7 @@ func (ctrl *MentorController) HandlerLoginMentor(c echo.Context) error {
 		}
 	}
 
-	data := map[string]interface{}{
-		"token": token,
-	}
-
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Login successful", data))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Login successful", res))
 }
 
 func (ctrl *MentorController) HandlerUpdatePassword(c echo.Context) error {
