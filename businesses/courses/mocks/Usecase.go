@@ -26,13 +26,13 @@ func (_m *Usecase) Create(courseDomain *courses.Domain) error {
 	return r0
 }
 
-// Delete provides a mock function with given fields: id
-func (_m *Usecase) Delete(id string) error {
-	ret := _m.Called(id)
+// Delete provides a mock function with given fields: courseId
+func (_m *Usecase) Delete(courseId string) error {
+	ret := _m.Called(courseId)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(id)
+		r0 = rf(courseId)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -86,13 +86,13 @@ func (_m *Usecase) FindByCategory(categoryId string) (*[]courses.Domain, error) 
 	return r0, r1
 }
 
-// FindById provides a mock function with given fields: id
-func (_m *Usecase) FindById(id string) (*courses.Domain, error) {
-	ret := _m.Called(id)
+// FindById provides a mock function with given fields: courseId
+func (_m *Usecase) FindById(courseId string) (*courses.Domain, error) {
+	ret := _m.Called(courseId)
 
 	var r0 *courses.Domain
 	if rf, ok := ret.Get(0).(func(string) *courses.Domain); ok {
-		r0 = rf(id)
+		r0 = rf(courseId)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*courses.Domain)
@@ -101,7 +101,7 @@ func (_m *Usecase) FindById(id string) (*courses.Domain, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(id)
+		r1 = rf(courseId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -109,13 +109,36 @@ func (_m *Usecase) FindById(id string) (*courses.Domain, error) {
 	return r0, r1
 }
 
-// Update provides a mock function with given fields: id, courseDomain
-func (_m *Usecase) Update(id string, courseDomain *courses.Domain) error {
-	ret := _m.Called(id, courseDomain)
+// FindByMentor provides a mock function with given fields: mentorId
+func (_m *Usecase) FindByMentor(mentorId string) (*[]courses.Domain, error) {
+	ret := _m.Called(mentorId)
+
+	var r0 *[]courses.Domain
+	if rf, ok := ret.Get(0).(func(string) *[]courses.Domain); ok {
+		r0 = rf(mentorId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]courses.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(mentorId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Update provides a mock function with given fields: courseId, courseDomain
+func (_m *Usecase) Update(courseId string, courseDomain *courses.Domain) error {
+	ret := _m.Called(courseId, courseDomain)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, *courses.Domain) error); ok {
-		r0 = rf(id, courseDomain)
+		r0 = rf(courseId, courseDomain)
 	} else {
 		r0 = ret.Error(0)
 	}

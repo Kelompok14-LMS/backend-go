@@ -100,6 +100,29 @@ func (_m *Repository) FindById(materialId string) (*materials.Domain, error) {
 	return r0, r1
 }
 
+// FindByModule provides a mock function with given fields: moduleIds
+func (_m *Repository) FindByModule(moduleIds []string) ([]materials.Domain, error) {
+	ret := _m.Called(moduleIds)
+
+	var r0 []materials.Domain
+	if rf, ok := ret.Get(0).(func([]string) []materials.Domain); ok {
+		r0 = rf(moduleIds)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]materials.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]string) error); ok {
+		r1 = rf(moduleIds)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Update provides a mock function with given fields: materialId, materialDomain
 func (_m *Repository) Update(materialId string, materialDomain *materials.Domain) error {
 	ret := _m.Called(materialId, materialDomain)

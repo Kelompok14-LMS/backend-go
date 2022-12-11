@@ -40,6 +40,29 @@ func (_m *Repository) Delete(moduleId string) error {
 	return r0
 }
 
+// FindByCourse provides a mock function with given fields: courseId
+func (_m *Repository) FindByCourse(courseId string) ([]modules.Domain, error) {
+	ret := _m.Called(courseId)
+
+	var r0 []modules.Domain
+	if rf, ok := ret.Get(0).(func(string) []modules.Domain); ok {
+		r0 = rf(courseId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]modules.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(courseId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // FindById provides a mock function with given fields: moduleId
 func (_m *Repository) FindById(moduleId string) (*modules.Domain, error) {
 	ret := _m.Called(moduleId)
