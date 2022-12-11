@@ -92,6 +92,27 @@ func (cr courseRepository) FindByCategory(categoryId string) (*[]courses.Domain,
 	return &coursesDomain, nil
 }
 
+func (cr courseRepository) FindByMentor(mentorId string) (*[]courses.Domain, error) {
+	var rec []Course
+
+	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
+		Joins("INNER JOIN categories ON categories.id = courses.category_id").
+		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
+		Where("courses.mentor_id = ?", mentorId).Find(&rec).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	var coursesDomain []courses.Domain
+
+	for _, course := range rec {
+		coursesDomain = append(coursesDomain, *course.ToDomain())
+	}
+
+	return &coursesDomain, nil
+}
+
 func (cr courseRepository) Update(id string, courseDomain *courses.Domain) error {
 	rec := FromDomain(courseDomain)
 
