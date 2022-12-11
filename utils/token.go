@@ -29,12 +29,12 @@ type JWTCustomClaims struct {
 	jwt.StandardClaims
 }
 
-func (config *JWTConfig) GenerateToken(userId string, actorId string, role string) (string, error) {
+func (config *JWTConfig) GenerateToken(userId string, actorId string, role string, exp time.Time) (string, error) {
 	claims := JWTCustomClaims{
 		UserId: userId,
 		Role:   role,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(1 * time.Hour).Unix(),
+			ExpiresAt: exp.Unix(),
 		},
 	}
 
