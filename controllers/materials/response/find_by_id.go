@@ -20,7 +20,7 @@ type FindByIdMaterial struct {
 func MaterialDetail(res *materials.Domain) *FindByIdMaterial {
 	return &FindByIdMaterial{
 		ID:          res.ID,
-		CourseId:    res.Module.CourseId,
+		CourseId:    res.CourseId,
 		ModuleId:    res.ModuleId,
 		Title:       res.Title,
 		URL:         res.URL,

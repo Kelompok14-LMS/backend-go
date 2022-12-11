@@ -23,11 +23,11 @@ type Material struct {
 func (rec *Material) ToDomain() *materials.Domain {
 	return &materials.Domain{
 		ID:          rec.ID,
+		CourseId:    rec.Module.CourseId,
 		ModuleId:    rec.ModuleId,
 		Title:       rec.Title,
 		URL:         rec.URL,
 		Description: rec.Description,
-		Module:      *rec.Module.ToDomain(),
 		CreatedAt:   rec.CreatedAt,
 		UpdatedAt:   rec.UpdatedAt,
 		DeletedAt:   rec.DeletedAt,
