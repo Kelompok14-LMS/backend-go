@@ -32,16 +32,19 @@ type Repository interface {
 	FindAll(keyword string) (*[]Domain, error)
 
 	// FindById repository find course by id
-	FindById(id string) (*Domain, error)
+	FindById(courseId string) (*Domain, error)
 
-	// FindByCategory repository find by id category
+	// FindByCategory repository find courses by category id
 	FindByCategory(categoryId string) (*[]Domain, error)
 
+	// FindByMentor repository find courses by mentor id
+	FindByMentor(mentorId string) (*[]Domain, error)
+
 	// Update repository update course
-	Update(id string, courseDomain *Domain) error
+	Update(courseId string, courseDomain *Domain) error
 
 	// Delete repository delete course
-	Delete(id string) error
+	Delete(courseId string) error
 }
 
 type Usecase interface {
@@ -52,14 +55,17 @@ type Usecase interface {
 	FindAll(keyword string) (*[]Domain, error)
 
 	// FindById usecase find by id
-	FindById(id string) (*Domain, error)
+	FindById(courseId string) (*Domain, error)
 
 	// FindByCategory usecase find by category id
 	FindByCategory(categoryId string) (*[]Domain, error)
 
+	// FindByMentor usecase find courses by mentor id
+	FindByMentor(mentorId string) (*[]Domain, error)
+
 	// Update usecase update
-	Update(id string, courseDomain *Domain) error
+	Update(courseId string, courseDomain *Domain) error
 
 	// Delete usecase delete
-	Delete(id string) error
+	Delete(courseId string) error
 }
