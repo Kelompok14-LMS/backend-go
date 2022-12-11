@@ -129,7 +129,7 @@ func TestAdd(t *testing.T) {
 
 		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courseDomain, nil).Once()
 
-		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materials.Domain{}, pkg.ErrMaterialNotFound).Once()
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materialDomain, nil).Once()
 
 		menteeProgressRepository.Mock.On("Add", mock.Anything).Return(errors.New("failed add progress")).Once()
 
