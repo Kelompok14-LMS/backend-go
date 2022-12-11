@@ -8,6 +8,8 @@ import (
 
 type FindCourses struct {
 	CourseId    string    `json:"course_id"`
+	MentorId    string    `json:"mentor_id"`
+	CategoryId  string    `json:"category_id"`
 	Mentor      string    `json:"mentor"`
 	Category    string    `json:"category"`
 	Title       string    `json:"title"`
@@ -20,6 +22,8 @@ type FindCourses struct {
 func AllCourses(res *courses.Domain) FindCourses {
 	return FindCourses{
 		CourseId:    res.ID,
+		MentorId:    res.MentorId,
+		CategoryId:  res.CategoryId,
 		Mentor:      res.Mentor.Fullname,
 		Category:    res.Category.Name,
 		Title:       res.Title,
