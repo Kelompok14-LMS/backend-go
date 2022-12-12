@@ -1,25 +1,25 @@
 package assignments
 
 import (
-	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
+	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/google/uuid"
 )
 
 type assignmentUsecase struct {
 	assignmentRepository Repository
-	moduleRepository     modules.Repository
+	courseRepository     courses.Repository
 }
 
-func NewAssignmentUsecase(assignmentRepository Repository, moduleRepository modules.Repository) Usecase {
+func NewAssignmentUsecase(assignmentRepository Repository, courseRepository courses.Repository) Usecase {
 	return assignmentUsecase{
 		assignmentRepository: assignmentRepository,
-		moduleRepository:     moduleRepository,
+		courseRepository:     courseRepository,
 	}
 }
 
 func (au assignmentUsecase) Create(assignmentDomain *Domain) error {
-	if _, err := au.moduleRepository.FindById(assignmentDomain.ModuleID); err != nil {
+	if _, err := au.courseRepository.FindById(assignmentDomain.CourseId); err != nil {
 		return err
 	}
 
@@ -27,7 +27,7 @@ func (au assignmentUsecase) Create(assignmentDomain *Domain) error {
 
 	assignment := Domain{
 		ID:          id,
-		ModuleID:    assignmentDomain.ModuleID,
+		CourseId:    assignmentDomain.CourseId,
 		Title:       assignmentDomain.Title,
 		Description: assignmentDomain.Description,
 	}
@@ -51,34 +51,33 @@ func (au assignmentUsecase) FindById(assignmentId string) (*Domain, error) {
 	return assignment, nil
 }
 
-func (au assignmentUsecase) FindByModuleId(moduleId string) (*Domain, error) {
-	assignment, err := au.assignmentRepository.FindByModuleId(moduleId)
+func (au assignmentUsecase) FindByCourseId(courseId string) (*[]Domain, error) {
+	assignment, err := au.assignmentRepository.FindByCourseId(courseId)
 
 	if err != nil {
 		return nil, pkg.ErrAssignmentNotFound
 	}
 
-	return assignment, nil
+	return &assignment, nil
 }
 
 func (au assignmentUsecase) Update(assignmentId string, assignmentDomain *Domain) error {
-	if _, err := au.moduleRepository.FindById(assignmentDomain.ModuleID); err != nil {
+	if _, err := au.courseRepository.FindById(assignmentDomain.CourseId); err != nil {
 		return err
 	}
-
 	_, err := au.assignmentRepository.FindById(assignmentId)
 
 	if err != nil {
 		return pkg.ErrAssignmentNotFound
 	}
 
-	updatedAssignment := Domain{
-		ModuleID:    assignmentDomain.ModuleID,
-		Title:       assignmentDomain.Title,
-		Description: assignmentDomain.Description,
-	}
+	// updatedAssignment := Domain{
+	// 	CourseId:    assignmentDomain.CourseId,
+	// 	Title:       assignmentDomain.Title,
+	// 	Description: assignmentDomain.Description,
+	// }
 
-	err = au.assignmentRepository.Update(assignmentId, &updatedAssignment)
+	err = au.assignmentRepository.Update(assignmentId, assignmentDomain)
 
 	if err != nil {
 		return pkg.ErrAssignmentNotFound
@@ -93,20 +92,6 @@ func (au assignmentUsecase) Delete(assignmentId string) error {
 	}
 
 	err := au.assignmentRepository.Delete(assignmentId)
-
-	if err != nil {
-		return pkg.ErrAssignmentNotFound
-	}
-
-	return nil
-}
-
-func (au assignmentUsecase) DeleteByModuleId(moduleId string) error {
-	if _, err := au.assignmentRepository.FindById(moduleId); err != nil {
-		return err
-	}
-
-	err := au.assignmentRepository.DeleteByModuleId(moduleId)
 
 	if err != nil {
 		return pkg.ErrAssignmentNotFound
