@@ -17,12 +17,13 @@ type Domain struct {
 }
 
 type Module struct {
-	ModuleId  string
-	CourseId  string
-	Title     string
-	Materials []Material
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ModuleId    string
+	CourseId    string
+	Title       string
+	Description string
+	Materials   []Material
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type Material struct {

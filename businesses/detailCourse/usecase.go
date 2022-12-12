@@ -31,11 +31,7 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		return nil, err
 	}
 
-	modules, err := dc.moduleRepository.FindByCourse(courseId)
-
-	if err != nil {
-		return nil, err
-	}
+	modules, _ := dc.moduleRepository.FindByCourse(courseId)
 
 	moduleIds := []string{}
 
@@ -43,11 +39,7 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		moduleIds = append(moduleIds, module.ID)
 	}
 
-	materials, err := dc.materialRepository.FindByModule(moduleIds)
-
-	if err != nil {
-		return nil, err
-	}
+	materials, _ := dc.materialRepository.FindByModule(moduleIds)
 
 	materialDomain := make([]Material, len(materials))
 

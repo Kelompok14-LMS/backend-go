@@ -7,12 +7,13 @@ import (
 )
 
 type Domain struct {
-	ID        string
-	CourseId  string
-	Title     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID          string
+	CourseId    string
+	Title       string
+	Description string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
 }
 
 type Repository interface {
