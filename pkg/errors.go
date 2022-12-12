@@ -31,6 +31,9 @@ var (
 	// ErrAssignmentNotFound error assignment does not exist
 	ErrAssignmentNotFound = errors.New("Assignment not found")
 
+	// ErrAssignmentNotFound error assignment does not exist
+	ErrAssignmentMenteeNotFound = errors.New("Assignment mentee not found")
+
 	// ErrEmailAlreadyExist error email already exist
 	ErrEmailAlreadyExist = errors.New("Email already exist")
 

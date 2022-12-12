@@ -43,6 +43,9 @@ import (
 
 	_detailCourseUsecase "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
 	_detailCourseController "github.com/Kelompok14-LMS/backend-go/controllers/detailCourse"
+
+	_assignmentMenteeUsecase "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
+	_assignmentMenteeController "github.com/Kelompok14-LMS/backend-go/controllers/menteeAssignments"
 )
 
 type RouteConfig struct {
@@ -109,6 +112,11 @@ func (routeConfig *RouteConfig) New() {
 	assignmentRepository := _driverFactory.NewAssignmentRepository(routeConfig.MySQLDB)
 	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, courseRepository)
 	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
+
+	// Inject the dependency to mentee assignment
+	menteeAssignmentRepository := _driverFactory.NewMenteeAssignmentRepository(routeConfig.MySQLDB)
+	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, routeConfig.StorageConfig)
+	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase)
 
 	// Inject the dependency to material
 	materialRepository := _driverFactory.NewMaterialRepository(routeConfig.MySQLDB)
@@ -197,4 +205,13 @@ func (routeConfig *RouteConfig) New() {
 	material.GET("/:materialId", materialController.HandlerFindByIdMaterial)
 	material.PUT("/:materialId", materialController.HandlerUpdateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	material.DELETE("/:materialId", materialController.HandlerSoftDeleteMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+
+	// Mentee assignment routes
+	menteeAssignment := v1.Group("/mentee-assignments")
+	menteeAssignment.POST("", menteeAssignmentController.HandlerCreateMenteeAssignment)
+	menteeAssignment.PUT("/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateMenteeAssignment)
+	menteeAssignment.GET("/:menteeAssignmentId", menteeAssignmentController.HandlerFindByIdMenteeAssignment)
+	menteeAssignment.PUT("/grade/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateGradeMentee)
+	menteeAssignment.DELETE("/:menteeAssignmentId", menteeAssignmentController.HandlerSoftDeleteMenteeAssignment)
+
 }
