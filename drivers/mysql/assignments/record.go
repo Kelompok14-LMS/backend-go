@@ -4,14 +4,14 @@ import (
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
-	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/modules"
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/courses"
 	"gorm.io/gorm"
 )
 
 type Assignment struct {
 	ID          string `gorm:"primaryKey;size:200" json:"id"`
-	ModuleID    string `gorm:"size:200" json:"module_id"`
-	Module      modules.Module
+	CourseId    string `json:"course_id" gorm:"size:200"`
+	Course      courses.Course
 	Title       string         `gorm:"size:225" json:"title"`
 	Description string         `json:"description"`
 	CreatedAt   time.Time      `json:"created_at"`
@@ -22,7 +22,7 @@ type Assignment struct {
 func (rec *Assignment) ToDomain() *assignments.Domain {
 	return &assignments.Domain{
 		ID:          rec.ID,
-		ModuleID:    rec.ModuleID,
+		CourseId:    rec.CourseId,
 		Title:       rec.Title,
 		Description: rec.Description,
 		CreatedAt:   rec.CreatedAt,
@@ -34,7 +34,7 @@ func (rec *Assignment) ToDomain() *assignments.Domain {
 func FromDomain(assignmentDomain *assignments.Domain) *Assignment {
 	return &Assignment{
 		ID:          assignmentDomain.ID,
-		ModuleID:    assignmentDomain.ModuleID,
+		CourseId:    assignmentDomain.CourseId,
 		Title:       assignmentDomain.Title,
 		Description: assignmentDomain.Description,
 		CreatedAt:   assignmentDomain.CreatedAt,

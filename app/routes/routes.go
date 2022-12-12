@@ -107,7 +107,7 @@ func (routeConfig *RouteConfig) New() {
 
 	// Inject the dependency to assignment
 	assignmentRepository := _driverFactory.NewAssignmentRepository(routeConfig.MySQLDB)
-	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, moduleRepository)
+	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, courseRepository)
 	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
 
 	// Inject the dependency to material
@@ -125,7 +125,7 @@ func (routeConfig *RouteConfig) New() {
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
-	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(courseRepository, moduleRepository, materialRepository)
+	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(courseRepository, moduleRepository, materialRepository, assignmentRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
 
 	// authentication routes
@@ -186,10 +186,9 @@ func (routeConfig *RouteConfig) New() {
 	assignment := v1.Group("/assignments")
 	assignment.POST("", assignmentController.HandlerCreateAssignment)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
-	assignment.GET("/modules/:moduleId", assignmentController.HandlerFindByModuleId)
+	assignment.GET("/course/:courseid", assignmentController.HandlerFindByCourse)
 	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment)
 	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment)
-	assignment.DELETE("/modules/:moduleId", assignmentController.HandlerDeleteAssignmentByModule)
 
 	// material routes
 	material := v1.Group("/materials")
