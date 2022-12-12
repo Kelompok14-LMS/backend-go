@@ -59,7 +59,6 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		moduleDomain[i].ModuleId = module.ID
 		moduleDomain[i].CourseId = module.CourseId
 		moduleDomain[i].Title = module.Title
-		moduleDomain[i].Description = module.Description
 		moduleDomain[i].CreatedAt = module.CreatedAt
 		moduleDomain[i].UpdatedAt = module.UpdatedAt
 	}
