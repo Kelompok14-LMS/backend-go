@@ -184,11 +184,11 @@ func (routeConfig *RouteConfig) New() {
 
 	// assignment routes
 	assignment := v1.Group("/assignments")
-	assignment.POST("", assignmentController.HandlerCreateAssignment)
+	assignment.POST("", assignmentController.HandlerCreateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
 	assignment.GET("/course/:courseid", assignmentController.HandlerFindByCourse)
-	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment)
-	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment)
+	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 
 	// material routes
 	material := v1.Group("/materials")
