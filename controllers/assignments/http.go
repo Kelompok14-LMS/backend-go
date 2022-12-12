@@ -66,17 +66,17 @@ func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) erro
 func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
 	courseid := c.Param("courseid")
 
-	assignment, err := ctrl.assignmentUsecase.FindByCourseId(courseid)
+	assignmentCourse, err := ctrl.assignmentUsecase.FindByCourseId(courseid)
 
 	assignments := []response.FindByIdAssignments{}
 
-	for _, assignment := range *assignment {
+	for _, assignment := range *assignmentCourse {
 		assignments = append(assignments, *response.DetailAssignment(&assignment))
 	}
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		if errors.Is(err, pkg.ErrCourseNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
