@@ -27,6 +27,37 @@ func (m menteeProgressRepository) Add(menteeProgressDomain *menteeProgresses.Dom
 	return nil
 }
 
+func (m menteeProgressRepository) FindByMaterial(menteeId string, materialId string) (*menteeProgresses.Domain, error) {
+	rec := MenteeProgress{}
+
+	err := m.conn.Model(&MenteeProgress{}).Where("mentee_progresses.mentee_id = ? AND mentee_progresses.material_id = ?", menteeId, materialId).
+		First(&rec).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rec.ToDomain(), nil
+}
+
+func (m menteeProgressRepository) FindByMentee(menteeId string, courseId string) ([]menteeProgresses.Domain, error) {
+	var rec []MenteeProgress
+
+	err := m.conn.Model(&MenteeProgress{}).Where("mentee_id = ? AND course_id = ?", menteeId, courseId).Find(&rec).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	var progresses []menteeProgresses.Domain
+
+	for _, progress := range rec {
+		progresses = append(progresses, *progress.ToDomain())
+	}
+
+	return progresses, nil
+}
+
 func (m menteeProgressRepository) Count(menteeId string) ([]int64, error) {
 	rec := []int64{}
 
