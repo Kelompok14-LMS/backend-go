@@ -29,6 +29,9 @@ type Repository interface {
 	// FindById repository find assignment mentee by id
 	FindById(assignmentmenteeId string) (*Domain, error)
 
+	// FindById repository find assignment mentee by id
+	FindByAssignmentId(assignmentId string) ([]Domain, error)
+
 	// Update repository update assignment  mentee
 	Update(assignmentmenteeId string, assignmentmenteeDomain *Domain) error
 

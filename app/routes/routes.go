@@ -44,6 +44,9 @@ import (
 	_detailCourseUsecase "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
 	_detailCourseController "github.com/Kelompok14-LMS/backend-go/controllers/detailCourse"
 
+	_detailAssignmentUsecase "github.com/Kelompok14-LMS/backend-go/businesses/detailsAssignments"
+	_detailAssignmentController "github.com/Kelompok14-LMS/backend-go/controllers/detailsAssignments"
+
 	_assignmentMenteeUsecase "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 	_assignmentMenteeController "github.com/Kelompok14-LMS/backend-go/controllers/menteeAssignments"
 )
@@ -136,6 +139,9 @@ func (routeConfig *RouteConfig) New() {
 	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(courseRepository, moduleRepository, materialRepository, assignmentRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
 
+	detailAssignmentUsecase := _detailAssignmentUsecase.NewDetailAssignmentUsecase(courseRepository, assignmentRepository, menteeAssignmentRepository)
+	detailAssignmentController := _detailAssignmentController.NewDetailAssignmentController(detailAssignmentUsecase)
+
 	// authentication routes
 	auth := v1.Group("/auth")
 	auth.POST("/mentee/login", menteeController.HandlerLoginMentee)
@@ -195,6 +201,7 @@ func (routeConfig *RouteConfig) New() {
 	assignment.POST("", assignmentController.HandlerCreateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
 	assignment.GET("/course/:courseid", assignmentController.HandlerFindByCourse)
+	assignment.GET("/:assignmentid/details", detailAssignmentController.HandlerDetailAssignment)
 	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 

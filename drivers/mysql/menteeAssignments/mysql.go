@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,28 @@ func (am assignmentMenteeRepository) FindById(assignmentMenteeId string) (*mente
 	}
 
 	return rec.ToDomain(), nil
+}
+
+func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string) ([]menteeAssignments.Domain, error) {
+	rec := []MenteeAssignment{}
+
+	err := am.conn.Model(&MenteeAssignment{}).Where("assignment_id = ?", assignmentId).Preload("Mentee").Find(&rec).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkg.ErrAssignmentNotFound
+		}
+
+		return nil, err
+	}
+
+	assignmentDomain := []menteeAssignments.Domain{}
+
+	for _, assignment := range rec {
+		assignmentDomain = append(assignmentDomain, *assignment.ToDomain())
+	}
+
+	return assignmentDomain, nil
 }
 
 func (am assignmentMenteeRepository) Update(assignmentMenteeId string, assignmentmenteeDomain *menteeAssignments.Domain) error {
