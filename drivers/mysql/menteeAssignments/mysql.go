@@ -46,10 +46,10 @@ func (am assignmentMenteeRepository) FindById(assignmentMenteeId string) (*mente
 	return rec.ToDomain(), nil
 }
 
-func (am assignmentMenteeRepository) FindByMenteeId(menteeId string) (*menteeAssignments.Domain, error) {
-	rec := MenteeAssignment{}
+func (am assignmentMenteeRepository) FindByMenteeId(menteeId string) ([]menteeAssignments.Domain, error) {
+	rec := []MenteeAssignment{}
 
-	err := am.conn.Model(&MenteeAssignment{}).Where("mentee_id = ?", menteeId).Preload("Mentee").First(&rec).Error
+	err := am.conn.Model(&MenteeAssignment{}).Where("mentee_id = ?", menteeId).Preload("Mentee").Order("created_at DESC").Find(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -58,14 +58,20 @@ func (am assignmentMenteeRepository) FindByMenteeId(menteeId string) (*menteeAss
 
 		return nil, err
 	}
+	assignmentMenteeDomain := []menteeAssignments.Domain{}
 
-	return rec.ToDomain(), nil
+	for _, assignment := range rec {
+		assignmentMenteeDomain = append(assignmentMenteeDomain, *assignment.ToDomain())
+	}
+
+	return assignmentMenteeDomain, nil
+
 }
 
 func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string) ([]menteeAssignments.Domain, error) {
 	rec := []MenteeAssignment{}
 
-	err := am.conn.Model(&MenteeAssignment{}).Where("assignment_id = ?", assignmentId).Preload("Mentee").Find(&rec).Error
+	err := am.conn.Model(&MenteeAssignment{}).Where("assignment_id = ?", assignmentId).Preload("Mentee").Order("created_at DESC").Find(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

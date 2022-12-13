@@ -87,15 +87,15 @@ func (_m *Usecase) FindById(assignmentId string) (*mentee_assignments.Domain, er
 }
 
 // FindByMenteeId provides a mock function with given fields: menteeId
-func (_m *Usecase) FindByMenteeId(menteeId string) (*mentee_assignments.Domain, error) {
+func (_m *Usecase) FindByMenteeId(menteeId string) ([]mentee_assignments.Domain, error) {
 	ret := _m.Called(menteeId)
 
-	var r0 *mentee_assignments.Domain
-	if rf, ok := ret.Get(0).(func(string) *mentee_assignments.Domain); ok {
+	var r0 []mentee_assignments.Domain
+	if rf, ok := ret.Get(0).(func(string) []mentee_assignments.Domain); ok {
 		r0 = rf(menteeId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*mentee_assignments.Domain)
+			r0 = ret.Get(0).([]mentee_assignments.Domain)
 		}
 	}
 

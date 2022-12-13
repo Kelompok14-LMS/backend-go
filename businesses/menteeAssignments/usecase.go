@@ -82,7 +82,7 @@ func (mu assignmentMenteeUsecase) FindById(assignmentMenteeId string) (*Domain, 
 	return assignmentMentee, nil
 }
 
-func (mu assignmentMenteeUsecase) FindByMenteeId(menteeId string) (*Domain, error) {
+func (mu assignmentMenteeUsecase) FindByMenteeId(menteeId string) ([]Domain, error) {
 	assignmentMentee, err := mu.assignmentMenteeRepository.FindByMenteeId(menteeId)
 
 	if err != nil {

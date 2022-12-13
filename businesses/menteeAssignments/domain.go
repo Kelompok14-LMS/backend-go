@@ -33,7 +33,7 @@ type Repository interface {
 	FindByAssignmentId(assignmentId string) ([]Domain, error)
 
 	// FindByMenteeId repository find assignment mentee by mentee id
-	FindByMenteeId(menteeId string) (*Domain, error)
+	FindByMenteeId(menteeId string) ([]Domain, error)
 
 	// Update repository update assignment  mentee
 	Update(assignmentmenteeId string, assignmentmenteeDomain *Domain) error
@@ -53,7 +53,7 @@ type Usecase interface {
 	FindByAssignmentId(assignmentId string) ([]Domain, error)
 
 	// FindByMenteeId rusecase find assignment mentee by mentee id
-	FindByMenteeId(menteeId string) (*Domain, error)
+	FindByMenteeId(menteeId string) ([]Domain, error)
 
 	// Update usecase update assignment
 	Update(assignmentId string, assignmentDomain *Domain) error

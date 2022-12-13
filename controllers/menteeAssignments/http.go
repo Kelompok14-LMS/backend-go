@@ -162,8 +162,13 @@ func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) er
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
 	}
+	var menteeAssignmentResponse []response.AssignmentMentee
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get mentee Assignment  by mentee id", response.FromDomain(menteeAssignment)))
+	for _, mentee_assignments := range menteeAssignment {
+		menteeAssignmentResponse = append(menteeAssignmentResponse, response.FromDomain(&mentee_assignments))
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by mentee id ", menteeAssignmentResponse))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerSoftDeleteMenteeAssignment(c echo.Context) error {
