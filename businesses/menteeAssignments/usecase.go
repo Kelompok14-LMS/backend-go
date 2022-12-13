@@ -82,6 +82,27 @@ func (mu assignmentMenteeUsecase) FindById(assignmentMenteeId string) (*Domain, 
 	return assignmentMentee, nil
 }
 
+func (mu assignmentMenteeUsecase) FindByMenteeId(menteeId string) (*Domain, error) {
+	assignmentMentee, err := mu.assignmentMenteeRepository.FindByMenteeId(menteeId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return assignmentMentee, nil
+}
+
+func (mu assignmentMenteeUsecase) FindByAssignmentId(assignmentId string) ([]Domain, error) {
+
+	menteeAssignments, err := mu.assignmentMenteeRepository.FindByAssignmentId(assignmentId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return menteeAssignments, nil
+}
+
 func (mu assignmentMenteeUsecase) Update(assignmentMenteeId string, assignmentMenteeDomain *Domain) error {
 	if _, err := mu.assignmentRepository.FindById(assignmentMenteeDomain.AssignmentId); err != nil {
 		return err

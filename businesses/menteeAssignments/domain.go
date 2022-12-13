@@ -29,8 +29,11 @@ type Repository interface {
 	// FindById repository find assignment mentee by id
 	FindById(assignmentmenteeId string) (*Domain, error)
 
-	// FindById repository find assignment mentee by id
+	// FindByAssignmentID repository find assignment mentee by assignment id
 	FindByAssignmentId(assignmentId string) ([]Domain, error)
+
+	// FindByMenteeId repository find assignment mentee by mentee id
+	FindByMenteeId(menteeId string) (*Domain, error)
 
 	// Update repository update assignment  mentee
 	Update(assignmentmenteeId string, assignmentmenteeDomain *Domain) error
@@ -45,6 +48,12 @@ type Usecase interface {
 
 	// FindById usecase findfind assignment by id
 	FindById(assignmentId string) (*Domain, error)
+
+	// FindByAssignmentID usecase  find assignment mentee by assignment id
+	FindByAssignmentId(assignmentId string) ([]Domain, error)
+
+	// FindByMenteeId rusecase find assignment mentee by mentee id
+	FindByMenteeId(menteeId string) (*Domain, error)
 
 	// Update usecase update assignment
 	Update(assignmentId string, assignmentDomain *Domain) error

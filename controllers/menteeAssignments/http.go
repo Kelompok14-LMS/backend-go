@@ -10,16 +10,19 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/controllers/menteeAssignments/response"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
+	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/labstack/echo/v4"
 )
 
 type AssignmentMenteeController struct {
 	assignmentMenteeUsecase menteeAssignments.Usecase
+	jwtConfig               *utils.JWTConfig
 }
 
-func NewAssignmentsMenteeController(assignmentMenteeUsecase menteeAssignments.Usecase) *AssignmentMenteeController {
+func NewAssignmentsMenteeController(assignmentMenteeUsecase menteeAssignments.Usecase, jwtConfig *utils.JWTConfig) *AssignmentMenteeController {
 	return &AssignmentMenteeController{
 		assignmentMenteeUsecase: assignmentMenteeUsecase,
+		jwtConfig:               jwtConfig,
 	}
 }
 
@@ -121,6 +124,46 @@ func (ctrl *AssignmentMenteeController) HandlerFindByIdMenteeAssignment(c echo.C
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by id", response.FromDomain(assignmentMentee)))
+}
+
+func (ctrl *AssignmentMenteeController) HandlerFindByAssignmentId(c echo.Context) error {
+	id := c.Param("assignmentId")
+
+	assignmentMentee, err := ctrl.assignmentMenteeUsecase.FindByAssignmentId(id)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
+		}
+
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+	}
+
+	var menteeAssignmentResponse []response.AssignmentMentee
+
+	for _, mentee_assignments := range assignmentMentee {
+		menteeAssignmentResponse = append(menteeAssignmentResponse, response.FromDomain(&mentee_assignments))
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by assignment id", menteeAssignmentResponse))
+}
+
+func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) error {
+	token, _ := ctrl.jwtConfig.ExtractToken(c)
+
+	menteeAssignment, err := ctrl.assignmentMenteeUsecase.FindByMenteeId(token.MenteeId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUserNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get mentee Assignment  by mentee id", response.FromDomain(menteeAssignment)))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerSoftDeleteMenteeAssignment(c echo.Context) error {

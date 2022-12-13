@@ -46,6 +46,22 @@ func (am assignmentMenteeRepository) FindById(assignmentMenteeId string) (*mente
 	return rec.ToDomain(), nil
 }
 
+func (am assignmentMenteeRepository) FindByMenteeId(menteeId string) (*menteeAssignments.Domain, error) {
+	rec := MenteeAssignment{}
+
+	err := am.conn.Model(&MenteeAssignment{}).Where("mentee_id = ?", menteeId).Preload("Mentee").First(&rec).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+
+		return nil, err
+	}
+
+	return rec.ToDomain(), nil
+}
+
 func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string) ([]menteeAssignments.Domain, error) {
 	rec := []MenteeAssignment{}
 

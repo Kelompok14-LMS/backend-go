@@ -119,7 +119,7 @@ func (routeConfig *RouteConfig) New() {
 	// Inject the dependency to mentee assignment
 	menteeAssignmentRepository := _driverFactory.NewMenteeAssignmentRepository(routeConfig.MySQLDB)
 	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, routeConfig.StorageConfig)
-	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase)
+	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase, routeConfig.JWTConfig)
 
 	// Inject the dependency to material
 	materialRepository := _driverFactory.NewMaterialRepository(routeConfig.MySQLDB)
@@ -215,10 +215,11 @@ func (routeConfig *RouteConfig) New() {
 
 	// Mentee assignment routes
 	menteeAssignment := v1.Group("/mentee-assignments")
-	menteeAssignment.POST("", menteeAssignmentController.HandlerCreateMenteeAssignment)
-	menteeAssignment.PUT("/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateMenteeAssignment)
+	menteeAssignment.POST("", menteeAssignmentController.HandlerCreateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.PUT("/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	menteeAssignment.GET("/:menteeAssignmentId", menteeAssignmentController.HandlerFindByIdMenteeAssignment)
-	menteeAssignment.PUT("/grade/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateGradeMentee)
-	menteeAssignment.DELETE("/:menteeAssignmentId", menteeAssignmentController.HandlerSoftDeleteMenteeAssignment)
-
+	menteeAssignment.PUT("/grade/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateGradeMentee, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	menteeAssignment.DELETE("/:menteeAssignmentId", menteeAssignmentController.HandlerSoftDeleteMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.GET("/assignments/:assignmentId", menteeAssignmentController.HandlerFindByAssignmentId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	menteeAssignment.GET("/mentee", menteeAssignmentController.HandlerFindByMenteeId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 }
