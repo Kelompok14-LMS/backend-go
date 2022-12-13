@@ -125,7 +125,7 @@ func (routeConfig *RouteConfig) New() {
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
-	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(courseRepository, moduleRepository, materialRepository)
+	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
 
 	// authentication routes
@@ -152,7 +152,9 @@ func (routeConfig *RouteConfig) New() {
 	mentee := v1.Group("/mentees", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	mentee.POST("/progress", menteeProgressController.HandlerAddProgress, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	mentee.GET("/:menteeId/courses", menteeCourseController.HandlerFindMenteeCourses)
+	mentee.GET("/:menteeId/courses/:courseId/details", detailCourseController.HandlerDetailCourseEnrolled)
 	mentee.GET("/:menteeId/courses/:courseId", menteeCourseController.HandlerCheckEnrollmentCourse)
+	mentee.GET("/:menteeId/materials/:materialId", menteeProgressController.HandlerFindMaterialEnrolled)
 
 	//	category routes
 	cat := v1.Group("/categories")
@@ -165,6 +167,7 @@ func (routeConfig *RouteConfig) New() {
 	course := v1.Group("/courses")
 	course.POST("", courseController.HandlerCreateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	course.GET("", courseController.HandlerFindAllCourses)
+	course.GET("/popular", courseController.HandlerFindByPopular)
 	course.POST("/enroll-course", menteeCourseController.HandlerEnrollCourse, authMiddleware.IsAuthenticated())
 	course.GET("/categories/:categoryId", courseController.HandlerFindByCategory)
 	course.GET("/mentors/:mentorId", courseController.HandlerFindByMentor)
