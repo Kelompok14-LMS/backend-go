@@ -6,7 +6,7 @@ import (
 	detailCourse "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
 )
 
-type course struct {
+type Course struct {
 	CourseId    string    `json:"course_id"`
 	CategoryId  string    `json:"category_id"`
 	MentorId    string    `json:"mentor_id"`
@@ -36,11 +36,12 @@ type Material struct {
 	Title       string    `json:"title"`
 	URL         string    `json:"url"`
 	Description string    `json:"description"`
+	Completed   bool      `json:"completed"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func FullDetailCourse(domain *detailCourse.Domain) *course {
+func FullDetailCourse(domain *detailCourse.Domain) *Course {
 	modules := make([]Module, len(domain.Modules))
 
 	for i, module := range domain.Modules {
@@ -70,7 +71,7 @@ func FullDetailCourse(domain *detailCourse.Domain) *course {
 		}
 	}
 
-	return &course{
+	return &Course{
 		CourseId:    domain.CourseId,
 		CategoryId:  domain.CategoryId,
 		MentorId:    domain.MentorId,
