@@ -32,11 +32,16 @@ type Material struct {
 	Title       string
 	URL         string
 	Description string
+	Completed   bool
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
 
 type Usecase interface {
-	// detail course with modules and materials
+	// DetailCourse usecase detail course with modules and materials
 	DetailCourse(courseId string) (*Domain, error)
+
+	// DetailCourseEnrolled usecase detail course with module and material
+	// for mentee who already enroll the course
+	DetailCourseEnrolled(menteeId string, courseId string) (*Domain, error)
 }
