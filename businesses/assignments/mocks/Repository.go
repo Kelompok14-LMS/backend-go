@@ -40,18 +40,27 @@ func (_m *Repository) Delete(assignmentId string) error {
 	return r0
 }
 
-// DeleteByModuleId provides a mock function with given fields: moduleId
-func (_m *Repository) DeleteByModuleId(moduleId string) error {
-	ret := _m.Called(moduleId)
+// FindByCourseId provides a mock function with given fields: courseId
+func (_m *Repository) FindByCourseId(courseId string) ([]assignments.Domain, error) {
+	ret := _m.Called(courseId)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(moduleId)
+	var r0 []assignments.Domain
+	if rf, ok := ret.Get(0).(func(string) []assignments.Domain); ok {
+		r0 = rf(courseId)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]assignments.Domain)
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(courseId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // FindById provides a mock function with given fields: assignmentId
@@ -70,29 +79,6 @@ func (_m *Repository) FindById(assignmentId string) (*assignments.Domain, error)
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(assignmentId)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// FindByModuleId provides a mock function with given fields: moduleId
-func (_m *Repository) FindByModuleId(moduleId string) (*assignments.Domain, error) {
-	ret := _m.Called(moduleId)
-
-	var r0 *assignments.Domain
-	if rf, ok := ret.Get(0).(func(string) *assignments.Domain); ok {
-		r0 = rf(moduleId)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*assignments.Domain)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(moduleId)
 	} else {
 		r1 = ret.Error(1)
 	}

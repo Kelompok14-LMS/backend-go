@@ -1,114 +1,176 @@
 package assignments_test
 
 import (
+	"errors"
 	"testing"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	_assignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/assignments/mocks"
-	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
-	_moduleMock "github.com/Kelompok14-LMS/backend-go/businesses/modules/mocks"
+	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
+	_courseMock "github.com/Kelompok14-LMS/backend-go/businesses/courses/mocks"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"gorm.io/gorm"
 )
 
 var (
-	assignmentRepository _assignmentMock.Repository
-	assignmentService    assignments.Usecase
+	assignmentsRepository _assignmentMock.Repository
+	courseRepository      _courseMock.Repository
 
-	moduleRepository _moduleMock.Repository
-	// storageClient    helper.StorageConfig
+	assignmentService assignments.Usecase
+
+	courseDomain     courses.Domain
+	assignmentDomain assignments.Domain
 )
 
 func TestMain(m *testing.M) {
-	assignmentRepository = _assignmentMock.Repository{Mock: mock.Mock{}}
-	moduleRepository = _moduleMock.Repository{Mock: mock.Mock{}}
+	assignmentService = assignments.NewAssignmentUsecase(&assignmentsRepository, &courseRepository)
 
-	assignmentService = assignments.NewAssignmentUsecase(&assignmentRepository, &moduleRepository)
+	courseDomain = courses.Domain{
+		ID:          uuid.NewString(),
+		MentorId:    uuid.NewString(),
+		CategoryId:  uuid.NewString(),
+		Title:       "test",
+		Description: "test",
+		Thumbnail:   "test.com",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	assignmentDomain = assignments.Domain{
+		ID:          uuid.NewString(),
+		CourseId:    courseDomain.ID,
+		Title:       "test",
+		Description: "ini test",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
 
 	m.Run()
 }
 
+func TestCreate(t *testing.T) {
+	t.Run("Test Create | Success create assignments", func(t *testing.T) {
+		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courseDomain, nil).Once()
+
+		assignmentsRepository.Mock.On("Create", mock.Anything).Return(nil).Once()
+
+		err := assignmentService.Create(&assignmentDomain)
+
+		assert.NoError(t, err)
+	})
+
+	t.Run("Test Create | Failed create assignments | Course not found", func(t *testing.T) {
+		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courses.Domain{}, pkg.ErrCourseNotFound).Once()
+
+		err := assignmentService.Create(&assignmentDomain)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Create | Failed create assignments | Error occurred", func(t *testing.T) {
+		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courseDomain, nil).Once()
+
+		assignmentsRepository.Mock.On("Create", mock.Anything).Return(errors.New("error occurred")).Once()
+
+		err := assignmentService.Create(&assignmentDomain)
+
+		assert.Error(t, err)
+	})
+}
+
 func TestFindById(t *testing.T) {
-	mockAssignment := assignments.Domain{
-		ID:          "Assignment_1",
-		ModuleID:    "Module_1",
-		Title:       "Title test",
-		Description: "Description test",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		DeletedAt:   gorm.DeletedAt{},
-	}
+	t.Run("Test FindById | Success get assignments by id", func(t *testing.T) {
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignmentDomain, nil).Once()
 
-	assignmentRepository.Mock.On("FindById", "Assignment_1").Return(&mockAssignment, nil)
+		result, err := assignmentService.FindById(assignmentDomain.ID)
 
-	result, err := assignmentService.FindById("Assignment_1")
+		assert.NoError(t, err)
+		assert.NotEmpty(t, result)
+	})
 
-	assert.Nil(t, err)
-	assert.NotNil(t, result)
+	t.Run("Test FindById | Failed get assignments by id | assignments not found", func(t *testing.T) {
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignments.Domain{}, pkg.ErrAssignmentNotFound).Once()
+
+		result, err := assignmentService.FindById(assignmentDomain.ID)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
 }
 
 func TestUpdate(t *testing.T) {
-	moduleDomain := modules.Domain{
-		ID:        "Module_1",
-		CourseId:  "Course_1",
-		Title:     "Course Title",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		DeletedAt: gorm.DeletedAt{},
-	}
+	t.Run("Test Update | Success update assignments", func(t *testing.T) {
+		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courseDomain, nil).Once()
 
-	moduleRepository.Mock.On("FindById", "MODULE_1").Return(&moduleDomain, nil)
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignmentDomain, nil).Once()
 
-	mockAssignment := assignments.Domain{
-		ID:          "Assignment_1",
-		ModuleID:    "Module_1",
-		Title:       "Title test",
-		Description: "Description test",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		DeletedAt:   gorm.DeletedAt{},
-	}
+		assignmentsRepository.Mock.On("Update", assignmentDomain.ID, &assignmentDomain).Return(nil).Once()
 
-	assignmentRepository.Mock.On("FindById", "Assignment_1").Return(&mockAssignment, nil)
+		err := assignmentService.Update(assignmentDomain.ID, &assignmentDomain)
 
-	assignmentDomain := assignments.Domain{
-		ModuleID:    "MODULE_1",
-		Title:       "Title test",
-		Description: "Description test",
-	}
+		assert.NoError(t, err)
+	})
 
-	assignmentRepository.Mock.On("Update", "Assignment_1", &assignmentDomain).Return(nil)
+	t.Run("Test Update | Failed update assignments | Course not found", func(t *testing.T) {
+		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courses.Domain{}, pkg.ErrCourseNotFound).Once()
 
-	updatedAssignment := assignments.Domain{
-		ID:          "Assignment_1",
-		ModuleID:    "MODULE_1",
-		Title:       "Title test",
-		Description: "Description test",
-	}
+		err := assignmentService.Update(assignmentDomain.ID, &assignmentDomain)
 
-	err := assignmentService.Update("Assignment_1", &updatedAssignment)
+		assert.Error(t, err)
+	})
 
-	assert.Nil(t, err)
+	t.Run("Test Update | Failed update assignments| Assignments not found", func(t *testing.T) {
+		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courseDomain, nil).Once()
+
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignments.Domain{}, pkg.ErrAssignmentNotFound).Once()
+
+		err := assignmentService.Update(assignmentDomain.ID, &assignmentDomain)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Update | Failed update assignments | Error ocurred", func(t *testing.T) {
+		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courseDomain, nil).Once()
+
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignmentDomain, nil).Once()
+
+		assignmentsRepository.Mock.On("Update", assignmentDomain.ID, &assignmentDomain).Return(errors.New("error occured")).Once()
+
+		err := assignmentService.Update(assignmentDomain.ID, &assignmentDomain)
+
+		assert.Error(t, err)
+	})
 }
 
 func TestDelete(t *testing.T) {
-	mockAssignment := assignments.Domain{
-		ID:          "Assignment_1",
-		ModuleID:    "MODULE_1",
-		Title:       "Title test",
-		Description: "Description test",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-		DeletedAt:   gorm.DeletedAt{},
-	}
+	t.Run("Test Delete | Success delete assignments", func(t *testing.T) {
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignmentDomain, nil).Once()
 
-	assignmentRepository.Mock.On("FindById", "Assignment_1").Return(&mockAssignment, nil)
+		assignmentsRepository.Mock.On("Delete", assignmentDomain.ID).Return(nil).Once()
 
-	assignmentRepository.Mock.On("Delete", "Assignment_1").Return(nil)
+		err := assignmentService.Delete(assignmentDomain.ID)
 
-	err := assignmentService.Delete("Assignment_1")
+		assert.NoError(t, err)
+	})
 
-	assert.Nil(t, err)
+	t.Run("Test Delete | Failed delete assignments | assignments not found", func(t *testing.T) {
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignments.Domain{}, pkg.ErrAssignmentNotFound).Once()
+
+		err := assignmentService.Delete(assignmentDomain.ID)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Delete | Failed delete assignments | Error not found", func(t *testing.T) {
+		assignmentsRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignmentDomain, nil).Once()
+
+		assignmentsRepository.Mock.On("Delete", assignmentDomain.ID).Return(errors.New("error occurred")).Once()
+
+		err := assignmentService.Delete(assignmentDomain.ID)
+
+		assert.Error(t, err)
+	})
 }

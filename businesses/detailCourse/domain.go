@@ -12,6 +12,15 @@ type Domain struct {
 	Category    string
 	Mentor      string
 	Modules     []Module
+	Assignments []Assignment
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+type Assignment struct {
+	ID          string
+	CourseId    string
+	Title       string
+	Description string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
