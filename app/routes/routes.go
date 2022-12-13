@@ -125,7 +125,7 @@ func (routeConfig *RouteConfig) New() {
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
-	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository)
+	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository)
 
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
 

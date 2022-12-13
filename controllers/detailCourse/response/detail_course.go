@@ -7,17 +7,19 @@ import (
 )
 
 type Course struct {
-	CourseId    string    `json:"course_id"`
-	CategoryId  string    `json:"category_id"`
-	MentorId    string    `json:"mentor_id"`
-	Mentor      string    `json:"mentor"`
-	Category    string    `json:"category"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Thumbnail   string    `json:"thumbnail"`
-	Modules     []Module  `json:"modules"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	CourseId    string       `json:"course_id"`
+	CategoryId  string       `json:"category_id"`
+	MentorId    string       `json:"mentor_id"`
+	Mentor      string       `json:"mentor"`
+	Category    string       `json:"category"`
+	Title       string       `json:"title"`
+	Description string       `json:"description"`
+	Thumbnail   string       `json:"thumbnail"`
+	Modules     []Module     `json:"modules"`
+	Assignments []Assignment `json:"assignment"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+}
 
 type Assignment struct {
 	AssignmentID string    `json:"assignment_id"`
@@ -100,7 +102,7 @@ func FullDetailCourse(domain *detailCourse.Domain) *Course {
 		Description: domain.Description,
 		Thumbnail:   domain.Thumbnail,
 		Modules:     modules,
-		Assignment:  assignments,
+		Assignments: assignments,
 		CreatedAt:   domain.CreatedAt,
 		UpdatedAt:   domain.UpdatedAt,
 	}

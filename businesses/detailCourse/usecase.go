@@ -15,7 +15,7 @@ type detailCourseUsecase struct {
 	moduleRepository         modules.Repository
 	materialRepository       materials.Repository
 	menteeProgressRepository menteeProgresses.Repository
-	assignmentsRepository assignments.Repository
+	assignmentsRepository    assignments.Repository
 }
 
 func NewDetailCourseUsecase(
@@ -24,7 +24,7 @@ func NewDetailCourseUsecase(
 	moduleRepository modules.Repository,
 	materialRepository materials.Repository,
 	menteeProgressRepository menteeProgresses.Repository,
-  assignmentsRepository assignments.Repository,
+	assignmentsRepository assignments.Repository,
 ) Usecase {
 	return detailCourseUsecase{
 		menteeRepository:         menteeRepository,
@@ -32,7 +32,8 @@ func NewDetailCourseUsecase(
 		moduleRepository:         moduleRepository,
 		materialRepository:       materialRepository,
 		menteeProgressRepository: menteeProgressRepository,
-    assignmentsRepository: assignmentsRepository,	
+		assignmentsRepository:    assignmentsRepository,
+	}
 }
 
 func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
@@ -59,8 +60,6 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 	if err != nil {
 		return nil, err
 	}
-  
-	modules, _ := dc.moduleRepository.FindByCourse(courseId)
 
 	moduleIds := []string{}
 
@@ -120,6 +119,22 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 
 func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId string) (*Domain, error) {
 	course, err := dc.courseRepository.FindById(courseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	assignments, err := dc.assignmentsRepository.FindByCourseId(courseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	assignmentId := []string{}
+
+	for _, assignment := range assignments {
+		assignmentId = append(assignmentId, assignment.ID)
+	}
 
 	assignmentsDomain := make([]Assignment, len(assignments))
 
