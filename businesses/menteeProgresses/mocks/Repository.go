@@ -49,6 +49,52 @@ func (_m *Repository) Count(menteeId string) ([]int64, error) {
 	return r0, r1
 }
 
+// FindByMaterial provides a mock function with given fields: menteeId, materialId
+func (_m *Repository) FindByMaterial(menteeId string, materialId string) (*mentee_progresses.Domain, error) {
+	ret := _m.Called(menteeId, materialId)
+
+	var r0 *mentee_progresses.Domain
+	if rf, ok := ret.Get(0).(func(string, string) *mentee_progresses.Domain); ok {
+		r0 = rf(menteeId, materialId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*mentee_progresses.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(menteeId, materialId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FindByMentee provides a mock function with given fields: menteeId, courseId
+func (_m *Repository) FindByMentee(menteeId string, courseId string) ([]mentee_progresses.Domain, error) {
+	ret := _m.Called(menteeId, courseId)
+
+	var r0 []mentee_progresses.Domain
+	if rf, ok := ret.Get(0).(func(string, string) []mentee_progresses.Domain); ok {
+		r0 = rf(menteeId, courseId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]mentee_progresses.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(menteeId, courseId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewRepository interface {
 	mock.TestingT
 	Cleanup(func())
