@@ -31,12 +31,13 @@ type Assignment struct {
 }
 
 type Module struct {
-	ModuleId  string     `json:"module_id"`
-	CourseId  string     `json:"course_id"`
-	Title     string     `json:"title"`
-	Materials []Material `json:"materials"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ModuleId    string     `json:"module_id"`
+	CourseId    string     `json:"course_id"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Materials   []Material `json:"materials"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type Material struct {
@@ -56,6 +57,7 @@ func FullDetailCourse(domain *detailCourse.Domain) *course {
 		modules[i].ModuleId = module.ModuleId
 		modules[i].CourseId = module.CourseId
 		modules[i].Title = module.Title
+		modules[i].Description = module.Description
 		modules[i].CreatedAt = module.CreatedAt
 		modules[i].UpdatedAt = module.UpdatedAt
 	}
