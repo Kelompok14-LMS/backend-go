@@ -63,20 +63,26 @@ func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) erro
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by id", response.DetailAssignment(assignment)))
 }
 
-func (ctrl *AssignmentController) HandlerFindByModuleId(c echo.Context) error {
-	moduleId := c.Param("moduleId")
+func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
+	courseid := c.Param("courseid")
 
-	assignment, err := ctrl.assignmentUsecase.FindById(moduleId)
+	assignmentCourse, err := ctrl.assignmentUsecase.FindByCourseId(courseid)
+
+	assignments := []response.FindByIdAssignments{}
+
+	for _, assignment := range *assignmentCourse {
+		assignments = append(assignments, *response.DetailAssignment(&assignment))
+	}
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		if errors.Is(err, pkg.ErrCourseNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by module id", response.DetailAssignment(assignment)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by course id", assignments))
 }
 
 func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error {
@@ -94,8 +100,8 @@ func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error 
 	err := ctrl.assignmentUsecase.Update(assignmentId, assignmentInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrModuleNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
+		if errors.Is(err, pkg.ErrCourseNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else if errors.Is(err, pkg.ErrAssignmentNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		} else {
@@ -120,20 +126,4 @@ func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error 
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Assignment deleted", nil))
-}
-
-func (ctrl *AssignmentController) HandlerDeleteAssignmentByModule(c echo.Context) error {
-	moduleId := c.Param("moduleId")
-
-	err := ctrl.assignmentUsecase.DeleteByModuleId(moduleId)
-
-	if err != nil {
-		if errors.Is(err, pkg.ErrModuleNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
-		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
-		}
-	}
-
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Assignments deleted", nil))
 }

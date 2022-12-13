@@ -1,6 +1,7 @@
 package detail_course
 
 import (
+	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
 	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
@@ -14,6 +15,7 @@ type detailCourseUsecase struct {
 	moduleRepository         modules.Repository
 	materialRepository       materials.Repository
 	menteeProgressRepository menteeProgresses.Repository
+	assignmentsRepository assignments.Repository
 }
 
 func NewDetailCourseUsecase(
@@ -22,6 +24,7 @@ func NewDetailCourseUsecase(
 	moduleRepository modules.Repository,
 	materialRepository materials.Repository,
 	menteeProgressRepository menteeProgresses.Repository,
+  assignmentsRepository assignments.Repository,
 ) Usecase {
 	return detailCourseUsecase{
 		menteeRepository:         menteeRepository,
@@ -29,7 +32,7 @@ func NewDetailCourseUsecase(
 		moduleRepository:         moduleRepository,
 		materialRepository:       materialRepository,
 		menteeProgressRepository: menteeProgressRepository,
-	}
+    assignmentsRepository: assignmentsRepository,	
 }
 
 func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
@@ -39,6 +42,24 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		return nil, err
 	}
 
+	assignments, err := dc.assignmentsRepository.FindByCourseId(courseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	assignmentId := []string{}
+
+	for _, assignment := range assignments {
+		assignmentId = append(assignmentId, assignment.ID)
+	}
+
+	modules, err := dc.moduleRepository.FindByCourse(courseId)
+
+	if err != nil {
+		return nil, err
+	}
+  
 	modules, _ := dc.moduleRepository.FindByCourse(courseId)
 
 	moduleIds := []string{}
@@ -100,8 +121,15 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId string) (*Domain, error) {
 	course, err := dc.courseRepository.FindById(courseId)
 
-	if err != nil {
-		return nil, err
+	assignmentsDomain := make([]Assignment, len(assignments))
+
+	for i, assignment := range assignments {
+		assignmentsDomain[i].ID = assignment.ID
+		assignmentsDomain[i].CourseId = assignment.CourseId
+		assignmentsDomain[i].Title = assignment.Title
+		assignmentsDomain[i].Description = assignment.Description
+		assignmentsDomain[i].CreatedAt = assignment.CreatedAt
+		assignmentsDomain[i].UpdatedAt = assignment.UpdatedAt
 	}
 
 	if _, err := dc.menteeRepository.FindById(menteeId); err != nil {
@@ -167,6 +195,7 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 		Description: course.Description,
 		Thumbnail:   course.Thumbnail,
 		Modules:     moduleDomain,
+		Assignments: assignmentsDomain,
 		CreatedAt:   course.CreatedAt,
 		UpdatedAt:   course.UpdatedAt,
 	}
