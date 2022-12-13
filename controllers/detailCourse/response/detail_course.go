@@ -7,17 +7,27 @@ import (
 )
 
 type course struct {
-	CourseId    string    `json:"course_id"`
-	CategoryId  string    `json:"category_id"`
-	MentorId    string    `json:"mentor_id"`
-	Mentor      string    `json:"mentor"`
-	Category    string    `json:"category"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Thumbnail   string    `json:"thumbnail"`
-	Modules     []Module  `json:"modules"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	CourseId    string       `json:"course_id"`
+	CategoryId  string       `json:"category_id"`
+	MentorId    string       `json:"mentor_id"`
+	Mentor      string       `json:"mentor"`
+	Category    string       `json:"category"`
+	Title       string       `json:"title"`
+	Description string       `json:"description"`
+	Thumbnail   string       `json:"thumbnail"`
+	Modules     []Module     `json:"modules"`
+	Assignment  []Assignment `json:"assignments"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+}
+
+type Assignment struct {
+	AssignmentID string    `json:"assignment_id"`
+	CourseId     string    `json:"course_id"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type Module struct {
@@ -52,6 +62,17 @@ func FullDetailCourse(domain *detailCourse.Domain) *course {
 		modules[i].UpdatedAt = module.UpdatedAt
 	}
 
+	assignments := make([]Assignment, len(domain.Assignments))
+
+	for i, assignment := range domain.Assignments {
+		assignments[i].AssignmentID = assignment.ID
+		assignments[i].CourseId = assignment.CourseId
+		assignments[i].Title = assignment.Title
+		assignments[i].Description = assignment.Description
+		assignments[i].CreatedAt = assignment.CreatedAt
+		assignments[i].UpdatedAt = assignment.UpdatedAt
+	}
+
 	for i, module := range modules {
 		module.Materials = make([]Material, len(domain.Modules[i].Materials))
 
@@ -80,6 +101,7 @@ func FullDetailCourse(domain *detailCourse.Domain) *course {
 		Description: domain.Description,
 		Thumbnail:   domain.Thumbnail,
 		Modules:     modules,
+		Assignment:  assignments,
 		CreatedAt:   domain.CreatedAt,
 		UpdatedAt:   domain.UpdatedAt,
 	}

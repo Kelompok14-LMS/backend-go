@@ -6,14 +6,14 @@ import (
 )
 
 type UpdateAssignment struct {
-	ModuleID    string `json:"module_id" form:"module_id" validate:"required"`
+	CourseId    string `json:"course_id" form:"course_id" validate:"required"`
 	Title       string `json:"title" form:"title" validate:"required"`
 	Description string `json:"description" form:"description" validate:"required"`
 }
 
 func (req *UpdateAssignment) ToDomain() *assignments.Domain {
 	return &assignments.Domain{
-		ModuleID:    req.ModuleID,
+		CourseId:    req.CourseId,
 		Title:       req.Title,
 		Description: req.Description,
 	}

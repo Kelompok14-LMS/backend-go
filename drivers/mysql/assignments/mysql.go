@@ -46,20 +46,26 @@ func (ar assignmentRepository) FindById(assignmentId string) (*assignments.Domai
 	return rec.ToDomain(), nil
 }
 
-func (ar assignmentRepository) FindByModuleId(moduleId string) (*assignments.Domain, error) {
-	rec := Assignment{}
+func (ar assignmentRepository) FindByCourseId(courseId string) ([]assignments.Domain, error) {
+	rec := []Assignment{}
 
-	err := ar.conn.Model(&Assignment{}).Where("module_id = ?", moduleId).First(&rec).Error
+	err := ar.conn.Model(&Assignment{}).Where("course_id = ?", courseId).Find(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkg.ErrModuleNotFound
+			return nil, pkg.ErrCourseNotFound
 		}
 
 		return nil, err
 	}
 
-	return rec.ToDomain(), nil
+	assignmentDomain := []assignments.Domain{}
+
+	for _, assignment := range rec {
+		assignmentDomain = append(assignmentDomain, *assignment.ToDomain())
+	}
+
+	return assignmentDomain, nil
 }
 
 func (ar assignmentRepository) Update(assignmentId string, assignmentDomain *assignments.Domain) error {
@@ -76,16 +82,6 @@ func (ar assignmentRepository) Update(assignmentId string, assignmentDomain *ass
 
 func (ar assignmentRepository) Delete(assignmentId string) error {
 	err := ar.conn.Model(&Assignment{}).Where("id = ?", assignmentId).Delete(&Assignment{}).Error
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (ar assignmentRepository) DeleteByModuleId(moduleId string) error {
-	err := ar.conn.Model(&Assignment{}).Where("module_id = ?", moduleId).Delete(&Assignment{}).Error
 
 	if err != nil {
 		return err
