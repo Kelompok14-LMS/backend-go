@@ -43,18 +43,6 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		return nil, err
 	}
 
-	assignments, err := dc.assignmentsRepository.FindByCourseId(courseId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	assignmentId := []string{}
-
-	for _, assignment := range assignments {
-		assignmentId = append(assignmentId, assignment.ID)
-	}
-
 	modules, err := dc.moduleRepository.FindByCourse(courseId)
 
 	if err != nil {
@@ -65,6 +53,19 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 
 	for _, module := range modules {
 		moduleIds = append(moduleIds, module.ID)
+	}
+
+	assignments, _ := dc.assignmentsRepository.FindByCourseId(courseId)
+
+	assignmentsDomain := make([]Assignment, len(assignments))
+
+	for i, assignment := range assignments {
+		assignmentsDomain[i].ID = assignment.ID
+		assignmentsDomain[i].CourseId = assignment.CourseId
+		assignmentsDomain[i].Title = assignment.Title
+		assignmentsDomain[i].Description = assignment.Description
+		assignmentsDomain[i].CreatedAt = assignment.CreatedAt
+		assignmentsDomain[i].UpdatedAt = assignment.UpdatedAt
 	}
 
 	materials, _ := dc.materialRepository.FindByModule(moduleIds)
@@ -110,6 +111,7 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		Description: course.Description,
 		Thumbnail:   course.Thumbnail,
 		Modules:     moduleDomain,
+		Assignments: assignmentsDomain,
 		CreatedAt:   course.CreatedAt,
 		UpdatedAt:   course.UpdatedAt,
 	}
@@ -124,17 +126,7 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 		return nil, err
 	}
 
-	assignments, err := dc.assignmentsRepository.FindByCourseId(courseId)
-
-	if err != nil {
-		return nil, err
-	}
-
-	assignmentId := []string{}
-
-	for _, assignment := range assignments {
-		assignmentId = append(assignmentId, assignment.ID)
-	}
+	assignments, _ := dc.assignmentsRepository.FindByCourseId(courseId)
 
 	assignmentsDomain := make([]Assignment, len(assignments))
 

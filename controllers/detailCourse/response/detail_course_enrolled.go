@@ -1,8 +1,6 @@
 package response
 
-import (
-	detailCourse "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
-)
+import detailCourse "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
 
 func FullDetailCourseEnrolled(domain *detailCourse.Domain) *Course {
 	modules := make([]Module, len(domain.Modules))
@@ -14,6 +12,17 @@ func FullDetailCourseEnrolled(domain *detailCourse.Domain) *Course {
 		modules[i].Description = module.Description
 		modules[i].CreatedAt = module.CreatedAt
 		modules[i].UpdatedAt = module.UpdatedAt
+	}
+
+	assignments := make([]Assignment, len(domain.Assignments))
+
+	for i, assignment := range domain.Assignments {
+		assignments[i].AssignmentID = assignment.ID
+		assignments[i].CourseId = assignment.CourseId
+		assignments[i].Title = assignment.Title
+		assignments[i].Description = assignment.Description
+		assignments[i].CreatedAt = assignment.CreatedAt
+		assignments[i].UpdatedAt = assignment.UpdatedAt
 	}
 
 	for i, module := range modules {
@@ -45,6 +54,7 @@ func FullDetailCourseEnrolled(domain *detailCourse.Domain) *Course {
 		Description: domain.Description,
 		Thumbnail:   domain.Thumbnail,
 		Modules:     modules,
+		Assignments: assignments,
 		CreatedAt:   domain.CreatedAt,
 		UpdatedAt:   domain.UpdatedAt,
 	}
