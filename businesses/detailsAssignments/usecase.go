@@ -42,40 +42,6 @@ func (da detailAssignmentUsecase) DetailAssignment(assignmentId string) (*Assign
 		return nil, err
 	}
 
-	// assignmentMenteeDomain := make([]AssignmentMentee, len(assignmentMentees))
-
-	// for _, assignmentMentee := range assignmentMentees {
-
-	// 	assignmentMenteeDomain = append(assignmentMenteeDomain, AssignmentMentee{
-	// 		AssignmentMenteeID: assignmentMentee.AssignmentId,
-	// 		MenteeId:           assignmentMentee.MenteeId,
-	// 		Name:               assignmentMentee.Name,
-	// 		AssignmentURL:      assignmentMentee.AssignmentURL,
-	// 		Grade:              assignmentMentee.Grade,
-	// 		CreatedAt:          assignmentMentee.CreatedAt,
-	// 		UpdatedAt:          assignmentMentee.UpdatedAt,
-	// 	})
-	// }
-
-	// assignmentsDomain := make([]Assignment, len(assignments))
-
-	// for i, assignment := range assignments {
-	// 	assignmentsDomain[i].AssignmentID = assignment.ID
-	// 	assignmentsDomain[i].CourseId = assignment.CourseId
-	// 	assignmentsDomain[i].Title = assignment.Title
-	// 	assignmentsDomain[i].Description = assignment.Description
-	// 	assignmentsDomain[i].CreatedAt = assignment.CreatedAt
-	// 	assignmentsDomain[i].UpdatedAt = assignment.UpdatedAt
-	// }
-
-	// for i, assignment := range assignmentsDomain {
-	// 	for _, assignmentMentee := range assignmentMenteeDomain {
-	// 		if assignment.AssignmentID == assignmentMentee.AssignmentId {
-	// 			assignmentsDomain[i].AssignmentMentee = append(assignmentsDomain[i].AssignmentMentee, assignmentMentee)
-	// 		}
-	// 	}
-	// }
-
 	assignmentsDetail := Assignment{
 		AssignmentID:     assignment.ID,
 		CourseId:         course.ID,

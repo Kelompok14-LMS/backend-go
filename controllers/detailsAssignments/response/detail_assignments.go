@@ -6,20 +6,6 @@ import (
 	detailAssignment "github.com/Kelompok14-LMS/backend-go/businesses/detailsAssignments"
 )
 
-// type course struct {
-// 	CourseId    string       `json:"course_id"`
-// 	CategoryId  string       `json:"category_id"`
-// 	MentorId    string       `json:"mentor_id"`
-// 	Mentor      string       `json:"mentor"`
-// 	Category    string       `json:"category"`
-// 	Title       string       `json:"title"`
-// 	Description string       `json:"description"`
-// 	Thumbnail   string       `json:"thumbnail"`
-// 	Assignment  []Assignment `json:"assignments"`
-// 	CreatedAt   time.Time    `json:"created_at"`
-// 	UpdatedAt   time.Time    `json:"updated_at"`
-// }
-
 type Assignment struct {
 	AssignmentID     string             `json:"assignment_id"`
 	CourseId         string             `json:"course_id"`
@@ -58,35 +44,6 @@ func FullDetailAssignement(domain *detailAssignment.Assignment) *Assignment {
 			UpdatedAt:          assignment.UpdatedAt,
 		})
 	}
-
-	// assignments := make([]Assignment, len(domain.Assignments))
-
-	// for _, assignment := range domain.Assignments {
-	// 	assignments = append(assignments, Assignment{
-	// 		AssignmentID: assignment.AssignmentID,
-	// 		CourseId:     assignment.CourseId,
-	// 		Title:        assignment.Title,
-	// 		Description:  assignment.Description,
-	// 		CreatedAt:    assignment.CreatedAt,
-	// 		UpdatedAt:    assignment.UpdatedAt,
-	// 	})
-	// }
-
-	// for i, assignment := range assignments {
-	// 	assignment.AssignmentMentee = make([]AssignmentMentee, len(domain.Assignments[i].AssignmentMentee))
-
-	// 	for _, assignment_mentee := range domain.Assignments[i].AssignmentMentee {
-	// 		assignment.AssignmentMentee = append(assignment.AssignmentMentee, AssignmentMentee{
-	// 			AssignmentMenteeID: assignment_mentee.AssignmentMenteeID,
-	// 			AssignmentId:       assignment_mentee.AssignmentId,
-	// 			Name:               assignment_mentee.Name,
-	// 			AssignmentURL:      assignment_mentee.AssignmentURL,
-	// 			Grade:              assignment_mentee.Grade,
-	// 			CreatedAt:          assignment.CreatedAt,
-	// 			UpdatedAt:          assignment.UpdatedAt,
-	// 		})
-	// 	}
-	// }
 
 	return &Assignment{
 		AssignmentID:     domain.AssignmentID,
