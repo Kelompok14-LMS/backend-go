@@ -40,6 +40,9 @@ type Repository interface {
 	// FindByMentor repository find courses by mentor id
 	FindByMentor(mentorId string) (*[]Domain, error)
 
+	// FindByPopular repository find courses by highest rating
+	FindByPopular() ([]Domain, error)
+
 	// Update repository update course
 	Update(courseId string, courseDomain *Domain) error
 
@@ -62,6 +65,9 @@ type Usecase interface {
 
 	// FindByMentor usecase find courses by mentor id
 	FindByMentor(mentorId string) (*[]Domain, error)
+
+	// FindByPopular usecase find courses by highest rating
+	FindByPopular() ([]Domain, error)
 
 	// Update usecase update
 	Update(courseId string, courseDomain *Domain) error
