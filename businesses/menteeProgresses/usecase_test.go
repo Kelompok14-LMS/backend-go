@@ -138,3 +138,38 @@ func TestAdd(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestFindMaterialEnrolled(t *testing.T) {
+	t.Run("Test Find Material Enrolled | Success get material enrolled", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(&menteeDomain, nil).Once()
+
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materialDomain, nil).Once()
+
+		menteeProgressRepository.Mock.On("FindByMaterial", menteeDomain.ID, materialDomain.ID).Return(&menteeProgressDomain, nil).Once()
+
+		result, err := menteeProgressService.FindMaterialEnrolled(menteeDomain.ID, materialDomain.ID)
+
+		assert.NoError(t, err)
+		assert.NotEmpty(t, result)
+	})
+
+	t.Run("Test Find Material Enrolled | Failed get material enrolled | Mentee not found", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(&mentees.Domain{}, pkg.ErrMenteeNotFound).Once()
+
+		result, err := menteeProgressService.FindMaterialEnrolled(menteeDomain.ID, materialDomain.ID)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+
+	t.Run("Test Find Material Enrolled | Failed get material enrolled | Material not found", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(&menteeDomain, nil).Once()
+
+		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materials.Domain{}, pkg.ErrMaterialNotFound).Once()
+
+		result, err := menteeProgressService.FindMaterialEnrolled(menteeDomain.ID, materialDomain.ID)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+}
