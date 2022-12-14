@@ -22,12 +22,11 @@ func (mu moduleUsecase) Create(moduleDomain *Domain) error {
 		return err
 	}
 
-	id := uuid.NewString()
-
 	module := Domain{
-		ID:       id,
-		CourseId: moduleDomain.CourseId,
-		Title:    moduleDomain.Title,
+		ID:          uuid.NewString(),
+		CourseId:    moduleDomain.CourseId,
+		Title:       moduleDomain.Title,
+		Description: moduleDomain.Description,
 	}
 
 	err := mu.moduleRepository.Create(&module)

@@ -129,6 +129,16 @@ func (cu courseUsecase) FindByMentor(mentorId string) (*[]Domain, error) {
 	return courses, nil
 }
 
+func (cu courseUsecase) FindByPopular() ([]Domain, error) {
+	courses, err := cu.courseRepository.FindByPopular()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return courses, nil
+}
+
 func (cu courseUsecase) Update(id string, courseDomain *Domain) error {
 	if _, err := cu.categoryRepository.FindById(courseDomain.CategoryId); err != nil {
 		return err
