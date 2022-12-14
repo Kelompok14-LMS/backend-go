@@ -35,6 +35,20 @@ func (_m *Repository) CheckEnrollment(menteeId string, courseId string) (*mentee
 	return r0, r1
 }
 
+// DeleteEnrolledCourse provides a mock function with given fields: menteeId, courseId
+func (_m *Repository) DeleteEnrolledCourse(menteeId string, courseId string) error {
+	ret := _m.Called(menteeId, courseId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(menteeId, courseId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Enroll provides a mock function with given fields: menteeCourseDomain
 func (_m *Repository) Enroll(menteeCourseDomain *mentee_courses.Domain) error {
 	ret := _m.Called(menteeCourseDomain)

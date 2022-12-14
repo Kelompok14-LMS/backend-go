@@ -26,13 +26,13 @@ func (_m *Repository) Add(menteeProgressDomain *mentee_progresses.Domain) error 
 	return r0
 }
 
-// Count provides a mock function with given fields: menteeId
-func (_m *Repository) Count(menteeId string) ([]int64, error) {
-	ret := _m.Called(menteeId)
+// Count provides a mock function with given fields: menteeId, title, status
+func (_m *Repository) Count(menteeId string, title string, status string) ([]int64, error) {
+	ret := _m.Called(menteeId, title, status)
 
 	var r0 []int64
-	if rf, ok := ret.Get(0).(func(string) []int64); ok {
-		r0 = rf(menteeId)
+	if rf, ok := ret.Get(0).(func(string, string, string) []int64); ok {
+		r0 = rf(menteeId, title, status)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]int64)
@@ -40,13 +40,27 @@ func (_m *Repository) Count(menteeId string) ([]int64, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(menteeId)
+	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
+		r1 = rf(menteeId, title, status)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
+}
+
+// DeleteMenteeProgressesByCourse provides a mock function with given fields: menteeId, courseId
+func (_m *Repository) DeleteMenteeProgressesByCourse(menteeId string, courseId string) error {
+	ret := _m.Called(menteeId, courseId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(menteeId, courseId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // FindByMaterial provides a mock function with given fields: menteeId, materialId
