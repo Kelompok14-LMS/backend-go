@@ -43,6 +43,9 @@ import (
 
 	_detailCourseUsecase "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
 	_detailCourseController "github.com/Kelompok14-LMS/backend-go/controllers/detailCourse"
+
+	_manageMenteesUsecase "github.com/Kelompok14-LMS/backend-go/businesses/manageMentees"
+	_manageMenteesController "github.com/Kelompok14-LMS/backend-go/controllers/manageMentees"
 )
 
 type RouteConfig struct {
@@ -125,9 +128,11 @@ func (routeConfig *RouteConfig) New() {
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
-	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository)
-
+	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeCourseRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
+
+	manageMenteeUsecase := _manageMenteesUsecase.NewManageMenteeUsecase(menteeCourseRepository, menteeProgressRepository)
+	manageMenteeController := _manageMenteesController.NewManageMenteeController(manageMenteeUsecase)
 
 	// authentication routes
 	auth := v1.Group("/auth")
@@ -172,6 +177,8 @@ func (routeConfig *RouteConfig) New() {
 	course.POST("/enroll-course", menteeCourseController.HandlerEnrollCourse, authMiddleware.IsAuthenticated())
 	course.GET("/categories/:categoryId", courseController.HandlerFindByCategory)
 	course.GET("/mentors/:mentorId", courseController.HandlerFindByMentor)
+	course.GET("/:courseId/mentees", menteeController.HandlerFindMenteesByCourse)
+	course.DELETE("/:courseId/mentees/:menteeId/delete-access", manageMenteeController.HandlerDeleteAccessMentee)
 	course.GET("/:courseId/details", detailCourseController.HandlerDetailCourse)
 	course.GET("/:courseId", courseController.HandlerFindByIdCourse)
 	course.PUT("/:courseId", courseController.HandlerUpdateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
