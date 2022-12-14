@@ -103,7 +103,7 @@ func (am assignmentMenteeRepository) Update(assignmentMenteeId string, assignmen
 }
 
 func (am assignmentMenteeRepository) Delete(assignmentMenteeId string) error {
-	err := am.conn.Model(&MenteeAssignment{}).Where("id = ?", assignmentMenteeId).Delete(&MenteeAssignment{}).Error
+	err := am.conn.Model(&MenteeAssignment{}).Unscoped().Where("id = ?", assignmentMenteeId).Delete(&MenteeAssignment{}).Error
 
 	if err != nil {
 		return err

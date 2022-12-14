@@ -164,11 +164,13 @@ func (mu assignmentMenteeUsecase) Update(assignmentMenteeId string, assignmentMe
 }
 
 func (mu assignmentMenteeUsecase) Delete(assignmentMenteeId string) error {
-	if _, err := mu.assignmentMenteeRepository.FindById(assignmentMenteeId); err != nil {
-		return err
-	}
+	assignmentMentee, err := mu.assignmentMenteeRepository.FindById(assignmentMenteeId)
 
-	err := mu.assignmentMenteeRepository.Delete(assignmentMenteeId)
+	ctx := context.Background()
+
+	err = mu.storage.DeleteObject(ctx, assignmentMentee.AssignmentURL)
+
+	err = mu.assignmentMenteeRepository.Delete(assignmentMenteeId)
 
 	if err != nil {
 		return err
