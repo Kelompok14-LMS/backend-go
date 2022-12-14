@@ -44,6 +44,12 @@ import (
 	_detailCourseUsecase "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
 	_detailCourseController "github.com/Kelompok14-LMS/backend-go/controllers/detailCourse"
 
+	_detailAssignmentUsecase "github.com/Kelompok14-LMS/backend-go/businesses/detailsAssignments"
+	_detailAssignmentController "github.com/Kelompok14-LMS/backend-go/controllers/detailsAssignments"
+
+	_assignmentMenteeUsecase "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
+	_assignmentMenteeController "github.com/Kelompok14-LMS/backend-go/controllers/menteeAssignments"
+  
 	_manageMenteesUsecase "github.com/Kelompok14-LMS/backend-go/businesses/manageMentees"
 	_manageMenteesController "github.com/Kelompok14-LMS/backend-go/controllers/manageMentees"
 )
@@ -113,6 +119,11 @@ func (routeConfig *RouteConfig) New() {
 	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, courseRepository)
 	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
 
+	// Inject the dependency to mentee assignment
+	menteeAssignmentRepository := _driverFactory.NewMenteeAssignmentRepository(routeConfig.MySQLDB)
+	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, routeConfig.StorageConfig)
+	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase, routeConfig.JWTConfig)
+
 	// Inject the dependency to material
 	materialRepository := _driverFactory.NewMaterialRepository(routeConfig.MySQLDB)
 	materialUsecase := _materialUsecase.NewMaterialUsecase(materialRepository, moduleRepository, routeConfig.StorageConfig)
@@ -128,6 +139,9 @@ func (routeConfig *RouteConfig) New() {
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
+	detailAssignmentUsecase := _detailAssignmentUsecase.NewDetailAssignmentUsecase(courseRepository, assignmentRepository, menteeAssignmentRepository)
+	detailAssignmentController := _detailAssignmentController.NewDetailAssignmentController(detailAssignmentUsecase)
+  
 	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeCourseRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
 
@@ -198,6 +212,7 @@ func (routeConfig *RouteConfig) New() {
 	assignment.POST("", assignmentController.HandlerCreateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
 	assignment.GET("/course/:courseid", assignmentController.HandlerFindByCourse)
+	assignment.GET("/:assignmentid/details", detailAssignmentController.HandlerDetailAssignment)
 	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 
@@ -208,4 +223,14 @@ func (routeConfig *RouteConfig) New() {
 	material.GET("/:materialId", materialController.HandlerFindByIdMaterial)
 	material.PUT("/:materialId", materialController.HandlerUpdateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	material.DELETE("/:materialId", materialController.HandlerSoftDeleteMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+
+	// Mentee assignment routes
+	menteeAssignment := v1.Group("/mentee-assignments")
+	menteeAssignment.POST("", menteeAssignmentController.HandlerCreateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.PUT("/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.GET("/:menteeAssignmentId", menteeAssignmentController.HandlerFindByIdMenteeAssignment)
+	menteeAssignment.PUT("/grade/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateGradeMentee, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	menteeAssignment.DELETE("/:menteeAssignmentId", menteeAssignmentController.HandlerSoftDeleteMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.GET("/assignments/:assignmentId", menteeAssignmentController.HandlerFindByAssignmentId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	menteeAssignment.GET("/mentee", menteeAssignmentController.HandlerFindByMenteeId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 }
