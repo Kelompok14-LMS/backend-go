@@ -1,6 +1,10 @@
 package mentees
 
-import "time"
+import (
+	"time"
+
+	"github.com/Kelompok14-LMS/backend-go/businesses/users"
+)
 
 type Domain struct {
 	ID             string
@@ -11,6 +15,7 @@ type Domain struct {
 	BirthDate      time.Time
 	Address        string
 	ProfilePicture string
+	User           users.Domain
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
@@ -48,6 +53,12 @@ type Repository interface {
 	// FindByIdUser repository find mentee by id user
 	FindByIdUser(userId string) (*Domain, error)
 
+	// repository find mentees by course
+	FindByCourse(courseId string) (*[]Domain, error)
+
+	// repository count total mentees by course
+	CountByCourse(courseId string) (int64, error)
+
 	// Update repository edit data mentee
 	Update(id string, menteeDomain *Domain) error
 }
@@ -70,6 +81,12 @@ type Usecase interface {
 
 	// FindById usecase find by id mentee
 	FindById(id string) (*Domain, error)
+
+	// usecase find mentee profile
+	// MenteeProfile(menteeId string) (*Domain, error)
+
+	// usecase find mentees by course
+	FindByCourse(courseId string) (map[string]interface{}, error)
 
 	// Update usecase edit data mentee
 	Update(id string, userDomain *Domain) error

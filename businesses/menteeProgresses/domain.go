@@ -33,7 +33,10 @@ type Repository interface {
 	FindByMentee(menteeId string, courseId string) ([]Domain, error)
 
 	// Count repository get mentee progresses count
-	Count(menteeId string) ([]int64, error)
+	Count(menteeId string, title string, status string) ([]int64, error)
+
+	// DeleteMenteeProgressesByCourse repository delete progress mentee by course
+	DeleteMenteeProgressesByCourse(menteeId string, courseId string) error
 }
 
 type Usecase interface {

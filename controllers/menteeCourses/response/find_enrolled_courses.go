@@ -3,7 +3,7 @@ package response
 import (
 	"time"
 
-	mentee_courses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
+	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 )
 
 type FindMenteeCourses struct {
@@ -14,11 +14,12 @@ type FindMenteeCourses struct {
 	Thumbnail      string    `json:"thumbnail"`
 	Progress       int64     `json:"progress"`
 	TotalMaterials int64     `json:"total_materials"`
+	Description    string    `json:"description"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-func MenteeCourses(menteeCourseDomain *mentee_courses.Domain) *FindMenteeCourses {
+func MenteeCourses(menteeCourseDomain *menteeCourses.Domain) *FindMenteeCourses {
 	return &FindMenteeCourses{
 		ID:             menteeCourseDomain.ID,
 		CourseId:       menteeCourseDomain.Course.ID,
@@ -27,6 +28,7 @@ func MenteeCourses(menteeCourseDomain *mentee_courses.Domain) *FindMenteeCourses
 		Thumbnail:      menteeCourseDomain.Course.Thumbnail,
 		Progress:       menteeCourseDomain.ProgressCount,
 		TotalMaterials: menteeCourseDomain.TotalMaterials,
+		Description:    menteeCourseDomain.Course.Description,
 		CreatedAt:      menteeCourseDomain.CreatedAt,
 		UpdatedAt:      menteeCourseDomain.UpdatedAt,
 	}

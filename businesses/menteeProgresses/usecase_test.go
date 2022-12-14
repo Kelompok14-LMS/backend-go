@@ -21,7 +21,7 @@ import (
 
 var (
 	menteeProgressRepository _menteeProgressMock.Repository
-	menteeRepository         _menteeMock.MenteeRepositoryMock
+	menteeRepository         _menteeMock.Repository
 	courseRepository         _courseMock.Repository
 	materialRepository       _materialMock.Repository
 

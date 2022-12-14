@@ -65,7 +65,7 @@ func (mr menteeRepository) FindById(id string) (*mentees.Domain, error) {
 }
 
 func (mr menteeRepository) FindByIdUser(userId string) (*mentees.Domain, error) {
-	rec := &Mentee{}
+	rec := Mentee{}
 
 	err := mr.conn.Model(&Mentee{}).Where("user_id = ?", userId).First(&rec).Error
 
@@ -78,6 +78,54 @@ func (mr menteeRepository) FindByIdUser(userId string) (*mentees.Domain, error) 
 	}
 
 	return rec.ToDomain(), nil
+}
+
+func (mr menteeRepository) FindByCourse(courseId string) (*[]mentees.Domain, error) {
+	var rec []Mentee
+
+	err := mr.conn.Model(&Mentee{}).Preload("User").
+		Joins("LEFT JOIN users ON users.id = mentees.user_id").
+		Joins("LEFT JOIN mentee_courses ON mentees.id = mentee_courses.mentee_id").
+		Where("mentee_courses.course_id = ?", courseId).
+		Order("mentees.fullname ASC").
+		Find(&rec).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkg.ErrCourseNotFound
+		}
+
+		return nil, err
+	}
+
+	var menteeDomain []mentees.Domain
+
+	for _, mentee := range rec {
+		menteeDomain = append(menteeDomain, *mentee.ToDomain())
+	}
+
+	return &menteeDomain, nil
+}
+
+func (mr menteeRepository) CountByCourse(courseId string) (int64, error) {
+	var total int64
+
+	err := mr.conn.Model(&Mentee{}).
+		Joins("LEFT JOIN users ON users.id = mentees.user_id").
+		Joins("LEFT JOIN mentee_courses ON mentees.id = mentee_courses.mentee_id").
+		Where("mentee_courses.course_id = ?", courseId).
+		Order("mentees.fullname ASC").
+		Count(&total).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, pkg.ErrCourseNotFound
+		}
+
+		return 0, nil
+	}
+
+	return total, nil
 }
 
 func (mr menteeRepository) Update(id string, menteeDomain *mentees.Domain) error {

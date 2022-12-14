@@ -221,6 +221,27 @@ func (m menteeUsecase) FindById(id string) (*Domain, error) {
 	panic("implement me")
 }
 
+func (m menteeUsecase) FindByCourse(courseId string) (map[string]interface{}, error) {
+	mentees, err := m.menteeRepository.FindByCourse(courseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	total, err := m.menteeRepository.CountByCourse(courseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	data := map[string]interface{}{
+		"total":   total,
+		"mentees": mentees,
+	}
+
+	return data, nil
+}
+
 func (m menteeUsecase) Update(id string, userDomain *Domain) error {
 	//TODO implement me
 	panic("implement me")
