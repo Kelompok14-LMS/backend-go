@@ -70,6 +70,9 @@ var (
 	// error unsupported image file
 	ErrUnsupportedImageFile = errors.New("Unsupported image file. Acceptable file format: .jpeg, .jpg, and .png")
 
+	// error record not found (cannot specify the error)
+	ErrRecordNotFound = errors.New("Record not found")
+
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")
 )

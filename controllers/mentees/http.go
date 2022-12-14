@@ -6,6 +6,7 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/Kelompok14-LMS/backend-go/controllers/mentees/request"
+	"github.com/Kelompok14-LMS/backend-go/controllers/mentees/response"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/labstack/echo/v4"
@@ -131,4 +132,33 @@ func (ctrl *MenteeController) HandlerForgotPassword(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success reset password", nil))
+}
+
+func (ctrl MenteeController) HandlerFindMenteesByCourse(c echo.Context) error {
+	courseId := c.Param("courseId")
+
+	data, err := ctrl.menteeUsecase.FindByCourse(courseId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrCourseNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	var menteeDomain []response.FindAllMentees
+
+	mentees := data["mentees"].(*[]mentees.Domain)
+
+	for _, mentee := range *mentees {
+		menteeDomain = append(menteeDomain, response.AllMentees(&mentee))
+	}
+
+	res := map[string]interface{}{
+		"total":   data["total"],
+		"mentees": menteeDomain,
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentees", res))
 }
