@@ -46,6 +46,7 @@ func (m menteeProgressUsecase) Add(menteeProgressDomain *Domain) error {
 		MenteeId:   menteeProgressDomain.MenteeId,
 		CourseId:   menteeProgressDomain.CourseId,
 		MaterialId: menteeProgressDomain.MaterialId,
+		Completed:  true,
 	}
 
 	err := m.menteeProgressRepository.Add(&menteeProgress)
@@ -55,4 +56,38 @@ func (m menteeProgressUsecase) Add(menteeProgressDomain *Domain) error {
 	}
 
 	return nil
+}
+
+func (m menteeProgressUsecase) FindMaterialEnrolled(menteeId string, materialId string) (*Domain, error) {
+	if _, err := m.menteeRepository.FindById(menteeId); err != nil {
+		return nil, err
+	}
+
+	material, err := m.materialRepository.FindById(materialId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	progress, _ := m.menteeProgressRepository.FindByMaterial(menteeId, materialId)
+
+	var completed bool
+
+	if progress == nil {
+		completed = false
+	} else {
+		completed = true
+	}
+
+	menteeProgress := Domain{
+		MenteeId:   menteeId,
+		CourseId:   material.CourseId,
+		MaterialId: materialId,
+		Material:   *material,
+		Completed:  completed,
+		CreatedAt:  material.CreatedAt,
+		UpdatedAt:  material.UpdatedAt,
+	}
+
+	return &menteeProgress, nil
 }

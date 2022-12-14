@@ -113,6 +113,27 @@ func (cr courseRepository) FindByMentor(mentorId string) (*[]courses.Domain, err
 	return &coursesDomain, nil
 }
 
+func (cr courseRepository) FindByPopular() ([]courses.Domain, error) {
+	rec := []Course{}
+
+	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
+		Joins("INNER JOIN categories ON categories.id = courses.category_id").
+		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
+		Order("courses.created_at DESC").Limit(10).Find(&rec).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	coursesDomain := []courses.Domain{}
+
+	for _, course := range rec {
+		coursesDomain = append(coursesDomain, *course.ToDomain())
+	}
+
+	return coursesDomain, nil
+}
+
 func (cr courseRepository) Update(id string, courseDomain *courses.Domain) error {
 	rec := FromDomain(courseDomain)
 

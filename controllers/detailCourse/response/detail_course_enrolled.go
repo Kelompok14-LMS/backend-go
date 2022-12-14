@@ -1,57 +1,8 @@
 package response
 
-import (
-	"time"
+import detailCourse "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
 
-	detailCourse "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
-)
-
-type Course struct {
-	CourseId    string       `json:"course_id"`
-	CategoryId  string       `json:"category_id"`
-	MentorId    string       `json:"mentor_id"`
-	Mentor      string       `json:"mentor"`
-	Category    string       `json:"category"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	Thumbnail   string       `json:"thumbnail"`
-	Modules     []Module     `json:"modules"`
-	Assignments []Assignment `json:"assignment"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
-}
-
-type Assignment struct {
-	AssignmentID string    `json:"assignment_id"`
-	CourseId     string    `json:"course_id"`
-	Title        string    `json:"title"`
-	Description  string    `json:"description"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-}
-
-type Module struct {
-	ModuleId    string     `json:"module_id"`
-	CourseId    string     `json:"course_id"`
-	Title       string     `json:"title"`
-	Description string     `json:"description"`
-	Materials   []Material `json:"materials"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-}
-
-type Material struct {
-	MaterialId  string    `json:"material_id"`
-	ModuleId    string    `json:"module_id"`
-	Title       string    `json:"title"`
-	URL         string    `json:"url"`
-	Description string    `json:"description"`
-	Completed   bool      `json:"completed"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-}
-
-func FullDetailCourse(domain *detailCourse.Domain) *Course {
+func FullDetailCourseEnrolled(domain *detailCourse.Domain) *Course {
 	modules := make([]Module, len(domain.Modules))
 
 	for i, module := range domain.Modules {
@@ -84,6 +35,7 @@ func FullDetailCourse(domain *detailCourse.Domain) *Course {
 				module.Materials[j].Title = material.Title
 				module.Materials[j].URL = material.URL
 				module.Materials[j].Description = material.Description
+				module.Materials[j].Completed = material.Completed
 				module.Materials[j].CreatedAt = material.CreatedAt
 				module.Materials[j].UpdatedAt = material.UpdatedAt
 

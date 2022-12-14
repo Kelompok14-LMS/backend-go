@@ -14,6 +14,7 @@ type MenteeProgress struct {
 	MenteeId   string `json:"mentee_id" gorm:"size:200"`
 	CourseId   string `json:"course_id" gorm:"size:200"`
 	MaterialId string `json:"material_id" gorm:"size:200"`
+	Completed  string `json:"completed" gorm:"size:1"`
 	Mentee     mentees.Mentee
 	Course     courses.Course
 	Material   materials.Material
@@ -22,11 +23,18 @@ type MenteeProgress struct {
 }
 
 func (req *MenteeProgress) ToDomain() *menteeProgresses.Domain {
+	var completed bool
+
+	if req.Completed == "1" {
+		completed = true
+	}
+
 	return &menteeProgresses.Domain{
 		ID:         req.ID,
 		MenteeId:   req.MenteeId,
 		CourseId:   req.CourseId,
 		MaterialId: req.MaterialId,
+		Completed:  completed,
 		Mentee:     *req.Mentee.ToDomain(),
 		Course:     *req.Course.ToDomain(),
 		Material:   *req.Material.ToDomain(),
@@ -36,11 +44,18 @@ func (req *MenteeProgress) ToDomain() *menteeProgresses.Domain {
 }
 
 func FromDomain(menteeProgressDomain *menteeProgresses.Domain) *MenteeProgress {
+	var completed string
+
+	if menteeProgressDomain.Completed {
+		completed = "1"
+	}
+
 	return &MenteeProgress{
 		ID:         menteeProgressDomain.ID,
 		MenteeId:   menteeProgressDomain.MenteeId,
 		CourseId:   menteeProgressDomain.CourseId,
 		MaterialId: menteeProgressDomain.MaterialId,
+		Completed:  completed,
 		CreatedAt:  menteeProgressDomain.CreatedAt,
 		UpdatedAt:  menteeProgressDomain.UpdatedAt,
 	}

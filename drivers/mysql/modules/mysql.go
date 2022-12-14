@@ -51,7 +51,7 @@ func (mr moduleRepository) FindByCourse(courseId string) ([]modules.Domain, erro
 
 	err := mr.conn.Model(&Module{}).Where("course_id = ?", courseId).
 		Order("created_at ASC").
-		First(&rec).Error
+		Find(&rec).Error
 
 	if err != nil {
 		return nil, pkg.ErrModuleNotFound
@@ -80,6 +80,16 @@ func (mr moduleRepository) Update(moduleId string, moduleDomain *modules.Domain)
 
 func (mr moduleRepository) Delete(moduleId string) error {
 	err := mr.conn.Model(&Module{}).Where("id = ?", moduleId).Delete(&Module{}).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (mr moduleRepository) Deletes(courseId string) error {
+	err := mr.conn.Model(&Module{}).Where("course_id = ?", courseId).Delete(&Module{}).Error
 
 	if err != nil {
 		return err
