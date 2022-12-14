@@ -66,7 +66,7 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 		return nil, err
 	}
 
-	progresses, err := m.menteeProgressRepository.Count(menteeId)
+	progresses, err := m.menteeProgressRepository.Count(menteeId, title, status)
 
 	if err != nil {
 		return nil, err
