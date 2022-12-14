@@ -4,7 +4,6 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
-	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
@@ -17,7 +16,6 @@ type detailCourseUsecase struct {
 	materialRepository       materials.Repository
 	menteeProgressRepository menteeProgresses.Repository
 	assignmentsRepository    assignments.Repository
-	menteeCourse             menteeCourses.Repository
 }
 
 func NewDetailCourseUsecase(
@@ -27,7 +25,6 @@ func NewDetailCourseUsecase(
 	materialRepository materials.Repository,
 	menteeProgressRepository menteeProgresses.Repository,
 	assignmentsRepository assignments.Repository,
-	menteeCourse menteeCourses.Repository,
 ) Usecase {
 	return detailCourseUsecase{
 		menteeRepository:         menteeRepository,
@@ -36,7 +33,6 @@ func NewDetailCourseUsecase(
 		materialRepository:       materialRepository,
 		menteeProgressRepository: menteeProgressRepository,
 		assignmentsRepository:    assignmentsRepository,
-		menteeCourse:             menteeCourse,
 	}
 }
 
@@ -47,7 +43,11 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		return nil, err
 	}
 
-	modules, _ := dc.moduleRepository.FindByCourse(courseId)
+	modules, err := dc.moduleRepository.FindByCourse(courseId)
+
+	if err != nil {
+		return nil, err
+	}
 
 	moduleIds := []string{}
 
@@ -120,10 +120,6 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 }
 
 func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId string) (*Domain, error) {
-	if _, err := dc.menteeCourse.CheckEnrollment(menteeId, courseId); err != nil {
-		return nil, err
-	}
-
 	course, err := dc.courseRepository.FindById(courseId)
 
 	if err != nil {
