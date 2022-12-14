@@ -6,14 +6,16 @@ import (
 )
 
 type CreateModuleInput struct {
-	CourseId string `json:"course_id" form:"course_id" validate:"required"`
-	Title    string `json:"title" form:"title" validate:"required"`
+	CourseId    string `json:"course_id" form:"course_id" validate:"required"`
+	Title       string `json:"title" form:"title" validate:"required"`
+	Description string `json:"description" form:"description" validate:"required"`
 }
 
 func (req *CreateModuleInput) ToDomain() *modules.Domain {
 	return &modules.Domain{
-		CourseId: req.CourseId,
-		Title:    req.Title,
+		CourseId:    req.CourseId,
+		Title:       req.Title,
+		Description: req.Description,
 	}
 }
 

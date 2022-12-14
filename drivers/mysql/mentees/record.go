@@ -43,6 +43,7 @@ func (rec *Mentee) ToDomain() *mentees.Domain {
 		Role:           rec.Role,
 		BirthDate:      rec.BirthDate,
 		ProfilePicture: rec.ProfilePicture,
+		User:           *rec.User.ToDomain(),
 		CreatedAt:      rec.CreatedAt,
 		UpdatedAt:      rec.UpdatedAt,
 	}

@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	menteeRepository _menteeMock.MenteeRepositoryMock
+	menteeRepository _menteeMock.Repository
 	menteeService    mentees.Usecase
 
 	otpRepository  _otpMock.Repository

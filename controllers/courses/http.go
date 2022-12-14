@@ -135,6 +135,22 @@ func (ctrl *CourseController) HandlerFindByMentor(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get courses by mentor", coursesResponse))
 }
 
+func (ctrl *CourseController) HandlerFindByPopular(c echo.Context) error {
+	coursesDomain, err := ctrl.courseUsecase.FindByPopular()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+	}
+
+	var coursesResponse []response.FindCourses
+
+	for _, course := range coursesDomain {
+		coursesResponse = append(coursesResponse, response.AllCourses(&course))
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get courses by mentor", coursesResponse))
+}
+
 func (ctrl *CourseController) HandlerUpdateCourse(c echo.Context) error {
 	courseId := c.Param("courseId")
 	courseInput := request.UpdateCourseInput{}

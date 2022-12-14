@@ -29,6 +29,9 @@ type Repository interface {
 
 	// CheckEnrollment repository check enrollment course mentee
 	CheckEnrollment(menteeId string, courseId string) (*Domain, error)
+
+	// DeleteEnrolledCourse delete enrolled course mentee
+	DeleteEnrolledCourse(menteeId string, courseId string) error
 }
 
 type Usecase interface {

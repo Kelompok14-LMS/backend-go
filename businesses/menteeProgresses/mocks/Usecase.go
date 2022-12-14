@@ -26,6 +26,29 @@ func (_m *Usecase) Add(menteeProgressDomain *mentee_progresses.Domain) error {
 	return r0
 }
 
+// FindMaterialEnrolled provides a mock function with given fields: menteeId, materialId
+func (_m *Usecase) FindMaterialEnrolled(menteeId string, materialId string) (*mentee_progresses.Domain, error) {
+	ret := _m.Called(menteeId, materialId)
+
+	var r0 *mentee_progresses.Domain
+	if rf, ok := ret.Get(0).(func(string, string) *mentee_progresses.Domain); ok {
+		r0 = rf(menteeId, materialId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*mentee_progresses.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(menteeId, materialId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewUsecase interface {
 	mock.TestingT
 	Cleanup(func())

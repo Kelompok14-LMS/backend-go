@@ -6,6 +6,7 @@ import (
 
 	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	"github.com/Kelompok14-LMS/backend-go/controllers/menteeProgresses/request"
+	"github.com/Kelompok14-LMS/backend-go/controllers/menteeProgresses/response"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/labstack/echo/v4"
@@ -47,4 +48,23 @@ func (ctrl *MenteeProgressController) HandlerAddProgress(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success add progress", nil))
+}
+
+func (ctrl *MenteeProgressController) HandlerFindMaterialEnrolled(c echo.Context) error {
+	menteeId := c.Param("menteeId")
+	materialId := c.Param("materialId")
+
+	progress, err := ctrl.menteeProgressUsecase.FindMaterialEnrolled(menteeId, materialId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrMenteeNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
+		} else if errors.Is(err, pkg.ErrMaterialNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get material", response.DetailMaterialEnrolled(progress)))
 }
