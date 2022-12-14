@@ -36,6 +36,9 @@ import (
 
 	menteeProgressesDomain "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	menteeProgressesDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/menteeProgresses"
+
+	menteeAssignmentsDomain "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
+	menteeAssignmentsDB "github.com/Kelompok14-LMS/backend-go/drivers/mysql/menteeAssignments"
 )
 
 func NewOTPRepository(client *redis.Client) otpDomain.Repository {
@@ -80,4 +83,8 @@ func NewMenteeCourseRepository(conn *gorm.DB) menteeCoursesDomain.Repository {
 
 func NewMenteeProgressRepository(conn *gorm.DB) menteeProgressesDomain.Repository {
 	return menteeProgressesDB.NewSQLRepository(conn)
+}
+
+func NewMenteeAssignmentRepository(conn *gorm.DB) menteeAssignmentsDomain.Repository {
+	return menteeAssignmentsDB.NewSQLRepository(conn)
 }
