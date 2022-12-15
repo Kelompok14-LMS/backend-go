@@ -90,6 +90,25 @@ func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string) ([]
 	return assignmentDomain, nil
 }
 
+func (am assignmentMenteeRepository) FindByCourse(menteeId string, courseId string) (*menteeAssignments.Domain, error) {
+	rec := MenteeAssignment{}
+
+	err := am.conn.Model(&MenteeAssignment{}).Preload("Assignment").
+		Joins("LEFT JOIN assignments ON assignments.id = mentee_assignments.assignment_id").
+		Where("mentee_assignments.mentee_id = ? AND assignments.course_id = ?", menteeId, courseId).
+		First(&rec).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkg.ErrAssignmentNotFound
+		}
+
+		return nil, err
+	}
+
+	return rec.ToDomain(), nil
+}
+
 func (am assignmentMenteeRepository) Update(assignmentMenteeId string, assignmentmenteeDomain *menteeAssignments.Domain) error {
 	rec := FromDomain(assignmentmenteeDomain)
 
