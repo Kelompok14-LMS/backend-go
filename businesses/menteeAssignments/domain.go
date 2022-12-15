@@ -24,10 +24,10 @@ type Domain struct {
 
 type Repository interface {
 	// Create repository create new assignment mentee
-	Create(assignmentmenteeDomain *Domain) error
+	Create(assignmentMenteeDomain *Domain) error
 
 	// FindById repository find assignment mentee by id
-	FindById(assignmentmenteeId string) (*Domain, error)
+	FindById(assignmentMenteeId string) (*Domain, error)
 
 	// FindByAssignmentID repository find assignment mentee by assignment id
 	FindByAssignmentId(assignmentId string) ([]Domain, error)
@@ -35,11 +35,14 @@ type Repository interface {
 	// FindByMenteeId repository find assignment mentee by mentee id
 	FindByMenteeId(menteeId string) ([]Domain, error)
 
+	// FindByCourse repository find assignment by course
+	FindByCourse(menteeId string, course string) (*Domain, error)
+
 	// Update repository update assignment  mentee
-	Update(assignmentmenteeId string, assignmentmenteeDomain *Domain) error
+	Update(assignmentMenteeId string, assignmentMenteeDomain *Domain) error
 
 	// Delete repository delete assignment mentee
-	Delete(assignmentmenteeId string) error
+	Delete(assignmentMenteeId string) error
 }
 
 type Usecase interface {
