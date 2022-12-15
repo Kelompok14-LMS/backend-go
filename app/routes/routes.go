@@ -49,7 +49,7 @@ import (
 
 	_assignmentMenteeUsecase "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 	_assignmentMenteeController "github.com/Kelompok14-LMS/backend-go/controllers/menteeAssignments"
-  
+
 	_manageMenteesUsecase "github.com/Kelompok14-LMS/backend-go/businesses/manageMentees"
 	_manageMenteesController "github.com/Kelompok14-LMS/backend-go/controllers/manageMentees"
 )
@@ -141,11 +141,11 @@ func (routeConfig *RouteConfig) New() {
 
 	detailAssignmentUsecase := _detailAssignmentUsecase.NewDetailAssignmentUsecase(courseRepository, assignmentRepository, menteeAssignmentRepository)
 	detailAssignmentController := _detailAssignmentController.NewDetailAssignmentController(detailAssignmentUsecase)
-  
+
 	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeCourseRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
 
-	manageMenteeUsecase := _manageMenteesUsecase.NewManageMenteeUsecase(menteeCourseRepository, menteeProgressRepository)
+	manageMenteeUsecase := _manageMenteesUsecase.NewManageMenteeUsecase(menteeCourseRepository, menteeProgressRepository, menteeAssignmentRepository, routeConfig.StorageConfig)
 	manageMenteeController := _manageMenteesController.NewManageMenteeController(manageMenteeUsecase)
 
 	// authentication routes
@@ -211,7 +211,7 @@ func (routeConfig *RouteConfig) New() {
 	assignment := v1.Group("/assignments")
 	assignment.POST("", assignmentController.HandlerCreateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
-	assignment.GET("/course/:courseid", assignmentController.HandlerFindByCourse)
+	assignment.GET("/courses/:courseid", assignmentController.HandlerFindByCourse)
 	assignment.GET("/:assignmentid/details", detailAssignmentController.HandlerDetailAssignment)
 	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
