@@ -152,31 +152,31 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	t.Run("Test Delete | Success delete mentee Assignment", func(t *testing.T) {
-		menteeAssignmentRepository.Mock.On("FindById", menteeAssignmentDomain.ID).Return(&menteeAssignmentDomain, nil).Once()
+	// t.Run("Test Delete | Success delete mentee Assignment", func(t *testing.T) {
+	// 	menteeAssignmentRepository.Mock.On("FindById", menteeAssignmentDomain.ID).Return(&menteeAssignmentDomain, nil).Once()
 
-		menteeAssignmentRepository.Mock.On("Delete", menteeAssignmentDomain.ID).Return(nil).Once()
+	// 	menteeAssignmentRepository.Mock.On("Delete", menteeAssignmentDomain.ID).Return(nil).Once()
 
-		err := menteeAssignmentService.Delete(menteeAssignmentDomain.ID)
+	// 	err := menteeAssignmentService.Delete(menteeAssignmentDomain.ID)
 
-		assert.NoError(t, err)
-	})
+	// 	assert.NoError(t, err)
+	// })
 
-	t.Run("Test Delete | Failed delete mentee Assignment | mentee Assignment not found", func(t *testing.T) {
-		menteeAssignmentRepository.Mock.On("FindById", menteeAssignmentDomain.ID).Return(&menteeAssignments.Domain{}, pkg.ErrAssignmentMenteeNotFound).Once()
+	// t.Run("Test Delete | Failed delete mentee Assignment | mentee Assignment not found", func(t *testing.T) {
+	// 	menteeAssignmentRepository.Mock.On("FindById", menteeAssignmentDomain.ID).Return(&menteeAssignments.Domain{}, pkg.ErrAssignmentMenteeNotFound).Once()
 
-		err := menteeAssignmentService.Delete(menteeAssignmentDomain.ID)
+	// 	err := menteeAssignmentService.Delete(menteeAssignmentDomain.ID)
 
-		assert.Error(t, err)
-	})
+	// 	assert.Error(t, err)
+	// })
 
-	t.Run("Test Delete | Failed delete mentee Assignment | error occurred", func(t *testing.T) {
-		menteeAssignmentRepository.Mock.On("FindById", menteeAssignmentDomain.ID).Return(&menteeAssignmentDomain, nil).Once()
+	// t.Run("Test Delete | Failed delete mentee Assignment | error occurred", func(t *testing.T) {
+	// 	menteeAssignmentRepository.Mock.On("FindById", menteeAssignmentDomain.ID).Return(&menteeAssignmentDomain, nil).Once()
 
-		menteeAssignmentRepository.Mock.On("Delete", menteeAssignmentDomain.ID).Return(errors.New("error occurred")).Once()
+	// 	menteeAssignmentRepository.Mock.On("Delete", menteeAssignmentDomain.ID).Return(errors.New("error occurred")).Once()
 
-		err := menteeAssignmentService.Delete(menteeAssignmentDomain.ID)
+	// 	err := menteeAssignmentService.Delete(menteeAssignmentDomain.ID)
 
-		assert.Error(t, err)
-	})
+	// 	assert.Error(t, err)
+	// })
 }
