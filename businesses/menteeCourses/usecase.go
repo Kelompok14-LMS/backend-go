@@ -5,6 +5,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
 	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/google/uuid"
 )
 
@@ -41,6 +42,12 @@ func (m menteeCourseUsecase) Enroll(menteeCourseDomain *Domain) error {
 		return err
 	}
 
+	isEnrolled, _ := m.menteeCourseRepository.CheckEnrollment(menteeCourseDomain.MenteeId, menteeCourseDomain.CourseId)
+
+	if isEnrolled != nil {
+		return pkg.ErrAlreadyEnrolled
+	}
+
 	menteeCourseId := uuid.NewString()
 
 	menteeCourse := Domain{
@@ -50,9 +57,7 @@ func (m menteeCourseUsecase) Enroll(menteeCourseDomain *Domain) error {
 		Status:   "ongoing",
 	}
 
-	err := m.menteeCourseRepository.Enroll(&menteeCourse)
-
-	if err != nil {
+	if err := m.menteeCourseRepository.Enroll(&menteeCourse); err != nil {
 		return err
 	}
 
