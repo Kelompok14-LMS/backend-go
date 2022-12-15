@@ -222,7 +222,7 @@ func (ctrl *MenteeController) HandlerFindAll(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentor ", allMentees))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentee ", allMentees))
 }
 
 func (ctrl *MenteeController) HandlerUpdateProfile(c echo.Context) error {
