@@ -8,6 +8,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/otp"
 	"github.com/Kelompok14-LMS/backend-go/businesses/users"
 	"github.com/Kelompok14-LMS/backend-go/constants"
+	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/google/uuid"
@@ -19,6 +20,7 @@ type menteeUsecase struct {
 	otpRepository    otp.Repository
 	jwtConfig        *utils.JWTConfig
 	mailerConfig     *pkg.MailerConfig
+	storage          *helper.StorageConfig
 }
 
 func NewMenteeUsecase(
@@ -27,6 +29,7 @@ func NewMenteeUsecase(
 	otpRepository otp.Repository,
 	jwtConfig *utils.JWTConfig,
 	mailerConfig *pkg.MailerConfig,
+	storage *helper.StorageConfig,
 ) Usecase {
 	return menteeUsecase{
 		menteeRepository: menteeRepository,
@@ -34,6 +37,7 @@ func NewMenteeUsecase(
 		otpRepository:    otpRepository,
 		jwtConfig:        jwtConfig,
 		mailerConfig:     mailerConfig,
+		storage:          storage,
 	}
 }
 
@@ -212,13 +216,32 @@ func (m menteeUsecase) Login(menteeAuth *MenteeAuth) (interface{}, error) {
 }
 
 func (m menteeUsecase) FindAll() (*[]Domain, error) {
-	//TODO implement me
-	panic("implement me")
+	var err error
+
+	mentees, err := m.menteeRepository.FindAll()
+
+	if err != nil {
+		if err == pkg.ErrMenteeNotFound {
+			return nil, pkg.ErrMenteeNotFound
+		}
+
+		return nil, pkg.ErrInternalServerError
+	}
+
+	return mentees, nil
 }
 
 func (m menteeUsecase) FindById(id string) (*Domain, error) {
-	//TODO implement me
-	panic("implement me")
+	mentee, err := m.menteeRepository.FindById(id)
+	if err != nil {
+		if err == pkg.ErrMenteeNotFound {
+			return nil, pkg.ErrMenteeNotFound
+		}
+
+		return nil, pkg.ErrInternalServerError
+	}
+
+	return mentee, nil
 }
 
 func (m menteeUsecase) FindByCourse(courseId string) (map[string]interface{}, error) {
@@ -242,7 +265,58 @@ func (m menteeUsecase) FindByCourse(courseId string) (map[string]interface{}, er
 	return data, nil
 }
 
-func (m menteeUsecase) Update(id string, userDomain *Domain) error {
-	//TODO implement me
-	panic("implement me")
+func (m menteeUsecase) Update(id string, menteeDomain *Domain) error {
+	mentee, err := m.menteeRepository.FindById(id)
+
+	if err != nil {
+		return err
+	}
+
+	var ProfilePictureURL string
+
+	if menteeDomain.ProfilePictureFile != nil {
+		ctx := context.Background()
+
+		if mentee.ProfilePicture != "" {
+			if err := m.storage.DeleteObject(ctx, mentee.ProfilePicture); err != nil {
+				return err
+			}
+		}
+
+		ProfilePicture, err := menteeDomain.ProfilePictureFile.Open()
+		if err != nil {
+			return pkg.ErrUnsupportedImageFile
+		}
+
+		defer ProfilePicture.Close()
+
+		filename, err := utils.GetFilename(menteeDomain.ProfilePictureFile.Filename)
+
+		ProfilePictureURL, err = m.storage.UploadImage(ctx, filename, ProfilePicture)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	updatedMentee := Domain{
+		Fullname:       menteeDomain.Fullname,
+		Phone:          menteeDomain.Phone,
+		BirthDate:      menteeDomain.BirthDate,
+		Address:        menteeDomain.Address,
+		ProfilePicture: ProfilePictureURL,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	err = m.menteeRepository.Update(id, &updatedMentee)
+	if err != nil {
+		if err == pkg.ErrMenteeNotFound {
+			return pkg.ErrMenteeNotFound
+		}
+
+		return pkg.ErrInternalServerError
+	}
+
+	return nil
 }

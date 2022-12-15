@@ -91,8 +91,8 @@ func (routeConfig *RouteConfig) New() {
 
 	// Inject the dependency to mentee
 	menteeRepository := _driverFactory.NewMenteeRepository(routeConfig.MySQLDB)
-	menteeUsecase := _menteeUsecase.NewMenteeUsecase(menteeRepository, userRepository, otpRepository, routeConfig.JWTConfig, routeConfig.Mailer)
-	menteeController := _menteeController.NewMenteeController(menteeUsecase)
+	menteeUsecase := _menteeUsecase.NewMenteeUsecase(menteeRepository, userRepository, otpRepository, routeConfig.JWTConfig, routeConfig.Mailer, routeConfig.StorageConfig)
+	menteeController := _menteeController.NewMenteeController(menteeUsecase, routeConfig.JWTConfig)
 
 	// Inject the dependency to mentor
 	mentorRepository := _driverFactory.NewMentorRepository(routeConfig.MySQLDB)
@@ -170,6 +170,10 @@ func (routeConfig *RouteConfig) New() {
 
 	// mentee routes
 	mentee := v1.Group("/mentees", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	mentee.GET("", menteeController.HandlerFindAll)
+	mentee.GET("/profile", menteeController.HandlerProfileMentee)
+	mentee.GET("/:menteeId", menteeController.HandlerFindByID)
+	mentee.PUT("/:menteeId", menteeController.HandlerUpdateProfile)
 	mentee.POST("/progress", menteeProgressController.HandlerAddProgress, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	mentee.GET("/:menteeId/courses", menteeCourseController.HandlerFindMenteeCourses)
 	mentee.GET("/:menteeId/courses/:courseId/details", detailCourseController.HandlerDetailCourseEnrolled)

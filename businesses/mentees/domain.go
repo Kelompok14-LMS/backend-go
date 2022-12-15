@@ -1,23 +1,25 @@
 package mentees
 
 import (
+	"mime/multipart"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/users"
 )
 
 type Domain struct {
-	ID             string
-	UserId         string
-	Fullname       string
-	Phone          string
-	Role           string
-	BirthDate      time.Time
-	Address        string
-	ProfilePicture string
-	User           users.Domain
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
+	ID                 string
+	UserId             string
+	Fullname           string
+	Phone              string
+	Role               string
+	BirthDate          time.Time
+	Address            string
+	ProfilePicture     string
+	ProfilePictureFile *multipart.FileHeader
+	User               users.Domain
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
 }
 
 type MenteeAuth struct {
@@ -89,5 +91,5 @@ type Usecase interface {
 	FindByCourse(courseId string) (map[string]interface{}, error)
 
 	// Update usecase edit data mentee
-	Update(id string, userDomain *Domain) error
+	Update(id string, menteeDomain *Domain) error
 }
