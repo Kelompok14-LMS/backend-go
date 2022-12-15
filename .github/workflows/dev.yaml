@@ -1,7 +1,7 @@
 name: Run CI CD Development for Backend Application Eduworld
 
 on:
-  pull_request:
+  push:
     branches:
       - 'development'
 
