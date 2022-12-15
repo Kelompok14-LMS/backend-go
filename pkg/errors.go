@@ -76,6 +76,9 @@ var (
 	// error record not found (cannot specify the error)
 	ErrRecordNotFound = errors.New("Record not found")
 
+	// error already enrolled this course
+	ErrAlreadyEnrolled = errors.New("Already enrolled this course")
+
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")
 )
