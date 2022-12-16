@@ -8,6 +8,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	_menteeMock "github.com/Kelompok14-LMS/backend-go/businesses/mentees/mocks"
 	"github.com/Kelompok14-LMS/backend-go/constants"
+	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/google/uuid"
@@ -28,6 +29,7 @@ var (
 	userRepository _userMock.UserRepositoryMock
 	jwtConfig      utils.JWTConfig
 	mailerConfig   pkg.MailerConfig
+	storage        helper.StorageConfig
 
 	menteeDomain         mentees.Domain
 	menteeAuth           mentees.MenteeAuth
@@ -38,7 +40,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	menteeService = mentees.NewMenteeUsecase(&menteeRepository, &userRepository, &otpRepository, &jwtConfig, &mailerConfig)
+	menteeService = mentees.NewMenteeUsecase(&menteeRepository, &userRepository, &otpRepository, &jwtConfig, &mailerConfig, &storage)
 
 	userDomain = users.Domain{
 		ID:        uuid.NewString(),

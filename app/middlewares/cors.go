@@ -7,8 +7,7 @@ import (
 
 func CORS() echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"*"},
-		AllowCredentials: true,
-		AllowMethods:     []string{echo.DELETE, echo.GET, echo.PUT, echo.POST, echo.OPTIONS},
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.DELETE, echo.GET, echo.PUT, echo.POST, echo.OPTIONS},
 	})
 }
