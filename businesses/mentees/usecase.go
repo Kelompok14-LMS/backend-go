@@ -290,7 +290,7 @@ func (m menteeUsecase) Update(id string, menteeDomain *Domain) error {
 
 		defer ProfilePicture.Close()
 
-		filename, err := utils.GetFilename(menteeDomain.ProfilePictureFile.Filename)
+		filename, _ := utils.GetFilename(menteeDomain.ProfilePictureFile.Filename)
 
 		ProfilePictureURL, err = m.storage.UploadImage(ctx, filename, ProfilePicture)
 
