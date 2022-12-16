@@ -69,7 +69,7 @@ jobs:
             docker container rm eduworld-app
             docker pull ${{ env.IMAGE }}:${{ github.sha }}-${{ github.run_number }}
             cd eduworld
-            docker container create --name eduworld-app -p 80:8080 -e GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GCP_KEY }} ${{ env.IMAGE }}:${{ github.sha }}-${{ github.run_number }}
+            docker container create --name eduworld-app -p 8080:8080 -e GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GCP_KEY }} ${{ env.IMAGE }}:${{ github.sha }}-${{ github.run_number }}
             docker cp $PWD/.env eduworld-app:/.env
             docker cp $PWD/gcp_key.json eduworld-app:/gcp_key.json
             docker start eduworld-app

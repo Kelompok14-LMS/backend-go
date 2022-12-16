@@ -15,6 +15,6 @@ FROM alpine:latest
 
 COPY --from=builder /app/main .
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["./main"]
