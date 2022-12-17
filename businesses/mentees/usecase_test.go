@@ -56,7 +56,6 @@ func TestMain(m *testing.M) {
 		Fullname:       "test",
 		Phone:          "test",
 		Role:           "mentee",
-		BirthDate:      time.Now(),
 		Address:        "test",
 		ProfilePicture: "test.com",
 		CreatedAt:      time.Now(),
@@ -122,6 +121,8 @@ func TestRegister(t *testing.T) {
 
 func TestVerifyRegister(t *testing.T) {
 	t.Run("Test VerifyRegister | Success register verified", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", userDomain.Email).Return(nil, nil).Once()
+
 		otpRepository.Mock.On("Get", mock.Anything, menteeRegister.Email).Return(menteeRegister.OTP, nil).Once()
 
 		userRepository.Mock.On("Create", mock.Anything).Return(nil).Once()
@@ -152,6 +153,8 @@ func TestVerifyRegister(t *testing.T) {
 	})
 
 	t.Run("Test VerifyRegister | Failed register verified | Error on create mentee", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", userDomain.Email).Return(nil, nil).Once()
+
 		otpRepository.Mock.On("Get", mock.Anything, menteeRegister.Email).Return(menteeRegister.OTP, nil).Once()
 
 		userRepository.Mock.On("Create", mock.Anything).Return(nil).Once()

@@ -3,7 +3,6 @@ package mentee_progresses_test
 import (
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	_courseMock "github.com/Kelompok14-LMS/backend-go/businesses/courses/mocks"
@@ -56,7 +55,6 @@ func TestMain(m *testing.M) {
 		Fullname:       "test",
 		Phone:          "test",
 		Role:           "mentee",
-		BirthDate:      time.Now(),
 		Address:        "test",
 		ProfilePicture: "test.com",
 	}
