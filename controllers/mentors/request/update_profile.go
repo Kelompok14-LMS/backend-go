@@ -35,6 +35,7 @@ func (req *MentorUpdateProfile) ToDomain() *mentors.MentorUpdateProfile {
 		Gender:             req.Gender,
 		BirthPlace:         req.BirthPlace,
 		BirthDate:          birth,
+		Address:            req.Address,
 		ProfilePictureFile: req.ProfilePictureFile,
 	}
 }
