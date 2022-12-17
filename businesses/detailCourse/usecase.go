@@ -55,17 +55,15 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 		moduleIds = append(moduleIds, module.ID)
 	}
 
-	assignments, _ := dc.assignmentsRepository.FindByCourseId(courseId)
+	assignment, _ := dc.assignmentsRepository.FindByCourseId(courseId)
 
-	assignmentsDomain := make([]Assignment, len(assignments))
-
-	for i, assignment := range assignments {
-		assignmentsDomain[i].ID = assignment.ID
-		assignmentsDomain[i].CourseId = assignment.CourseId
-		assignmentsDomain[i].Title = assignment.Title
-		assignmentsDomain[i].Description = assignment.Description
-		assignmentsDomain[i].CreatedAt = assignment.CreatedAt
-		assignmentsDomain[i].UpdatedAt = assignment.UpdatedAt
+	assignmentDomain := Assignment{
+		ID:          assignment.ID,
+		CourseId:    assignment.CourseId,
+		Title:       assignment.Title,
+		Description: assignment.Description,
+		CreatedAt:   assignment.CreatedAt,
+		UpdatedAt:   assignment.UpdatedAt,
 	}
 
 	materials, _ := dc.materialRepository.FindByModule(moduleIds)
@@ -102,18 +100,20 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 	}
 
 	courseDomain := Domain{
-		CourseId:    course.ID,
-		CategoryId:  course.CategoryId,
-		MentorId:    course.MentorId,
-		Mentor:      course.Mentor.Fullname,
-		Category:    course.Category.Name,
-		Title:       course.Title,
-		Description: course.Description,
-		Thumbnail:   course.Thumbnail,
-		Modules:     moduleDomain,
-		Assignments: assignmentsDomain,
-		CreatedAt:   course.CreatedAt,
-		UpdatedAt:   course.UpdatedAt,
+		CourseId:     course.ID,
+		CategoryId:   course.CategoryId,
+		MentorId:     course.MentorId,
+		Mentor:       course.Mentor.Fullname,
+		Category:     course.Category.Name,
+		Title:        course.Title,
+		Description:  course.Description,
+		Thumbnail:    course.Thumbnail,
+		TotalReviews: course.TotalReviews,
+		Rating:       course.Rating,
+		Modules:      moduleDomain,
+		Assignment:   assignmentDomain,
+		CreatedAt:    course.CreatedAt,
+		UpdatedAt:    course.UpdatedAt,
 	}
 
 	return &courseDomain, nil
@@ -130,17 +130,15 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 		return nil, err
 	}
 
-	assignments, _ := dc.assignmentsRepository.FindByCourseId(courseId)
+	assignment, _ := dc.assignmentsRepository.FindByCourseId(courseId)
 
-	assignmentsDomain := make([]Assignment, len(assignments))
-
-	for i, assignment := range assignments {
-		assignmentsDomain[i].ID = assignment.ID
-		assignmentsDomain[i].CourseId = assignment.CourseId
-		assignmentsDomain[i].Title = assignment.Title
-		assignmentsDomain[i].Description = assignment.Description
-		assignmentsDomain[i].CreatedAt = assignment.CreatedAt
-		assignmentsDomain[i].UpdatedAt = assignment.UpdatedAt
+	assignmentDomain := Assignment{
+		ID:          assignment.ID,
+		CourseId:    assignment.CourseId,
+		Title:       assignment.Title,
+		Description: assignment.Description,
+		CreatedAt:   assignment.CreatedAt,
+		UpdatedAt:   assignment.UpdatedAt,
 	}
 
 	if _, err := dc.menteeRepository.FindById(menteeId); err != nil {
@@ -197,18 +195,20 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 	}
 
 	courseDomain := Domain{
-		CourseId:    course.ID,
-		CategoryId:  course.CategoryId,
-		MentorId:    course.MentorId,
-		Mentor:      course.Mentor.Fullname,
-		Category:    course.Category.Name,
-		Title:       course.Title,
-		Description: course.Description,
-		Thumbnail:   course.Thumbnail,
-		Modules:     moduleDomain,
-		Assignments: assignmentsDomain,
-		CreatedAt:   course.CreatedAt,
-		UpdatedAt:   course.UpdatedAt,
+		CourseId:     course.ID,
+		CategoryId:   course.CategoryId,
+		MentorId:     course.MentorId,
+		Mentor:       course.Mentor.Fullname,
+		Category:     course.Category.Name,
+		Title:        course.Title,
+		Description:  course.Description,
+		Thumbnail:    course.Thumbnail,
+		TotalReviews: course.TotalReviews,
+		Rating:       course.Rating,
+		Modules:      moduleDomain,
+		Assignment:   assignmentDomain,
+		CreatedAt:    course.CreatedAt,
+		UpdatedAt:    course.UpdatedAt,
 	}
 
 	return &courseDomain, nil

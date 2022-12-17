@@ -14,17 +14,6 @@ func FullDetailCourseEnrolled(domain *detailCourse.Domain) *Course {
 		modules[i].UpdatedAt = module.UpdatedAt
 	}
 
-	assignments := make([]Assignment, len(domain.Assignments))
-
-	for i, assignment := range domain.Assignments {
-		assignments[i].AssignmentID = assignment.ID
-		assignments[i].CourseId = assignment.CourseId
-		assignments[i].Title = assignment.Title
-		assignments[i].Description = assignment.Description
-		assignments[i].CreatedAt = assignment.CreatedAt
-		assignments[i].UpdatedAt = assignment.UpdatedAt
-	}
-
 	for i, module := range modules {
 		module.Materials = make([]Material, len(domain.Modules[i].Materials))
 
@@ -44,18 +33,29 @@ func FullDetailCourseEnrolled(domain *detailCourse.Domain) *Course {
 		}
 	}
 
+	assignment := Assignment{
+		AssignmentID: domain.Assignment.ID,
+		CourseId:     domain.Assignment.CourseId,
+		Title:        domain.Assignment.Title,
+		Description:  domain.Assignment.Description,
+		CreatedAt:    domain.Assignment.CreatedAt,
+		UpdatedAt:    domain.Assignment.UpdatedAt,
+	}
+
 	return &Course{
-		CourseId:    domain.CourseId,
-		CategoryId:  domain.CategoryId,
-		MentorId:    domain.MentorId,
-		Mentor:      domain.Mentor,
-		Category:    domain.Category,
-		Title:       domain.Title,
-		Description: domain.Description,
-		Thumbnail:   domain.Thumbnail,
-		Modules:     modules,
-		Assignments: assignments,
-		CreatedAt:   domain.CreatedAt,
-		UpdatedAt:   domain.UpdatedAt,
+		CourseId:     domain.CourseId,
+		CategoryId:   domain.CategoryId,
+		MentorId:     domain.MentorId,
+		Mentor:       domain.Mentor,
+		Category:     domain.Category,
+		Title:        domain.Title,
+		Description:  domain.Description,
+		Thumbnail:    domain.Thumbnail,
+		TotalReviews: domain.TotalReviews,
+		Rating:       domain.Rating,
+		Modules:      modules,
+		Assignment:   assignment,
+		CreatedAt:    domain.CreatedAt,
+		UpdatedAt:    domain.UpdatedAt,
 	}
 }

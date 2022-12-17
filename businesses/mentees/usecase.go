@@ -73,6 +73,16 @@ func (m menteeUsecase) Register(menteeAuth *MenteeAuth) error {
 }
 
 func (m menteeUsecase) VerifyRegister(menteeDomain *MenteeRegister) error {
+	if len(menteeDomain.Password) < 6 {
+		return pkg.ErrPasswordLengthInvalid
+	}
+
+	userDomain, _ := m.userRepository.FindByEmail(menteeDomain.Email)
+
+	if userDomain != nil {
+		return pkg.ErrEmailAlreadyExist
+	}
+
 	var err error
 
 	ctx := context.Background()

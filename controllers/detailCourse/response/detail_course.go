@@ -7,18 +7,20 @@ import (
 )
 
 type Course struct {
-	CourseId    string       `json:"course_id"`
-	CategoryId  string       `json:"category_id"`
-	MentorId    string       `json:"mentor_id"`
-	Mentor      string       `json:"mentor"`
-	Category    string       `json:"category"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	Thumbnail   string       `json:"thumbnail"`
-	Modules     []Module     `json:"modules"`
-	Assignments []Assignment `json:"assignment"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	CourseId     string     `json:"course_id"`
+	CategoryId   string     `json:"category_id"`
+	MentorId     string     `json:"mentor_id"`
+	Mentor       string     `json:"mentor"`
+	Category     string     `json:"category"`
+	Title        string     `json:"title"`
+	Description  string     `json:"description"`
+	Thumbnail    string     `json:"thumbnail"`
+	TotalReviews int        `json:"total_reviews"`
+	Rating       float32    `json:"rating"`
+	Modules      []Module   `json:"modules"`
+	Assignment   Assignment `json:"assignment"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
 }
 
 type Assignment struct {
@@ -63,17 +65,6 @@ func FullDetailCourse(domain *detailCourse.Domain) *Course {
 		modules[i].UpdatedAt = module.UpdatedAt
 	}
 
-	assignments := make([]Assignment, len(domain.Assignments))
-
-	for i, assignment := range domain.Assignments {
-		assignments[i].AssignmentID = assignment.ID
-		assignments[i].CourseId = assignment.CourseId
-		assignments[i].Title = assignment.Title
-		assignments[i].Description = assignment.Description
-		assignments[i].CreatedAt = assignment.CreatedAt
-		assignments[i].UpdatedAt = assignment.UpdatedAt
-	}
-
 	for i, module := range modules {
 		module.Materials = make([]Material, len(domain.Modules[i].Materials))
 
@@ -92,18 +83,29 @@ func FullDetailCourse(domain *detailCourse.Domain) *Course {
 		}
 	}
 
+	assignment := Assignment{
+		AssignmentID: domain.Assignment.ID,
+		CourseId:     domain.Assignment.CourseId,
+		Title:        domain.Assignment.Title,
+		Description:  domain.Assignment.Description,
+		CreatedAt:    domain.Assignment.CreatedAt,
+		UpdatedAt:    domain.Assignment.UpdatedAt,
+	}
+
 	return &Course{
-		CourseId:    domain.CourseId,
-		CategoryId:  domain.CategoryId,
-		MentorId:    domain.MentorId,
-		Mentor:      domain.Mentor,
-		Category:    domain.Category,
-		Title:       domain.Title,
-		Description: domain.Description,
-		Thumbnail:   domain.Thumbnail,
-		Modules:     modules,
-		Assignments: assignments,
-		CreatedAt:   domain.CreatedAt,
-		UpdatedAt:   domain.UpdatedAt,
+		CourseId:     domain.CourseId,
+		CategoryId:   domain.CategoryId,
+		MentorId:     domain.MentorId,
+		Mentor:       domain.Mentor,
+		Category:     domain.Category,
+		Title:        domain.Title,
+		Description:  domain.Description,
+		Thumbnail:    domain.Thumbnail,
+		TotalReviews: domain.TotalReviews,
+		Rating:       domain.Rating,
+		Modules:      modules,
+		Assignment:   assignment,
+		CreatedAt:    domain.CreatedAt,
+		UpdatedAt:    domain.UpdatedAt,
 	}
 }

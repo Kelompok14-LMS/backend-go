@@ -51,21 +51,21 @@ func (au assignmentUsecase) FindById(assignmentId string) (*Domain, error) {
 	return assignment, nil
 }
 
-func (au assignmentUsecase) FindByCourseId(courseId string) (*[]Domain, error) {
-
+func (au assignmentUsecase) FindByCourseId(courseId string) (*Domain, error) {
 	assignment, err := au.assignmentRepository.FindByCourseId(courseId)
 
 	if err != nil {
 		return nil, pkg.ErrCourseNotFound
 	}
 
-	return &assignment, nil
+	return assignment, nil
 }
 
 func (au assignmentUsecase) Update(assignmentId string, assignmentDomain *Domain) error {
 	if _, err := au.courseRepository.FindById(assignmentDomain.CourseId); err != nil {
 		return err
 	}
+
 	_, err := au.assignmentRepository.FindById(assignmentId)
 
 	if err != nil {

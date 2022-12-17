@@ -107,3 +107,21 @@ func (m menteeCourseUsecase) CheckEnrollment(menteeId string, courseId string) (
 
 	return isEnrolled, nil
 }
+
+func (m menteeCourseUsecase) CompleteCourse(menteeId string, courseId string) error {
+	if _, err := m.menteeCourseRepository.CheckEnrollment(menteeId, courseId); err != nil {
+		return err
+	}
+
+	menteeCourse := Domain{
+		Status: "completed",
+	}
+
+	err := m.menteeCourseRepository.Update(menteeId, courseId, &menteeCourse)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

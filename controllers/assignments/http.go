@@ -68,12 +68,6 @@ func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
 
 	assignmentCourse, err := ctrl.assignmentUsecase.FindByCourseId(courseid)
 
-	assignments := []response.FindByIdAssignments{}
-
-	for _, assignment := range *assignmentCourse {
-		assignments = append(assignments, *response.DetailAssignment(&assignment))
-	}
-
 	if err != nil {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
@@ -82,7 +76,7 @@ func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by course id", assignments))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by course id", *response.DetailAssignment(assignmentCourse)))
 }
 
 func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error {

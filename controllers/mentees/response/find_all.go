@@ -12,7 +12,7 @@ type FindAllMentees struct {
 	Fullname       string    `json:"fullname"`
 	Phone          string    `json:"phone"`
 	Role           string    `json:"role"`
-	BirthDate      time.Time `json:"birth_date"`
+	BirthDate      string    `json:"birth_date"`
 	ProfilePicture string    `json:"profile_picture"`
 	Email          string    `json:"email"`
 	CreatedAt      time.Time `json:"created_at"`

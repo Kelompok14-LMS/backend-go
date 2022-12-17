@@ -86,3 +86,20 @@ func (ctrl *MenteeCourseController) HandlerCheckEnrollmentCourse(c echo.Context)
 		"status_enrollment": isEnrolled,
 	}))
 }
+
+func (ctrl *MenteeCourseController) HandlerCompleteCourse(c echo.Context) error {
+	courseId := c.Param("courseId")
+	menteeId := c.Param("menteeId")
+
+	err := ctrl.menteeCourseUsecase.CompleteCourse(menteeId, courseId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success complete course", nil))
+}

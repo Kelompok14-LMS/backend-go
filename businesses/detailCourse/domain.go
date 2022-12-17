@@ -3,19 +3,22 @@ package detail_course
 import "time"
 
 type Domain struct {
-	CourseId    string
-	MentorId    string
-	CategoryId  string
-	Title       string
-	Description string
-	Thumbnail   string
-	Category    string
-	Mentor      string
-	Modules     []Module
-	Assignments []Assignment
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	CourseId     string
+	MentorId     string
+	CategoryId   string
+	Title        string
+	Description  string
+	Thumbnail    string
+	Category     string
+	Mentor       string
+	TotalReviews int
+	Rating       float32
+	Modules      []Module
+	Assignment   Assignment
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
+
 type Assignment struct {
 	ID          string
 	CourseId    string
