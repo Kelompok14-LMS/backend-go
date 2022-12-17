@@ -46,8 +46,8 @@ func (ar assignmentRepository) FindById(assignmentId string) (*assignments.Domai
 	return rec.ToDomain(), nil
 }
 
-func (ar assignmentRepository) FindByCourseId(courseId string) ([]assignments.Domain, error) {
-	rec := []Assignment{}
+func (ar assignmentRepository) FindByCourseId(courseId string) (*assignments.Domain, error) {
+	rec := Assignment{}
 
 	err := ar.conn.Model(&Assignment{}).Where("course_id = ?", courseId).Find(&rec).Error
 
@@ -59,13 +59,7 @@ func (ar assignmentRepository) FindByCourseId(courseId string) ([]assignments.Do
 		return nil, err
 	}
 
-	assignmentDomain := []assignments.Domain{}
-
-	for _, assignment := range rec {
-		assignmentDomain = append(assignmentDomain, *assignment.ToDomain())
-	}
-
-	return assignmentDomain, nil
+	return rec.ToDomain(), nil
 }
 
 func (ar assignmentRepository) Update(assignmentId string, assignmentDomain *assignments.Domain) error {
