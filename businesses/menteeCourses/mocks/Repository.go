@@ -86,6 +86,20 @@ func (_m *Repository) FindCoursesByMentee(menteeId string, title string, status 
 	return r0, r1
 }
 
+// Update provides a mock function with given fields: menteeId, courseId, menteeCourseDomain
+func (_m *Repository) Update(menteeId string, courseId string, menteeCourseDomain *mentee_courses.Domain) error {
+	ret := _m.Called(menteeId, courseId, menteeCourseDomain)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, *mentee_courses.Domain) error); ok {
+		r0 = rf(menteeId, courseId, menteeCourseDomain)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type mockConstructorTestingTNewRepository interface {
 	mock.TestingT
 	Cleanup(func())
