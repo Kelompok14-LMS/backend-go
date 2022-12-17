@@ -14,6 +14,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentees"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/mentors"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/modules"
+	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/reviews"
 	"github.com/Kelompok14-LMS/backend-go/drivers/mysql/users"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -62,5 +63,6 @@ func DBMigrate(db *gorm.DB) {
 		&menteeCourses.MenteeCourse{},
 		&menteeProgresses.MenteeProgress{},
 		&menteeAssignments.MenteeAssignment{},
+		&reviews.Review{},
 	)
 }
