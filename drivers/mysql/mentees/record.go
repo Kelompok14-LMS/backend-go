@@ -13,7 +13,7 @@ type Mentee struct {
 	Fullname       string     `gorm:"size:255" json:"fullname"`
 	Phone          string     `gorm:"size:15" json:"phone"`
 	Role           string     `gorm:"size:50" json:"role"`
-	BirthDate      time.Time  `json:"birth_date"`
+	BirthDate      string     `json:"birth_date"`
 	ProfilePicture string     `json:"profile_picture"`
 	User           users.User `json:"user"`
 	CreatedAt      time.Time  `json:"created_at"`

@@ -24,7 +24,7 @@ type Repository interface {
 	FindById(assignmentId string) (*Domain, error)
 
 	// FindByCourseId repository find assignment by courseid
-	FindByCourseId(courseId string) ([]Domain, error)
+	FindByCourseId(courseId string) (*Domain, error)
 
 	// Update repository update assignment
 	Update(assignmentId string, assignmentDomain *Domain) error
@@ -41,7 +41,7 @@ type Usecase interface {
 	FindById(assignmentId string) (*Domain, error)
 
 	// FindByCourseId usecase find assignment by courseid
-	FindByCourseId(courseId string) (*[]Domain, error)
+	FindByCourseId(courseId string) (*Domain, error)
 
 	// Update usecase update assignment
 	Update(assignmentId string, assignmentDomain *Domain) error

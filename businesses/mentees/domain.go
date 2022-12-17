@@ -13,7 +13,7 @@ type Domain struct {
 	Fullname           string
 	Phone              string
 	Role               string
-	BirthDate          time.Time
+	BirthDate          string
 	Address            string
 	ProfilePicture     string
 	ProfilePictureFile *multipart.FileHeader

@@ -70,6 +70,18 @@ func (m menteeCourseRepository) CheckEnrollment(menteeId string, courseId string
 	return rec.ToDomain(), nil
 }
 
+func (m menteeCourseRepository) Update(menteeId string, courseId string, menteeCourseDomain *menteeCourses.Domain) error {
+	rec := FromDomain(menteeCourseDomain)
+
+	err := m.conn.Model(&MenteeCourse{}).Where("mentee_id = ? AND course_id = ?", menteeId, courseId).Updates(&rec).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m menteeCourseRepository) DeleteEnrolledCourse(menteeId string, courseId string) error {
 	err := m.conn.Model(&MenteeCourse{}).Unscoped().
 		Where("mentee_id = ? AND course_id = ?", menteeId, courseId).Delete(&MenteeCourse{}).Error

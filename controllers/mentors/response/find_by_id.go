@@ -18,6 +18,7 @@ type FindMentorByID struct {
 	BirthPlace     string    `json:"birth_place"`
 	BirthDate      string    `json:"birth_date"`
 	ProfilePicture string    `json:"profile_picture"`
+	Address        string    `json:"address"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
@@ -35,6 +36,7 @@ func FromDomainUser(user *mentors.Domain) *FindMentorByID {
 		BirthPlace:     user.BirthPlace,
 		BirthDate:      user.BirthDate.String(),
 		ProfilePicture: user.ProfilePicture,
+		Address:        user.Address,
 		CreatedAt:      user.CreatedAt,
 		UpdatedAt:      user.UpdatedAt,
 	}

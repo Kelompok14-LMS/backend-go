@@ -2,7 +2,6 @@ package request
 
 import (
 	"mime/multipart"
-	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/go-playground/validator/v10"
@@ -16,12 +15,10 @@ type MenteeUpdateProfile struct {
 }
 
 func (req *MenteeUpdateProfile) ToDomain() *mentees.Domain {
-	format := "2006-01-02"
-	birth, _ := time.Parse(format, req.BirthDate)
 	return &mentees.Domain{
 		Fullname:           req.Fullname,
 		Phone:              req.Phone,
-		BirthDate:          birth,
+		BirthDate:          req.BirthDate,
 		ProfilePictureFile: req.ProfilePictureFile,
 	}
 }
