@@ -52,3 +52,37 @@ func FromDomain(courseDomain *courses.Domain) *Course {
 		DeletedAt:   courseDomain.DeletedAt,
 	}
 }
+
+type CourseWithRating struct {
+	ID           string `json:"id"`
+	MentorId     string `json:"mentor_id"`
+	CategoryId   string `json:"category_id"`
+	Title        string `json:"title"`
+	Description  string `json:"description"`
+	Thumbnail    string `json:"thumbnail"`
+	Category     categories.Category
+	Mentor       mentors.Mentor
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	DeletedAt    gorm.DeletedAt `json:"deleted_at"`
+	TotalReviews int            `json:"total_reviews"`
+	Rating       float32        `json:"rating"`
+}
+
+func (rec *CourseWithRating) ToDomain() *courses.Domain {
+	return &courses.Domain{
+		ID:           rec.ID,
+		MentorId:     rec.MentorId,
+		CategoryId:   rec.CategoryId,
+		Title:        rec.Title,
+		Description:  rec.Description,
+		Thumbnail:    rec.Thumbnail,
+		TotalReviews: rec.TotalReviews,
+		Rating:       rec.Rating,
+		Category:     *rec.Category.ToDomain(),
+		Mentor:       *rec.Mentor.ToDomain(),
+		CreatedAt:    rec.CreatedAt,
+		UpdatedAt:    rec.UpdatedAt,
+		DeletedAt:    rec.DeletedAt,
+	}
+}

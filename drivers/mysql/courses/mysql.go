@@ -31,12 +31,15 @@ func (cr courseRepository) Create(courseDomain *courses.Domain) error {
 }
 
 func (cr courseRepository) FindAll(keyword string) (*[]courses.Domain, error) {
-	var rec []Course
+	var rec []CourseWithRating
 
 	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
-		Joins("INNER JOIN categories ON categories.id = courses.category_id").
-		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
+		Select("COUNT(reviews.course_id) AS total_reviews, AVG(reviews.rating) as rating, courses.*, categories.id AS category_id, categories.name, mentors.id AS mentor_id, mentors.fullname").
+		Joins("LEFT JOIN categories ON courses.category_id = categories.id").
+		Joins("LEFT JOIN mentors ON courses.mentor_id = mentors.id").
+		Joins("LEFT JOIN reviews ON courses.id = reviews.course_id").
 		Where("courses.title LIKE ? OR categories.name LIKE ?", "%"+keyword+"%", "%"+keyword+"%").
+		Group("courses.id").Order("courses.created_at").
 		Find(&rec).Error
 
 	if err != nil {
@@ -53,12 +56,15 @@ func (cr courseRepository) FindAll(keyword string) (*[]courses.Domain, error) {
 }
 
 func (cr courseRepository) FindById(id string) (*courses.Domain, error) {
-	rec := Course{}
+	rec := CourseWithRating{}
 
 	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
-		Joins("INNER JOIN categories ON categories.id = courses.category_id").
-		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
-		Where("courses.id = ?", id).First(&rec).Error
+		Select("COUNT(reviews.course_id) AS total_reviews, AVG(reviews.rating) as rating, courses.*, categories.id AS category_id, categories.name, mentors.id AS mentor_id, mentors.fullname").
+		Joins("LEFT JOIN categories ON courses.category_id = categories.id").
+		Joins("LEFT JOIN mentors ON courses.mentor_id = mentors.id").
+		Joins("LEFT JOIN reviews ON courses.id = reviews.course_id").
+		Where("courses.id = ?", id).Group("courses.id").
+		First(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -72,12 +78,16 @@ func (cr courseRepository) FindById(id string) (*courses.Domain, error) {
 }
 
 func (cr courseRepository) FindByCategory(categoryId string) (*[]courses.Domain, error) {
-	var rec []Course
+	var rec []CourseWithRating
 
 	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
-		Joins("INNER JOIN categories ON categories.id = courses.category_id").
-		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
-		Where("courses.category_id = ?", categoryId).Find(&rec).Error
+		Select("COUNT(reviews.course_id) AS total_reviews, AVG(reviews.rating) as rating, courses.*, categories.id AS category_id, categories.name, mentors.id AS mentor_id, mentors.fullname").
+		Joins("LEFT JOIN categories ON courses.category_id = categories.id").
+		Joins("LEFT JOIN mentors ON courses.mentor_id = mentors.id").
+		Joins("LEFT JOIN reviews ON courses.id = reviews.course_id").
+		Where("courses.category_id = ?", categoryId).
+		Group("courses.id").Order("courses.created_at").
+		Find(&rec).Error
 
 	if err != nil {
 		return nil, err
@@ -93,12 +103,16 @@ func (cr courseRepository) FindByCategory(categoryId string) (*[]courses.Domain,
 }
 
 func (cr courseRepository) FindByMentor(mentorId string) (*[]courses.Domain, error) {
-	var rec []Course
+	var rec []CourseWithRating
 
 	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
-		Joins("INNER JOIN categories ON categories.id = courses.category_id").
-		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
-		Where("courses.mentor_id = ?", mentorId).Find(&rec).Error
+		Select("COUNT(reviews.course_id) AS total_reviews, AVG(reviews.rating) as rating, courses.*, categories.id AS category_id, categories.name, mentors.id AS mentor_id, mentors.fullname").
+		Joins("LEFT JOIN categories ON courses.category_id = categories.id").
+		Joins("LEFT JOIN mentors ON courses.mentor_id = mentors.id").
+		Joins("LEFT JOIN reviews ON courses.id = reviews.course_id").
+		Where("courses.mentor_id = ?", mentorId).
+		Group("courses.id").Order("courses.created_at").
+		Find(&rec).Error
 
 	if err != nil {
 		return nil, err
@@ -114,12 +128,15 @@ func (cr courseRepository) FindByMentor(mentorId string) (*[]courses.Domain, err
 }
 
 func (cr courseRepository) FindByPopular() ([]courses.Domain, error) {
-	rec := []Course{}
+	var rec []CourseWithRating
 
 	err := cr.conn.Model(&Course{}).Preload("Category").Preload("Mentor").
-		Joins("INNER JOIN categories ON categories.id = courses.category_id").
-		Joins("INNER JOIN mentors ON mentors.id = courses.mentor_id").
-		Order("courses.created_at DESC").Limit(10).Find(&rec).Error
+		Select("COUNT(reviews.course_id) AS total_reviews, AVG(reviews.rating) as rating, courses.*, categories.id AS category_id, categories.name, mentors.id AS mentor_id, mentors.fullname").
+		Joins("LEFT JOIN categories ON courses.category_id = categories.id").
+		Joins("LEFT JOIN mentors ON courses.mentor_id = mentors.id").
+		Joins("LEFT JOIN reviews ON courses.id = reviews.course_id").
+		Group("courses.id").Order("rating DESC").Limit(15).
+		Find(&rec).Error
 
 	if err != nil {
 		return nil, err
