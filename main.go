@@ -2,6 +2,13 @@ package main
 
 import (
 	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/Kelompok14-LMS/backend-go/app/middlewares"
@@ -15,6 +22,8 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/utils"
 	"github.com/labstack/echo/v4"
 )
+
+type operation func(context.Context) error
 
 func main() {
 	// init mysql config
@@ -76,5 +85,70 @@ func main() {
 
 	route.New()
 
-	e.Logger.Fatal(e.Start(configs.GetConfig("APP_PORT")))
+	go func() {
+		if err := e.Start(configs.GetConfig("APP_PORT")); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server")
+		}
+	}()
+
+	wait := gracefulShutdown(ctx, 5*time.Second, map[string]operation{
+		"mysql": func(ctx context.Context) error {
+			return _dbMySQL.CloseDB(mysqlDB)
+		},
+		"http-server": func(ctx context.Context) error {
+			return e.Shutdown(ctx)
+		},
+	})
+
+	<-wait
+}
+
+// graceful shutdown perform application shutdown gracefully
+func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string]operation) <-chan struct{} {
+	wait := make(chan struct{})
+
+	go func() {
+		s := make(chan os.Signal, 1)
+
+		// add any other syscall that you want to be notified with
+		signal.Notify(s, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
+		<-s
+
+		log.Println("shutting down")
+
+		// set timeout for the ops to be done to prevent system hang
+		timeoutFunc := time.AfterFunc(timeout, func() {
+			log.Printf("timeout %d ms has been elapsed, force exit", timeout.Milliseconds())
+			os.Exit(0)
+		})
+
+		defer timeoutFunc.Stop()
+
+		var wg sync.WaitGroup
+
+		// do the operation asynchronously to save time
+		for key, op := range ops {
+			wg.Add(1)
+			innerOp := op
+			innerKey := key
+			go func() {
+				defer wg.Done()
+
+				log.Printf("cleaning up: %v", innerKey)
+
+				if err := innerOp(ctx); err != nil {
+					log.Printf("%s: clean up failed: %s", innerKey, err.Error())
+					return
+				}
+
+				log.Printf("%s was shutdown gracefully", innerKey)
+			}()
+		}
+
+		wg.Wait()
+
+		close(wait)
+	}()
+
+	return wait
 }
