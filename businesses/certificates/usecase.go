@@ -3,6 +3,8 @@ package certificates
 import (
 	"bytes"
 	"html/template"
+	"os"
+	"path"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
