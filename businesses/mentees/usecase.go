@@ -3,6 +3,7 @@ package mentees
 import (
 	"context"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/otp"
@@ -254,25 +255,18 @@ func (m menteeUsecase) FindById(id string) (*Domain, error) {
 	return mentee, nil
 }
 
-func (m menteeUsecase) FindByCourse(courseId string) (map[string]interface{}, error) {
-	mentees, err := m.menteeRepository.FindByCourse(courseId)
+func (m menteeUsecase) FindByCourse(courseId string, pagination pkg.Pagination) (*pkg.Pagination, error) {
+	mentees, totalRows, err := m.menteeRepository.FindByCourse(courseId, pagination.GetLimit(), pagination.GetOffset())
 
 	if err != nil {
 		return nil, err
 	}
 
-	total, err := m.menteeRepository.CountByCourse(courseId)
+	pagination.Result = mentees
+	pagination.TotalRows = totalRows
+	pagination.TotalPages = int(math.Ceil(float64(totalRows) / float64(pagination.GetLimit())))
 
-	if err != nil {
-		return nil, err
-	}
-
-	data := map[string]interface{}{
-		"total":   total,
-		"mentees": mentees,
-	}
-
-	return data, nil
+	return &pagination, nil
 }
 
 func (m menteeUsecase) Update(id string, menteeDomain *Domain) error {

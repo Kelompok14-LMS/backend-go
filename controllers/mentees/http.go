@@ -3,6 +3,7 @@ package mentees
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/Kelompok14-LMS/backend-go/controllers/mentees/request"
@@ -140,7 +141,15 @@ func (ctrl *MenteeController) HandlerForgotPassword(c echo.Context) error {
 func (ctrl MenteeController) HandlerFindMenteesByCourse(c echo.Context) error {
 	courseId := c.Param("courseId")
 
-	data, err := ctrl.menteeUsecase.FindByCourse(courseId)
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+
+	pagination := pkg.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	res, err := ctrl.menteeUsecase.FindByCourse(courseId, pagination)
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
@@ -152,16 +161,13 @@ func (ctrl MenteeController) HandlerFindMenteesByCourse(c echo.Context) error {
 
 	var menteeDomain []response.FindAllMentees
 
-	mentees := data["mentees"].(*[]mentees.Domain)
+	mentees := res.Result.(*[]mentees.Domain)
 
 	for _, mentee := range *mentees {
 		menteeDomain = append(menteeDomain, response.AllMentees(&mentee))
 	}
 
-	res := map[string]interface{}{
-		"total":   data["total"],
-		"mentees": menteeDomain,
-	}
+	res.Result = menteeDomain
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentees", res))
 }
