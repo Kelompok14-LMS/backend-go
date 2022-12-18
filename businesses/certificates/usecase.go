@@ -8,6 +8,7 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
+	"github.com/Kelompok14-LMS/backend-go/templates"
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 )
 
@@ -39,11 +40,7 @@ func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
 		return nil, err
 	}
 
-	base, _ := os.Getwd()
-
-	filepath := path.Join(base, "templates", "template-certificate.html")
-
-	tmpl, err := template.ParseFiles(filepath)
+	tmpl, err := template.New("").Parse(templates.Certificate)
 
 	if err != nil {
 		return nil, err
