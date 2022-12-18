@@ -1,7 +1,6 @@
 package constants
 
 import (
-	"path"
 	"time"
 )
 
@@ -20,9 +19,4 @@ const (
 
 	// images dir
 	IMAGES_DIR = "images"
-)
-
-var (
-	// root path
-	ROOT_PATH = path.Join("backend-go", "../")
 )
