@@ -3,6 +3,7 @@ package certificates
 import (
 	"bytes"
 	"html/template"
+	"os"
 	"path"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
@@ -24,7 +25,7 @@ func NewCertificateUsecase(menteeRepository mentees.Repository, courseRepository
 
 func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
 	// NOTE: in windows, should be point to wkhtmltopdf executable file
-	// wkhtmltopdf.SetPath("C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
+	wkhtmltopdf.SetPath("C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
 
 	mentee, err := cu.menteeRepository.FindById(data.MenteeId)
 
@@ -38,7 +39,9 @@ func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
 		return nil, err
 	}
 
-	filepath := path.Join("templates", "template-certificate.html")
+	base, _ := os.Getwd()
+
+	filepath := path.Join(base, "templates", "template-certificate.html")
 
 	tmpl, err := template.ParseFiles(filepath)
 
