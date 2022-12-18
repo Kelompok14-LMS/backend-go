@@ -3,6 +3,7 @@ package certificates
 import (
 	"bytes"
 	"html/template"
+	"os"
 	"path"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
@@ -38,7 +39,9 @@ func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
 		return nil, err
 	}
 
-	filepath := path.Join("templates", "template-certificate.html")
+	base, _ := os.Getwd()
+
+	filepath := path.Join(base, "templates", "template-certificate.html")
 
 	tmpl, err := template.ParseFiles(filepath)
 
