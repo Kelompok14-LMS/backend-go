@@ -68,17 +68,20 @@ func (am assignmentMenteeRepository) FindByMenteeId(menteeId string) ([]menteeAs
 
 }
 
-func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string) ([]menteeAssignments.Domain, error) {
+func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string, limit int, offset int) ([]menteeAssignments.Domain, int, error) {
 	rec := []MenteeAssignment{}
 
-	err := am.conn.Model(&MenteeAssignment{}).Where("assignment_id = ?", assignmentId).Preload("Mentee").Order("created_at DESC").Find(&rec).Error
+	err := am.conn.Model(&MenteeAssignment{}).Preload("Mentee").
+		Where("assignment_id = ?", assignmentId).Order("created_at DESC").
+		Limit(limit).Offset(offset).
+		Find(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkg.ErrAssignmentNotFound
+			return nil, 0, pkg.ErrAssignmentNotFound
 		}
 
-		return nil, err
+		return nil, 0, err
 	}
 
 	assignmentDomain := []menteeAssignments.Domain{}
@@ -87,7 +90,7 @@ func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string) ([]
 		assignmentDomain = append(assignmentDomain, *assignment.ToDomain())
 	}
 
-	return assignmentDomain, nil
+	return assignmentDomain, 0, nil
 }
 
 func (am assignmentMenteeRepository) FindByCourse(menteeId string, courseId string) (*menteeAssignments.Domain, error) {

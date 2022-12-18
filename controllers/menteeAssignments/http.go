@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 	"github.com/Kelompok14-LMS/backend-go/controllers/menteeAssignments/request"
@@ -129,7 +130,15 @@ func (ctrl *AssignmentMenteeController) HandlerFindByIdMenteeAssignment(c echo.C
 func (ctrl *AssignmentMenteeController) HandlerFindByAssignmentId(c echo.Context) error {
 	id := c.Param("assignmentId")
 
-	assignmentMentee, err := ctrl.assignmentMenteeUsecase.FindByAssignmentId(id)
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+
+	pagination := pkg.Pagination{
+		Limit: limit,
+		Page:  page,
+	}
+
+	res, err := ctrl.assignmentMenteeUsecase.FindByAssignmentId(id, pagination)
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
@@ -141,11 +150,15 @@ func (ctrl *AssignmentMenteeController) HandlerFindByAssignmentId(c echo.Context
 
 	var menteeAssignmentResponse []response.AssignmentMentee
 
-	for _, mentee_assignments := range assignmentMentee {
-		menteeAssignmentResponse = append(menteeAssignmentResponse, response.FromDomain(&mentee_assignments))
+	menteeAssignments := res.Result.([]menteeAssignments.Domain)
+
+	for _, menteeAssignment := range menteeAssignments {
+		menteeAssignmentResponse = append(menteeAssignmentResponse, response.FromDomain(&menteeAssignment))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by assignment id", menteeAssignmentResponse))
+	res.Result = menteeAssignmentResponse
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by assignment id", res))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) error {

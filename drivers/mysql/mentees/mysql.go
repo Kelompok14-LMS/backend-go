@@ -80,22 +80,31 @@ func (mr menteeRepository) FindByIdUser(userId string) (*mentees.Domain, error) 
 	return rec.ToDomain(), nil
 }
 
-func (mr menteeRepository) FindByCourse(courseId string) (*[]mentees.Domain, error) {
+func (mr menteeRepository) FindByCourse(courseId string, limit int, offset int) (*[]mentees.Domain, int, error) {
+	var totalRows int64
+
+	_ = mr.conn.Model(&Mentee{}).
+		Joins("LEFT JOIN users ON users.id = mentees.user_id").
+		Joins("LEFT JOIN mentee_courses ON mentees.id = mentee_courses.mentee_id").
+		Where("mentee_courses.course_id = ?", courseId).
+		Order("mentees.fullname ASC").
+		Count(&totalRows).Error
+
 	var rec []Mentee
 
 	err := mr.conn.Model(&Mentee{}).Preload("User").
 		Joins("LEFT JOIN users ON users.id = mentees.user_id").
 		Joins("LEFT JOIN mentee_courses ON mentees.id = mentee_courses.mentee_id").
 		Where("mentee_courses.course_id = ?", courseId).
-		Order("mentees.fullname ASC").
+		Order("mentees.fullname ASC").Limit(limit).Offset(offset).
 		Find(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, pkg.ErrCourseNotFound
+			return nil, 0, pkg.ErrCourseNotFound
 		}
 
-		return nil, err
+		return nil, 0, err
 	}
 
 	var menteeDomain []mentees.Domain
@@ -104,7 +113,7 @@ func (mr menteeRepository) FindByCourse(courseId string) (*[]mentees.Domain, err
 		menteeDomain = append(menteeDomain, *mentee.ToDomain())
 	}
 
-	return &menteeDomain, nil
+	return &menteeDomain, int(totalRows), nil
 }
 
 func (mr menteeRepository) CountByCourse(courseId string) (int64, error) {
