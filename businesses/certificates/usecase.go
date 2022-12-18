@@ -25,7 +25,7 @@ func NewCertificateUsecase(menteeRepository mentees.Repository, courseRepository
 
 func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
 	// NOTE: in windows, should be point to wkhtmltopdf executable file
-	wkhtmltopdf.SetPath("C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
+	// wkhtmltopdf.SetPath("C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
 
 	mentee, err := cu.menteeRepository.FindById(data.MenteeId)
 
