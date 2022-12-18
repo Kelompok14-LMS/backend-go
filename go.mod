@@ -1,6 +1,6 @@
 module github.com/Kelompok14-LMS/backend-go
 
-go 1.18
+go 1.19
 
 require (
 	cloud.google.com/go/storage v1.28.1
@@ -17,6 +17,7 @@ require (
 	cloud.google.com/go/compute v1.14.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.2 // indirect
 	cloud.google.com/go/iam v0.8.0 // indirect
+	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.8.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect

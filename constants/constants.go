@@ -1,6 +1,9 @@
 package constants
 
-import "time"
+import (
+	"path"
+	"time"
+)
 
 const (
 	// TTL otp redis 5 min
@@ -17,4 +20,9 @@ const (
 
 	// images dir
 	IMAGES_DIR = "images"
+)
+
+var (
+	// root path
+	ROOT_PATH = path.Join("backend-go", "../")
 )

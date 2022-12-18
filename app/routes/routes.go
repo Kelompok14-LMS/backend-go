@@ -55,6 +55,9 @@ import (
 
 	_reviewUsecase "github.com/Kelompok14-LMS/backend-go/businesses/reviews"
 	_reviewController "github.com/Kelompok14-LMS/backend-go/controllers/reviews"
+
+	_certificateUsecase "github.com/Kelompok14-LMS/backend-go/businesses/certificates"
+	_certificateController "github.com/Kelompok14-LMS/backend-go/controllers/certificates"
 )
 
 type RouteConfig struct {
@@ -155,6 +158,9 @@ func (routeConfig *RouteConfig) New() {
 	reviewUsecase := _reviewUsecase.NewReviewUsecase(reviewRepository, menteeCourseRepository, menteeRepository, courseRepository)
 	reviewController := _reviewController.NewReviewController(reviewUsecase)
 
+	certificateUsecase := _certificateUsecase.NewCertificateUsecase(menteeRepository, courseRepository)
+	certificateController := _certificateController.NewCertificateController(certificateUsecase)
+
 	// authentication routes
 	auth := v1.Group("/auth")
 	auth.POST("/mentee/login", menteeController.HandlerLoginMentee)
@@ -184,6 +190,7 @@ func (routeConfig *RouteConfig) New() {
 	mentee.PUT("/:menteeId", menteeController.HandlerUpdateProfile)
 	mentee.GET("/:menteeId/reviews", reviewController.HandlerFindByMentee)
 	mentee.GET("/:menteeId/courses", menteeCourseController.HandlerFindMenteeCourses)
+	mentee.GET("/:menteeId/courses/:courseId/certificate", certificateController.HandlerGenerateCert)
 	mentee.GET("/:menteeId/courses/:courseId/details", detailCourseController.HandlerDetailCourseEnrolled)
 	mentee.PUT("/:menteeId/courses/:courseId/complete", menteeCourseController.HandlerCompleteCourse)
 	mentee.GET("/:menteeId/courses/:courseId", menteeCourseController.HandlerCheckEnrollmentCourse)
