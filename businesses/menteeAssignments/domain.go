@@ -6,6 +6,7 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 )
 
 type Domain struct {
@@ -30,7 +31,7 @@ type Repository interface {
 	FindById(assignmentMenteeId string) (*Domain, error)
 
 	// FindByAssignmentID repository find assignment mentee by assignment id
-	FindByAssignmentId(assignmentId string) ([]Domain, error)
+	FindByAssignmentId(assignmentId string, limit int, offset int) ([]Domain, int, error)
 
 	// FindByMenteeId repository find assignment mentee by mentee id
 	FindByMenteeId(menteeId string) ([]Domain, error)
@@ -53,7 +54,7 @@ type Usecase interface {
 	FindById(assignmentId string) (*Domain, error)
 
 	// FindByAssignmentID usecase  find assignment mentee by assignment id
-	FindByAssignmentId(assignmentId string) ([]Domain, error)
+	FindByAssignmentId(assignmentId string, pagination pkg.Pagination) (*pkg.Pagination, error)
 
 	// FindByMenteeId rusecase find assignment mentee by mentee id
 	FindByMenteeId(menteeId string) ([]Domain, error)

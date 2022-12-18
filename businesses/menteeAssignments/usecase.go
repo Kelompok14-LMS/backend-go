@@ -2,6 +2,7 @@ package mentee_assignments
 
 import (
 	"context"
+	"math"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	"github.com/Kelompok14-LMS/backend-go/helper"
@@ -92,15 +93,18 @@ func (mu assignmentMenteeUsecase) FindByMenteeId(menteeId string) ([]Domain, err
 	return assignmentMentee, nil
 }
 
-func (mu assignmentMenteeUsecase) FindByAssignmentId(assignmentId string) ([]Domain, error) {
-
-	menteeAssignments, err := mu.assignmentMenteeRepository.FindByAssignmentId(assignmentId)
+func (mu assignmentMenteeUsecase) FindByAssignmentId(assignmentId string, pagination pkg.Pagination) (*pkg.Pagination, error) {
+	menteeAssignments, totalRows, err := mu.assignmentMenteeRepository.FindByAssignmentId(assignmentId, pagination.GetLimit(), pagination.GetOffset())
 
 	if err != nil {
 		return nil, err
 	}
 
-	return menteeAssignments, nil
+	pagination.Result = menteeAssignments
+	pagination.TotalRows = totalRows
+	pagination.TotalPages = int(math.Ceil(float64(totalRows) / float64(pagination.GetLimit())))
+
+	return &pagination, nil
 }
 
 func (mu assignmentMenteeUsecase) Update(assignmentMenteeId string, assignmentMenteeDomain *Domain) error {

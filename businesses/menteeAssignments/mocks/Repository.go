@@ -40,27 +40,34 @@ func (_m *Repository) Delete(assignmentMenteeId string) error {
 	return r0
 }
 
-// FindByAssignmentId provides a mock function with given fields: assignmentId
-func (_m *Repository) FindByAssignmentId(assignmentId string) ([]mentee_assignments.Domain, error) {
-	ret := _m.Called(assignmentId)
+// FindByAssignmentId provides a mock function with given fields: assignmentId, limit, offset
+func (_m *Repository) FindByAssignmentId(assignmentId string, limit int, offset int) ([]mentee_assignments.Domain, int, error) {
+	ret := _m.Called(assignmentId, limit, offset)
 
 	var r0 []mentee_assignments.Domain
-	if rf, ok := ret.Get(0).(func(string) []mentee_assignments.Domain); ok {
-		r0 = rf(assignmentId)
+	if rf, ok := ret.Get(0).(func(string, int, int) []mentee_assignments.Domain); ok {
+		r0 = rf(assignmentId, limit, offset)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]mentee_assignments.Domain)
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(assignmentId)
+	var r1 int
+	if rf, ok := ret.Get(1).(func(string, int, int) int); ok {
+		r1 = rf(assignmentId, limit, offset)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	var r2 error
+	if rf, ok := ret.Get(2).(func(string, int, int) error); ok {
+		r2 = rf(assignmentId, limit, offset)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // FindByCourse provides a mock function with given fields: menteeId, course

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/users"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 )
 
 type Domain struct {
@@ -56,7 +57,7 @@ type Repository interface {
 	FindByIdUser(userId string) (*Domain, error)
 
 	// repository find mentees by course
-	FindByCourse(courseId string) (*[]Domain, error)
+	FindByCourse(courseId string, limit int, offset int) (*[]Domain, int, error)
 
 	// repository count total mentees by course
 	CountByCourse(courseId string) (int64, error)
@@ -88,7 +89,7 @@ type Usecase interface {
 	// MenteeProfile(menteeId string) (*Domain, error)
 
 	// usecase find mentees by course
-	FindByCourse(courseId string) (map[string]interface{}, error)
+	FindByCourse(courseId string, pagination pkg.Pagination) (*pkg.Pagination, error)
 
 	// Update usecase edit data mentee
 	Update(id string, menteeDomain *Domain) error
