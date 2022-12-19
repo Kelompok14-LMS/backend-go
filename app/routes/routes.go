@@ -132,15 +132,15 @@ func (routeConfig *RouteConfig) New() {
 	menteeProgressUsecase := _menteeProgressesUsecase.NewMenteeProgressUsecase(menteeProgressRepository, menteeRepository, courseRepository, materialRepository)
 	menteeProgressController := _menteeProgressController.NewMenteeProgressController(menteeProgressUsecase)
 
+	// Inject the dependency to mentee assignment
+	menteeAssignmentRepository := _driverFactory.NewMenteeAssignmentRepository(routeConfig.MySQLDB)
+	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, menteeRepository, routeConfig.StorageConfig)
+	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase, routeConfig.JWTConfig)
+
 	// Inject the dependency to menteeCourse
 	menteeCourseRepository := _driverFactory.NewMenteeCourseRepository(routeConfig.MySQLDB)
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeAssignmentRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
-
-	// Inject the dependency to mentee assignment
-	menteeAssignmentRepository := _driverFactory.NewMenteeAssignmentRepository(routeConfig.MySQLDB)
-	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, menteeCourseRepository, menteeRepository, routeConfig.StorageConfig)
-	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase, routeConfig.JWTConfig)
 
 	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeAssignmentRepository, menteeCourseRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)

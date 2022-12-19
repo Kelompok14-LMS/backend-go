@@ -35,7 +35,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	menteeAssignmentService = menteeAssignments.NewMenteeAssignmentUsecase(&menteeAssignmentRepository, &assignmentRepository, &menteeCourseRepository, &menteeRepository, &storageClient)
+	menteeAssignmentService = menteeAssignments.NewMenteeAssignmentUsecase(&menteeAssignmentRepository, &assignmentRepository, &menteeRepository, &storageClient)
 
 	assignmentDomain = assignments.Domain{
 		ID:          uuid.NewString(),

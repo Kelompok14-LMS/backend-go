@@ -5,7 +5,6 @@ import (
 	"math"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
-	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
@@ -16,32 +15,27 @@ import (
 type assignmentMenteeUsecase struct {
 	assignmentMenteeRepository Repository
 	assignmentRepository       assignments.Repository
-	menteeCourseRepository     menteeCourses.Repository
 	menteeRepository           mentees.Repository
 	storage                    *helper.StorageConfig
 }
 
 func NewMenteeAssignmentUsecase(assignmentMenteeRepository Repository,
-	assignmentRepository assignments.Repository, menteeCourseRepository menteeCourses.Repository, menteeRepository mentees.Repository,
+	assignmentRepository assignments.Repository, menteeRepository mentees.Repository,
 	storage *helper.StorageConfig) Usecase {
 	return assignmentMenteeUsecase{
 		assignmentMenteeRepository: assignmentMenteeRepository,
 		assignmentRepository:       assignmentRepository,
-		menteeCourseRepository:     menteeCourseRepository,
 		menteeRepository:           menteeRepository,
 		storage:                    storage,
 	}
 }
 
 func (mu assignmentMenteeUsecase) Create(assignmentMenteeDomain *Domain) error {
-	assignments, err := mu.assignmentRepository.FindById(assignmentMenteeDomain.AssignmentId)
+	_, err := mu.assignmentRepository.FindById(assignmentMenteeDomain.AssignmentId)
 	if err != nil {
 		return err
 	}
 
-	if _, err := mu.menteeCourseRepository.CheckEnrollment(assignmentMenteeDomain.MenteeId, assignments.CourseId); err != nil {
-		return pkg.ErrNoEnrolled
-	}
 	PDF, err := assignmentMenteeDomain.PDFfile.Open()
 
 	if err != nil {
@@ -89,13 +83,7 @@ func (mu assignmentMenteeUsecase) FindById(assignmentMenteeId string) (*Domain, 
 	if err != nil {
 		return nil, err
 	}
-	var completed bool
-
-	if assignmentMentee == nil {
-		completed = false
-	} else {
-		completed = true
-	}
+	completed := assignmentMentee != nil
 
 	menteeAssignment := Domain{
 		ID:             assignmentMentee.ID,
@@ -123,18 +111,9 @@ func (mu assignmentMenteeUsecase) FindMenteeAssignmentEnrolled(menteeId string, 
 		return nil, err
 	}
 
-	assignmentMentee, err := mu.assignmentMenteeRepository.FindMenteeAssignmentEnrolled(menteeId, assignmentId)
-	if err != nil {
-		return nil, err
-	}
+	assignmentMentee, _ := mu.assignmentMenteeRepository.FindMenteeAssignmentEnrolled(menteeId, assignmentId)
 
-	var completed bool
-
-	if assignmentMentee == nil {
-		completed = false
-	} else {
-		completed = true
-	}
+	completed := assignmentMentee != nil
 
 	menteeAssignment := Domain{
 		ID:             assignmentMentee.ID,
