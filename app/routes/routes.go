@@ -142,7 +142,7 @@ func (routeConfig *RouteConfig) New() {
 	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, menteeCourseRepository, menteeRepository, routeConfig.StorageConfig)
 	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase, routeConfig.JWTConfig)
 
-	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeCourseRepository)
+	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeAssignmentRepository, menteeCourseRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
 
 	manageMenteeUsecase := _manageMenteesUsecase.NewManageMenteeUsecase(menteeCourseRepository, menteeProgressRepository, menteeAssignmentRepository, routeConfig.StorageConfig)
@@ -178,7 +178,7 @@ func (routeConfig *RouteConfig) New() {
 	// mentee routes
 	mentee := v1.Group("/mentees", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	mentee.GET("", menteeController.HandlerFindAll)
-	mentee.POST("/progress", menteeProgressController.HandlerAddProgress, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	mentee.POST("/progress", menteeProgressController.HandlerAddProgress)
 	mentee.GET("/profile", menteeController.HandlerProfileMentee)
 	mentee.GET("/:menteeId", menteeController.HandlerFindByID)
 	mentee.PUT("/:menteeId", menteeController.HandlerUpdateProfile)
