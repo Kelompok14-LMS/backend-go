@@ -184,6 +184,25 @@ func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) er
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by mentee id ", menteeAssignmentResponse))
 }
 
+func (ctrl *AssignmentMenteeController) HandlerFindMenteeAssignmentEnrolled(c echo.Context) error {
+	menteeId := c.Param("menteeId")
+	assignmentId := c.Param("assignmentId")
+
+	menteeAssignment, err := ctrl.assignmentMenteeUsecase.FindMenteeAssignmentEnrolled(menteeId, assignmentId)
+
+	if err != nil {
+		if errors.Is(err, pkg.ErrMenteeNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
+		} else if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
+		} else {
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		}
+	}
+
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get mentee assignments", response.DetailAssignmentEnrolled(menteeAssignment)))
+}
+
 func (ctrl *AssignmentMenteeController) HandlerSoftDeleteMenteeAssignment(c echo.Context) error {
 	id := c.Param("menteeAssignmentId")
 

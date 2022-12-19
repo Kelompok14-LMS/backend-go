@@ -79,6 +79,9 @@ var (
 	// error already enrolled this course
 	ErrAlreadyEnrolled = errors.New("Already enrolled this course")
 
+	// error no enrolled this course
+	ErrNoEnrolled = errors.New("You must enrolled to this course")
+
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")
 )

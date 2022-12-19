@@ -6,6 +6,7 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
+	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
@@ -16,16 +17,18 @@ type assignmentMenteeUsecase struct {
 	assignmentMenteeRepository Repository
 	assignmentRepository       assignments.Repository
 	menteeCourseRepository     menteeCourses.Repository
+	menteeRepository           mentees.Repository
 	storage                    *helper.StorageConfig
 }
 
 func NewMenteeAssignmentUsecase(assignmentMenteeRepository Repository,
-	assignmentRepository assignments.Repository, menteeCourseRepository menteeCourses.Repository,
+	assignmentRepository assignments.Repository, menteeCourseRepository menteeCourses.Repository, menteeRepository mentees.Repository,
 	storage *helper.StorageConfig) Usecase {
 	return assignmentMenteeUsecase{
 		assignmentMenteeRepository: assignmentMenteeRepository,
 		assignmentRepository:       assignmentRepository,
 		menteeCourseRepository:     menteeCourseRepository,
+		menteeRepository:           menteeRepository,
 		storage:                    storage,
 	}
 }
@@ -90,38 +93,22 @@ func (mu assignmentMenteeUsecase) FindById(assignmentMenteeId string) (*Domain, 
 	return assignmentMentee, nil
 }
 
-func (mu assignmentMenteeUsecase) FindMenteeAssignmentEnrolled(menteeId string, materialId string) (*Domain, error) {
-	if _, err := m.menteeRepository.FindById(menteeId); err != nil {
+func (mu assignmentMenteeUsecase) FindMenteeAssignmentEnrolled(menteeId string, assignmentId string) (*Domain, error) {
+	if _, err := mu.menteeRepository.FindById(menteeId); err != nil {
 		return nil, err
 	}
 
-	material, err := m.materialRepository.FindById(materialId)
-
+	_, err := mu.assignmentRepository.FindById(assignmentId)
 	if err != nil {
 		return nil, err
 	}
 
-	progress, _ := m.menteeProgressRepository.FindByMaterial(menteeId, materialId)
+	assignmentMentee, err := mu.assignmentMenteeRepository.FindMenteeAssignmentEnrolled(menteeId, assignmentId)
 
-	var completed bool
-
-	if progress == nil {
-		completed = false
-	} else {
-		completed = true
+	if err != nil {
+		return nil, err
 	}
-
-	menteeProgress := Domain{
-		MenteeId:   menteeId,
-		CourseId:   material.CourseId,
-		MaterialId: materialId,
-		Material:   *material,
-		Completed:  completed,
-		CreatedAt:  material.CreatedAt,
-		UpdatedAt:  material.UpdatedAt,
-	}
-
-	return &menteeProgress, nil
+	return assignmentMentee, nil
 }
 
 func (mu assignmentMenteeUsecase) FindByMenteeId(menteeId string) ([]Domain, error) {
