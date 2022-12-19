@@ -22,7 +22,7 @@ func FromDomain(domain *menteeAssignments.Domain) AssignmentMentee {
 		ID:             domain.ID,
 		Name:           domain.Name,
 		PDF:            domain.AssignmentURL,
-		ProfilePicture: domain.Mentee.ProfilePicture,
+		ProfilePicture: domain.ProfilePicture,
 		Grade:          domain.Grade,
 		Completed:      domain.Completed,
 		CreatedAt:      domain.CreatedAt,
