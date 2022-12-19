@@ -4,6 +4,7 @@ import (
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
+	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
@@ -11,13 +12,14 @@ import (
 )
 
 type detailCourseUsecase struct {
-	menteeRepository         mentees.Repository
-	courseRepository         courses.Repository
-	moduleRepository         modules.Repository
-	materialRepository       materials.Repository
-	menteeProgressRepository menteeProgresses.Repository
-	assignmentsRepository    assignments.Repository
-	menteeCourse             menteeCourses.Repository
+	menteeRepository           mentees.Repository
+	courseRepository           courses.Repository
+	moduleRepository           modules.Repository
+	materialRepository         materials.Repository
+	menteeProgressRepository   menteeProgresses.Repository
+	assignmentsRepository      assignments.Repository
+	menteeAssignmentRepository menteeAssignments.Repository
+	menteeCourse               menteeCourses.Repository
 }
 
 func NewDetailCourseUsecase(
@@ -27,16 +29,18 @@ func NewDetailCourseUsecase(
 	materialRepository materials.Repository,
 	menteeProgressRepository menteeProgresses.Repository,
 	assignmentsRepository assignments.Repository,
+	menteeAssignmentRepository menteeAssignments.Repository,
 	menteeCourse menteeCourses.Repository,
 ) Usecase {
 	return detailCourseUsecase{
-		menteeRepository:         menteeRepository,
-		courseRepository:         courseRepository,
-		moduleRepository:         moduleRepository,
-		materialRepository:       materialRepository,
-		menteeProgressRepository: menteeProgressRepository,
-		assignmentsRepository:    assignmentsRepository,
-		menteeCourse:             menteeCourse,
+		menteeRepository:           menteeRepository,
+		courseRepository:           courseRepository,
+		moduleRepository:           moduleRepository,
+		materialRepository:         materialRepository,
+		menteeProgressRepository:   menteeProgressRepository,
+		assignmentsRepository:      assignmentsRepository,
+		menteeAssignmentRepository: menteeAssignmentRepository,
+		menteeCourse:               menteeCourse,
 	}
 }
 
@@ -120,7 +124,9 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 }
 
 func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId string) (*Domain, error) {
-	if _, err := dc.menteeCourse.CheckEnrollment(menteeId, courseId); err != nil {
+	menteeCourse, err := dc.menteeCourse.CheckEnrollment(menteeId, courseId)
+
+	if err != nil {
 		return nil, err
 	}
 
@@ -132,11 +138,16 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 
 	assignment, _ := dc.assignmentsRepository.FindByCourseId(courseId)
 
+	menteeAssignment, _ := dc.menteeAssignmentRepository.FindByCourse(menteeId, courseId)
+
+	isCompletingAssignment := menteeAssignment != nil
+
 	assignmentDomain := Assignment{
 		ID:          assignment.ID,
 		CourseId:    assignment.CourseId,
 		Title:       assignment.Title,
 		Description: assignment.Description,
+		Completed:   isCompletingAssignment,
 		CreatedAt:   assignment.CreatedAt,
 		UpdatedAt:   assignment.UpdatedAt,
 	}
@@ -194,21 +205,47 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 		}
 	}
 
+	totalMaterialsArray, _ := dc.materialRepository.CountByCourse([]string{courseId})
+
+	var totalMaterials int64
+
+	if len(totalMaterialsArray) != 0 {
+		totalMaterials = totalMaterialsArray[0]
+	}
+
+	if assignment != nil {
+		totalMaterials += 1
+	}
+
+	progressArray, _ := dc.menteeProgressRepository.Count(menteeId, course.Title, menteeCourse.Status)
+
+	var progress int64
+
+	if len(progressArray) != 0 {
+		progress = progressArray[0]
+	}
+
+	if isCompletingAssignment {
+		totalMaterials += 1
+	}
+
 	courseDomain := Domain{
-		CourseId:     course.ID,
-		CategoryId:   course.CategoryId,
-		MentorId:     course.MentorId,
-		Mentor:       course.Mentor.Fullname,
-		Category:     course.Category.Name,
-		Title:        course.Title,
-		Description:  course.Description,
-		Thumbnail:    course.Thumbnail,
-		TotalReviews: course.TotalReviews,
-		Rating:       course.Rating,
-		Modules:      moduleDomain,
-		Assignment:   assignmentDomain,
-		CreatedAt:    course.CreatedAt,
-		UpdatedAt:    course.UpdatedAt,
+		CourseId:       course.ID,
+		CategoryId:     course.CategoryId,
+		MentorId:       course.MentorId,
+		Mentor:         course.Mentor.Fullname,
+		Category:       course.Category.Name,
+		Title:          course.Title,
+		Description:    course.Description,
+		Thumbnail:      course.Thumbnail,
+		TotalReviews:   course.TotalReviews,
+		Rating:         course.Rating,
+		Progress:       progress,
+		TotalMaterials: totalMaterials,
+		Modules:        moduleDomain,
+		Assignment:     assignmentDomain,
+		CreatedAt:      course.CreatedAt,
+		UpdatedAt:      course.UpdatedAt,
 	}
 
 	return &courseDomain, nil
