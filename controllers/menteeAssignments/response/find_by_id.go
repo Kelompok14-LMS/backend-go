@@ -12,6 +12,7 @@ type AssignmentMentee struct {
 	PDF            string    `json:"pdf"`
 	ProfilePicture string    `json:"profile_picture"`
 	Grade          int       `json:"grade"`
+	Completed      bool      `json:"completed"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
@@ -23,6 +24,7 @@ func FromDomain(domain *menteeAssignments.Domain) AssignmentMentee {
 		PDF:            domain.AssignmentURL,
 		ProfilePicture: domain.Mentee.ProfilePicture,
 		Grade:          domain.Grade,
+		Completed:      domain.Completed,
 		CreatedAt:      domain.CreatedAt,
 		UpdatedAt:      domain.UpdatedAt,
 	}
