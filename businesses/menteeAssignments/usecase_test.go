@@ -9,7 +9,9 @@ import (
 	_assignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/assignments/mocks"
 	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 	_menteeAssignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments/mocks"
+	_menteeCourseMock "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses/mocks"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
+	_menteeMock "github.com/Kelompok14-LMS/backend-go/businesses/mentees/mocks"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/google/uuid"
@@ -21,6 +23,8 @@ var (
 	menteeAssignmentRepository _menteeAssignmentMock.Repository
 	assignmentRepository       _assignmentMock.Repository
 	menteeAssignmentService    menteeAssignments.Usecase
+	menteeCourseRepository     _menteeCourseMock.Repository
+	menteeRepository           _menteeMock.Repository
 	storageClient              helper.StorageConfig
 
 	assignmentDomain        assignments.Domain
@@ -31,7 +35,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	menteeAssignmentService = menteeAssignments.NewMenteeAssignmentUsecase(&menteeAssignmentRepository, &assignmentRepository, &storageClient)
+	menteeAssignmentService = menteeAssignments.NewMenteeAssignmentUsecase(&menteeAssignmentRepository, &assignmentRepository, &menteeCourseRepository, &menteeRepository, &storageClient)
 
 	assignmentDomain = assignments.Domain{
 		ID:          uuid.NewString(),

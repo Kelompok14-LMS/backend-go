@@ -22,16 +22,17 @@ type MenteeAssignment struct {
 
 func (rec *MenteeAssignment) ToDomain() *menteeAssignments.Domain {
 	return &menteeAssignments.Domain{
-		ID:            rec.ID,
-		MenteeId:      rec.MenteeId,
-		AssignmentId:  rec.AssignmentId,
-		Name:          rec.Mentee.Fullname,
-		AssignmentURL: rec.AssignmentURL,
-		Grade:         rec.Grade,
-		Mentee:        *rec.Mentee.ToDomain(),
-		Assignment:    *rec.Assignment.ToDomain(),
-		CreatedAt:     rec.CreatedAt,
-		UpdatedAt:     rec.UpdatedAt,
+		ID:             rec.ID,
+		MenteeId:       rec.MenteeId,
+		AssignmentId:   rec.AssignmentId,
+		Name:           rec.Mentee.Fullname,
+		ProfilePicture: rec.Mentee.ProfilePicture,
+		AssignmentURL:  rec.AssignmentURL,
+		Grade:          rec.Grade,
+		Mentee:         *rec.Mentee.ToDomain(),
+		Assignment:     *rec.Assignment.ToDomain(),
+		CreatedAt:      rec.CreatedAt,
+		UpdatedAt:      rec.UpdatedAt,
 	}
 }
 

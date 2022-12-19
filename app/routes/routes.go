@@ -122,11 +122,6 @@ func (routeConfig *RouteConfig) New() {
 	assignmentUsecase := _assignmentUsecase.NewAssignmentUsecase(assignmentRepository, courseRepository)
 	assignmentController := _assignmentController.NewAssignmentsController(assignmentUsecase)
 
-	// Inject the dependency to mentee assignment
-	menteeAssignmentRepository := _driverFactory.NewMenteeAssignmentRepository(routeConfig.MySQLDB)
-	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, routeConfig.StorageConfig)
-	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase, routeConfig.JWTConfig)
-
 	// Inject the dependency to material
 	materialRepository := _driverFactory.NewMaterialRepository(routeConfig.MySQLDB)
 	materialUsecase := _materialUsecase.NewMaterialUsecase(materialRepository, moduleRepository, routeConfig.StorageConfig)
@@ -141,6 +136,11 @@ func (routeConfig *RouteConfig) New() {
 	menteeCourseRepository := _driverFactory.NewMenteeCourseRepository(routeConfig.MySQLDB)
 	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
+
+	// Inject the dependency to mentee assignment
+	menteeAssignmentRepository := _driverFactory.NewMenteeAssignmentRepository(routeConfig.MySQLDB)
+	menteeAssignmentUsecase := _assignmentMenteeUsecase.NewMenteeAssignmentUsecase(menteeAssignmentRepository, assignmentRepository, menteeCourseRepository, menteeRepository, routeConfig.StorageConfig)
+	menteeAssignmentController := _assignmentMenteeController.NewAssignmentsMenteeController(menteeAssignmentUsecase, routeConfig.JWTConfig)
 
 	detailCourseUsecase := _detailCourseUsecase.NewDetailCourseUsecase(menteeRepository, courseRepository, moduleRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeAssignmentRepository, menteeCourseRepository)
 	detailCourseController := _detailCourseController.NewDetailCourseController(detailCourseUsecase)
@@ -242,11 +242,12 @@ func (routeConfig *RouteConfig) New() {
 	menteeAssignment := v1.Group("/mentee-assignments")
 	menteeAssignment.POST("", menteeAssignmentController.HandlerCreateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	menteeAssignment.PUT("/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
-	menteeAssignment.GET("/:menteeAssignmentId", menteeAssignmentController.HandlerFindByIdMenteeAssignment)
+	menteeAssignment.GET("/:menteeAssignmentId", menteeAssignmentController.HandlerFindByIdMenteeAssignment, authMiddleware.IsAuthenticated())
 	menteeAssignment.PUT("/grade/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateGradeMentee, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	menteeAssignment.DELETE("/:menteeAssignmentId", menteeAssignmentController.HandlerSoftDeleteMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
 	menteeAssignment.GET("/assignments/:assignmentId", menteeAssignmentController.HandlerFindByAssignmentId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
 	menteeAssignment.GET("/mentee", menteeAssignmentController.HandlerFindByMenteeId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.GET("/:menteeId/assignments/:assignmentId", menteeAssignmentController.HandlerFindMenteeAssignmentEnrolled, authMiddleware.IsAuthenticated())
 
 	// reviews routes
 	review := v1.Group("/reviews", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
