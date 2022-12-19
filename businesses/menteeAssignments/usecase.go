@@ -104,11 +104,32 @@ func (mu assignmentMenteeUsecase) FindMenteeAssignmentEnrolled(menteeId string, 
 	}
 
 	assignmentMentee, err := mu.assignmentMenteeRepository.FindMenteeAssignmentEnrolled(menteeId, assignmentId)
-
 	if err != nil {
 		return nil, err
 	}
-	return assignmentMentee, nil
+
+	var completed bool
+
+	if assignmentMentee == nil {
+		completed = false
+	} else {
+		completed = true
+	}
+
+	menteeAssignment := Domain{
+		ID:             assignmentMentee.ID,
+		MenteeId:       menteeId,
+		AssignmentId:   assignmentId,
+		Name:           assignmentMentee.Name,
+		ProfilePicture: assignmentMentee.ProfilePicture,
+		AssignmentURL:  assignmentMentee.AssignmentURL,
+		Grade:          assignmentMentee.Grade,
+		Completed:      completed,
+		CreatedAt:      assignmentMentee.CreatedAt,
+		UpdatedAt:      assignmentMentee.UpdatedAt,
+	}
+
+	return &menteeAssignment, nil
 }
 
 func (mu assignmentMenteeUsecase) FindByMenteeId(menteeId string) ([]Domain, error) {

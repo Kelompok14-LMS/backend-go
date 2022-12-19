@@ -10,17 +10,19 @@ import (
 )
 
 type Domain struct {
-	ID            string
-	MenteeId      string
-	AssignmentId  string
-	Name          string
-	AssignmentURL string
-	PDFfile       *multipart.FileHeader
-	Grade         int
-	Mentee        mentees.Domain
-	Assignment    assignments.Domain
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID             string
+	MenteeId       string
+	AssignmentId   string
+	Name           string
+	ProfilePicture string
+	AssignmentURL  string
+	PDFfile        *multipart.FileHeader
+	Grade          int
+	Completed      bool
+	Mentee         mentees.Domain
+	Assignment     assignments.Domain
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 type Repository interface {
