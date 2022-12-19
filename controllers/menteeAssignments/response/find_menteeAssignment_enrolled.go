@@ -6,7 +6,7 @@ import (
 	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 )
 
-type AssignmentMentee struct {
+type AssignmentMenteeEnrolled struct {
 	ID             string    `json:"id"`
 	Name           string    `json:"name"`
 	PDF            string    `json:"pdf"`
@@ -17,8 +17,8 @@ type AssignmentMentee struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-func FromDomain(domain *menteeAssignments.Domain) AssignmentMentee {
-	return AssignmentMentee{
+func DetailAssignmentEnrolled(domain *menteeAssignments.Domain) AssignmentMenteeEnrolled {
+	return AssignmentMenteeEnrolled{
 		ID:             domain.ID,
 		Name:           domain.Name,
 		PDF:            domain.AssignmentURL,

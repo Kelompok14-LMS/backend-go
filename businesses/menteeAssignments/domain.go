@@ -10,17 +10,19 @@ import (
 )
 
 type Domain struct {
-	ID            string
-	MenteeId      string
-	AssignmentId  string
-	Name          string
-	AssignmentURL string
-	PDFfile       *multipart.FileHeader
-	Grade         int
-	Mentee        mentees.Domain
-	Assignment    assignments.Domain
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID             string
+	MenteeId       string
+	AssignmentId   string
+	Name           string
+	ProfilePicture string
+	AssignmentURL  string
+	PDFfile        *multipart.FileHeader
+	Grade          int
+	Completed      bool
+	Mentee         mentees.Domain
+	Assignment     assignments.Domain
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 type Repository interface {
@@ -35,6 +37,9 @@ type Repository interface {
 
 	// FindByMenteeId repository find assignment mentee by mentee id
 	FindByMenteeId(menteeId string) ([]Domain, error)
+
+	// FindMenteeAssignmentEnrolled repository find mentee assignment from enrolled course
+	FindMenteeAssignmentEnrolled(menteeId string, assignmentId string) (*Domain, error)
 
 	// FindByCourse repository find assignment by course
 	FindByCourse(menteeId string, course string) (*Domain, error)
@@ -55,6 +60,9 @@ type Usecase interface {
 
 	// FindByAssignmentID usecase  find assignment mentee by assignment id
 	FindByAssignmentId(assignmentId string, pagination pkg.Pagination) (*pkg.Pagination, error)
+
+	// FindMenteeAssignmentEnrolled usecase find mentee assignment from enrolled course
+	FindMenteeAssignmentEnrolled(menteeId string, assignmentId string) (*Domain, error)
 
 	// FindByMenteeId rusecase find assignment mentee by mentee id
 	FindByMenteeId(menteeId string) ([]Domain, error)
