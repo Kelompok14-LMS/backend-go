@@ -134,7 +134,7 @@ func (routeConfig *RouteConfig) New() {
 
 	// Inject the dependency to menteeCourse
 	menteeCourseRepository := _driverFactory.NewMenteeCourseRepository(routeConfig.MySQLDB)
-	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository)
+	menteeCourseUsecase := _menteeCoursesUsecase.NewMenteeCourseUsecase(menteeCourseRepository, menteeRepository, courseRepository, materialRepository, menteeProgressRepository, assignmentRepository, menteeAssignmentRepository)
 	menteeCourseController := _menteeCoursesController.NewMenteeCourseController(menteeCourseUsecase)
 
 	// Inject the dependency to mentee assignment

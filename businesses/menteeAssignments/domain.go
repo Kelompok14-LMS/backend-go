@@ -42,7 +42,10 @@ type Repository interface {
 	FindMenteeAssignmentEnrolled(menteeId string, assignmentId string) (*Domain, error)
 
 	// FindByCourse repository find assignment by course
-	FindByCourse(menteeId string, course string) (*Domain, error)
+	FindByCourse(menteeId string, courseId string) (*Domain, error)
+
+	// FindByCourses repository find mentee assignments by courses
+	FindByCourses(menteeId string, courseIds []string) (*[]Domain, error)
 
 	// Update repository update assignment  mentee
 	Update(assignmentMenteeId string, assignmentMenteeDomain *Domain) error

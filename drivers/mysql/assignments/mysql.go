@@ -62,6 +62,28 @@ func (ar assignmentRepository) FindByCourseId(courseId string) (*assignments.Dom
 	return rec.ToDomain(), nil
 }
 
+func (ar assignmentRepository) FindByCourses(courseIds []string) (*[]assignments.Domain, error) {
+	rec := []Assignment{}
+
+	err := ar.conn.Model(&Assignment{}).Where("course_id IN ?", courseIds).Find(&rec).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkg.ErrCourseNotFound
+		}
+
+		return nil, err
+	}
+
+	var assignmentDomain []assignments.Domain
+
+	for _, assignment := range rec {
+		assignmentDomain = append(assignmentDomain, *assignment.ToDomain())
+	}
+
+	return &assignmentDomain, nil
+}
+
 func (ar assignmentRepository) Update(assignmentId string, assignmentDomain *assignments.Domain) error {
 	rec := FromDomain(assignmentDomain)
 
