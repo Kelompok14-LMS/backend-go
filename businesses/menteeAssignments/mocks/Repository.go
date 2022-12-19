@@ -70,13 +70,13 @@ func (_m *Repository) FindByAssignmentId(assignmentId string, limit int, offset 
 	return r0, r1, r2
 }
 
-// FindByCourse provides a mock function with given fields: menteeId, course
-func (_m *Repository) FindByCourse(menteeId string, course string) (*mentee_assignments.Domain, error) {
-	ret := _m.Called(menteeId, course)
+// FindByCourse provides a mock function with given fields: menteeId, courseId
+func (_m *Repository) FindByCourse(menteeId string, courseId string) (*mentee_assignments.Domain, error) {
+	ret := _m.Called(menteeId, courseId)
 
 	var r0 *mentee_assignments.Domain
 	if rf, ok := ret.Get(0).(func(string, string) *mentee_assignments.Domain); ok {
-		r0 = rf(menteeId, course)
+		r0 = rf(menteeId, courseId)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*mentee_assignments.Domain)
@@ -85,7 +85,30 @@ func (_m *Repository) FindByCourse(menteeId string, course string) (*mentee_assi
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string, string) error); ok {
-		r1 = rf(menteeId, course)
+		r1 = rf(menteeId, courseId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FindByCourses provides a mock function with given fields: menteeId, courseIds
+func (_m *Repository) FindByCourses(menteeId string, courseIds []string) (*[]mentee_assignments.Domain, error) {
+	ret := _m.Called(menteeId, courseIds)
+
+	var r0 *[]mentee_assignments.Domain
+	if rf, ok := ret.Get(0).(func(string, []string) *[]mentee_assignments.Domain); ok {
+		r0 = rf(menteeId, courseIds)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]mentee_assignments.Domain)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, []string) error); ok {
+		r1 = rf(menteeId, courseIds)
 	} else {
 		r1 = ret.Error(1)
 	}

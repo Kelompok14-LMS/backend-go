@@ -180,9 +180,11 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 
 	progresses, _ := dc.menteeProgressRepository.FindByMentee(menteeId, courseId)
 
-	for i := range progresses {
-		if progresses[i].Completed {
-			materialDomain[i].Completed = true
+	for i := range materialDomain {
+		for j := range progresses {
+			if progresses[j].Completed && materialDomain[i].MaterialId == progresses[j].MaterialId {
+				materialDomain[i].Completed = true
+			}
 		}
 	}
 
@@ -226,7 +228,7 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 	}
 
 	if isCompletingAssignment {
-		totalMaterials += 1
+		progress += 1
 	}
 
 	courseDomain := Domain{

@@ -4,9 +4,13 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
+	_assignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/assignments/mocks"
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	_courseMock "github.com/Kelompok14-LMS/backend-go/businesses/courses/mocks"
 	_materialMock "github.com/Kelompok14-LMS/backend-go/businesses/materials/mocks"
+	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
+	_menteeAssignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments/mocks"
 	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 	_menteeCourseMock "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses/mocks"
 	_menteeProgressMock "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses/mocks"
@@ -19,19 +23,23 @@ import (
 )
 
 var (
-	menteeCourseRepository   _menteeCourseMock.Repository
-	courseRepository         _courseMock.Repository
-	menteeRepository         _menteeMock.Repository
-	materialRepository       _materialMock.Repository
-	menteeProgressRepository _menteeProgressMock.Repository
+	menteeCourseRepository     _menteeCourseMock.Repository
+	courseRepository           _courseMock.Repository
+	menteeRepository           _menteeMock.Repository
+	materialRepository         _materialMock.Repository
+	menteeProgressRepository   _menteeProgressMock.Repository
+	assignmentRepository       _assignmentMock.Repository
+	menteeAssignmentRepository _menteeAssignmentMock.Repository
 
 	menteeCourseService menteeCourses.Usecase
 
-	menteeCourseDomain menteeCourses.Domain
-	courseDomain       courses.Domain
-	menteeDomain       mentees.Domain
-	progresses         []int64
-	totalMaterials     []int64
+	menteeCourseDomain     menteeCourses.Domain
+	courseDomain           courses.Domain
+	menteeDomain           mentees.Domain
+	assignmentDomain       assignments.Domain
+	menteeAssignmentDomain menteeAssignments.Domain
+	progresses             []int64
+	totalMaterials         []int64
 )
 
 func TestMain(m *testing.M) {
@@ -41,6 +49,8 @@ func TestMain(m *testing.M) {
 		&courseRepository,
 		&materialRepository,
 		&menteeProgressRepository,
+		&assignmentRepository,
+		&menteeAssignmentRepository,
 	)
 
 	courseDomain = courses.Domain{
@@ -67,6 +77,22 @@ func TestMain(m *testing.M) {
 		MenteeId: menteeDomain.ID,
 		CourseId: courseDomain.ID,
 		Status:   "ongoing",
+	}
+
+	assignmentDomain = assignments.Domain{
+		ID:          uuid.NewString(),
+		CourseId:    courseDomain.ID,
+		Title:       "test",
+		Description: "test",
+	}
+
+	menteeAssignmentDomain = menteeAssignments.Domain{
+		ID:            uuid.NewString(),
+		MenteeId:      menteeDomain.ID,
+		AssignmentId:  assignmentDomain.ID,
+		Name:          menteeDomain.Fullname,
+		AssignmentURL: "test.com",
+		Grade:         80,
 	}
 
 	progresses = []int64{5}
@@ -143,6 +169,10 @@ func TestFindMenteeCourses(t *testing.T) {
 		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, "test", "test").Return(progresses, nil).Once()
 
 		materialRepository.Mock.On("CountByCourse", []string{courseDomain.ID}).Return(totalMaterials, nil).Once()
+
+		assignmentRepository.Mock.On("FindByCourses", []string{courseDomain.ID}).Return(&[]assignments.Domain{assignmentDomain}, nil).Once()
+
+		menteeAssignmentRepository.Mock.On("FindByCourses", menteeDomain.ID, []string{courseDomain.ID}).Return(&[]menteeAssignments.Domain{menteeAssignmentDomain}, nil)
 
 		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, "test", "test")
 

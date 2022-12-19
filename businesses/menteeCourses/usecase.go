@@ -1,8 +1,10 @@
 package mentee_courses
 
 import (
+	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
+	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
@@ -10,11 +12,13 @@ import (
 )
 
 type menteeCourseUsecase struct {
-	menteeCourseRepository   Repository
-	menteeRepository         mentees.Repository
-	courseRepository         courses.Repository
-	materialRepository       materials.Repository
-	menteeProgressRepository menteeProgresses.Repository
+	menteeCourseRepository     Repository
+	menteeRepository           mentees.Repository
+	courseRepository           courses.Repository
+	materialRepository         materials.Repository
+	menteeProgressRepository   menteeProgresses.Repository
+	assignmentRepository       assignments.Repository
+	menteeAssignmentRepository menteeAssignments.Repository
 }
 
 func NewMenteeCourseUsecase(
@@ -23,13 +27,17 @@ func NewMenteeCourseUsecase(
 	courseRepository courses.Repository,
 	materialRepository materials.Repository,
 	menteeProgressRepository menteeProgresses.Repository,
+	assignmentRepository assignments.Repository,
+	menteeAssignmentRepository menteeAssignments.Repository,
 ) Usecase {
 	return menteeCourseUsecase{
-		menteeCourseRepository:   menteeCourseRepository,
-		menteeRepository:         menteeRepository,
-		courseRepository:         courseRepository,
-		materialRepository:       materialRepository,
-		menteeProgressRepository: menteeProgressRepository,
+		menteeCourseRepository:     menteeCourseRepository,
+		menteeRepository:           menteeRepository,
+		courseRepository:           courseRepository,
+		materialRepository:         materialRepository,
+		menteeProgressRepository:   menteeProgressRepository,
+		assignmentRepository:       assignmentRepository,
+		menteeAssignmentRepository: menteeAssignmentRepository,
 	}
 }
 
@@ -95,6 +103,26 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 
 	for i, material := range totalMaterials {
 		(*menteeCourses)[i].TotalMaterials = material
+	}
+
+	assignments, _ := m.assignmentRepository.FindByCourses(courseIds)
+
+	for i := range *menteeCourses {
+		for j := range *assignments {
+			if (*menteeCourses)[i].CourseId == (*assignments)[j].CourseId {
+				(*menteeCourses)[i].TotalMaterials += 1
+			}
+		}
+	}
+
+	menteeAssignments, _ := m.menteeAssignmentRepository.FindByCourses(menteeId, courseIds)
+
+	for i := range *menteeCourses {
+		for j := range *menteeAssignments {
+			if (*menteeCourses)[i].CourseId == (*menteeAssignments)[j].Assignment.CourseId {
+				(*menteeCourses)[i].ProgressCount += 1
+			}
+		}
 	}
 
 	return menteeCourses, nil

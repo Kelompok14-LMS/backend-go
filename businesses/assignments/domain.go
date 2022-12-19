@@ -26,6 +26,9 @@ type Repository interface {
 	// FindByCourseId repository find assignment by courseid
 	FindByCourseId(courseId string) (*Domain, error)
 
+	// FindByCourses repository find assignments by courses
+	FindByCourses(courseIds []string) (*[]Domain, error)
+
 	// Update repository update assignment
 	Update(assignmentId string, assignmentDomain *Domain) error
 
