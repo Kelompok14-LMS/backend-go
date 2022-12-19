@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
+	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 	"github.com/Kelompok14-LMS/backend-go/helper"
 	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/utils"
@@ -14,15 +15,17 @@ import (
 type assignmentMenteeUsecase struct {
 	assignmentMenteeRepository Repository
 	assignmentRepository       assignments.Repository
+	menteeCoursesRepository    menteeCourses.Repository
 	storage                    *helper.StorageConfig
 }
 
 func NewMenteeAssignmentUsecase(assignmentMenteeRepository Repository,
-	assignmentRepository assignments.Repository,
+	assignmentRepository assignments.Repository, menteeCoursesRepository menteeCourses.Repository,
 	storage *helper.StorageConfig) Usecase {
 	return assignmentMenteeUsecase{
 		assignmentMenteeRepository: assignmentMenteeRepository,
 		assignmentRepository:       assignmentRepository,
+		menteeCoursesRepository:    menteeCoursesRepository,
 		storage:                    storage,
 	}
 }
@@ -81,6 +84,40 @@ func (mu assignmentMenteeUsecase) FindById(assignmentMenteeId string) (*Domain, 
 	}
 
 	return assignmentMentee, nil
+}
+
+func (mu assignmentMenteeUsecase) FindMenteeAssignmentEnrolled(menteeId string, materialId string) (*Domain, error) {
+	if _, err := m.menteeRepository.FindById(menteeId); err != nil {
+		return nil, err
+	}
+
+	material, err := m.materialRepository.FindById(materialId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	progress, _ := m.menteeProgressRepository.FindByMaterial(menteeId, materialId)
+
+	var completed bool
+
+	if progress == nil {
+		completed = false
+	} else {
+		completed = true
+	}
+
+	menteeProgress := Domain{
+		MenteeId:   menteeId,
+		CourseId:   material.CourseId,
+		MaterialId: materialId,
+		Material:   *material,
+		Completed:  completed,
+		CreatedAt:  material.CreatedAt,
+		UpdatedAt:  material.UpdatedAt,
+	}
+
+	return &menteeProgress, nil
 }
 
 func (mu assignmentMenteeUsecase) FindByMenteeId(menteeId string) ([]Domain, error) {

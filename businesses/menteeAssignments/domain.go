@@ -56,6 +56,9 @@ type Usecase interface {
 	// FindByAssignmentID usecase  find assignment mentee by assignment id
 	FindByAssignmentId(assignmentId string, pagination pkg.Pagination) (*pkg.Pagination, error)
 
+	// FindMenteeAssignmentEnrolled usecase find mentee assignment from enrolled course
+	FindMenteeAssignmentEnrolled(menteeId string, assignmentId string) (*Domain, error)
+
 	// FindByMenteeId rusecase find assignment mentee by mentee id
 	FindByMenteeId(menteeId string) ([]Domain, error)
 
