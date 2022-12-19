@@ -82,6 +82,12 @@ func (am assignmentMenteeRepository) FindByMenteeId(menteeId string) ([]menteeAs
 }
 
 func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string, limit int, offset int) ([]menteeAssignments.Domain, int, error) {
+	var totalRows int64
+
+	_ = am.conn.Model(&MenteeAssignment{}).
+		Where("assignment_id = ?", assignmentId).Order("created_at DESC").
+		Count(&totalRows).Error
+
 	rec := []MenteeAssignment{}
 
 	err := am.conn.Model(&MenteeAssignment{}).Preload("Mentee").
@@ -103,7 +109,7 @@ func (am assignmentMenteeRepository) FindByAssignmentId(assignmentId string, lim
 		assignmentDomain = append(assignmentDomain, *assignment.ToDomain())
 	}
 
-	return assignmentDomain, 0, nil
+	return assignmentDomain, int(totalRows), nil
 }
 
 func (am assignmentMenteeRepository) FindByCourse(menteeId string, courseId string) (*menteeAssignments.Domain, error) {
