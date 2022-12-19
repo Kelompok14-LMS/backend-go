@@ -15,26 +15,30 @@ import (
 type assignmentMenteeUsecase struct {
 	assignmentMenteeRepository Repository
 	assignmentRepository       assignments.Repository
-	menteeCoursesRepository    menteeCourses.Repository
+	menteeCourseRepository     menteeCourses.Repository
 	storage                    *helper.StorageConfig
 }
 
 func NewMenteeAssignmentUsecase(assignmentMenteeRepository Repository,
-	assignmentRepository assignments.Repository, menteeCoursesRepository menteeCourses.Repository,
+	assignmentRepository assignments.Repository, menteeCourseRepository menteeCourses.Repository,
 	storage *helper.StorageConfig) Usecase {
 	return assignmentMenteeUsecase{
 		assignmentMenteeRepository: assignmentMenteeRepository,
 		assignmentRepository:       assignmentRepository,
-		menteeCoursesRepository:    menteeCoursesRepository,
+		menteeCourseRepository:     menteeCourseRepository,
 		storage:                    storage,
 	}
 }
 
 func (mu assignmentMenteeUsecase) Create(assignmentMenteeDomain *Domain) error {
-	if _, err := mu.assignmentRepository.FindById(assignmentMenteeDomain.AssignmentId); err != nil {
+	assignments, err := mu.assignmentRepository.FindById(assignmentMenteeDomain.AssignmentId)
+	if err != nil {
 		return err
 	}
 
+	if _, err := mu.menteeCourseRepository.CheckEnrollment(assignmentMenteeDomain.MenteeId, assignments.CourseId); err != nil {
+		return pkg.ErrNoEnrolled
+	}
 	PDF, err := assignmentMenteeDomain.PDFfile.Open()
 
 	if err != nil {
