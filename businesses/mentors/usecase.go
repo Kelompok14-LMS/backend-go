@@ -3,6 +3,7 @@ package mentors
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/users"
@@ -187,7 +188,6 @@ func (m mentorUsecase) FindById(id string) (*Domain, error) {
 }
 
 func (m mentorUsecase) Update(id string, updateMentor *MentorUpdateProfile) error {
-
 	_, err := m.userRepository.FindById(updateMentor.UserID)
 
 	if err != nil {
@@ -222,13 +222,21 @@ func (m mentorUsecase) Update(id string, updateMentor *MentorUpdateProfile) erro
 			}
 		}
 
-		filename := updateMentor.ProfilePictureFile.Filename
-
 		ProfilePicture, err := updateMentor.ProfilePictureFile.Open()
 
 		if err != nil {
 			return err
 		}
+
+		defer ProfilePicture.Close()
+
+		extension := filepath.Ext(updateMentor.ProfilePictureFile.Filename)
+
+		if extension != ".jpg" && extension != ".png" && extension != ".jpeg" {
+			return pkg.ErrUnsupportedImageFile
+		}
+
+		filename, _ := utils.GetFilename(updateMentor.ProfilePictureFile.Filename)
 
 		ProfilePictureURL, err = m.storage.UploadImage(ctx, filename, ProfilePicture)
 

@@ -45,11 +45,11 @@ func (ctrl *MenteeController) HandlerRegisterMentee(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrEmailAlreadyExist) {
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrEmailAlreadyExist.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success send OTP to email", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses mengirim OTP ke email", nil))
 }
 
 func (ctrl *MenteeController) HandlerVerifyRegisterMentee(c echo.Context) error {
@@ -71,11 +71,11 @@ func (ctrl *MenteeController) HandlerVerifyRegisterMentee(c echo.Context) error 
 		} else if errors.Is(err, pkg.ErrOTPNotMatch) {
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrOTPNotMatch.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Register success", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Register berhasil", nil))
 }
 
 func (ctrl *MenteeController) HandlerLoginMentee(c echo.Context) error {
@@ -93,17 +93,17 @@ func (ctrl *MenteeController) HandlerLoginMentee(c echo.Context) error {
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrUserNotFound) {
-			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrUserNotFound.Error()))
+			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
 		} else if errors.Is(err, pkg.ErrMenteeNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
 		} else if errors.Is(err, pkg.ErrPasswordLengthInvalid) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Login successful", res))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Login berhasil", res))
 }
 
 func (ctrl *MenteeController) HandlerForgotPassword(c echo.Context) error {
@@ -131,11 +131,11 @@ func (ctrl *MenteeController) HandlerForgotPassword(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrPasswordNotMatch) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordNotMatch.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success reset password", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses ganti kata sandi", nil))
 }
 
 func (ctrl MenteeController) HandlerFindMenteesByCourse(c echo.Context) error {
@@ -155,7 +155,7 @@ func (ctrl MenteeController) HandlerFindMenteesByCourse(c echo.Context) error {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
@@ -169,7 +169,7 @@ func (ctrl MenteeController) HandlerFindMenteesByCourse(c echo.Context) error {
 
 	res.Result = menteeDomain
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentees", res))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get semua mentee berdasarkan kursus", res))
 }
 
 func (ctrl *MenteeController) HandlerFindByID(c echo.Context) error {
@@ -183,11 +183,11 @@ func (ctrl *MenteeController) HandlerFindByID(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get Mentee by id", response.FromDomain(mentee)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get mentee berdasarkan id", response.FromDomain(mentee)))
 }
 
 func (ctrl *MenteeController) HandlerProfileMentee(c echo.Context) error {
@@ -201,11 +201,11 @@ func (ctrl *MenteeController) HandlerProfileMentee(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get Mentee by id", response.FromDomain(mentee)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get mentee berdasarkan token header", response.FromDomain(mentee)))
 }
 
 func (ctrl *MenteeController) HandlerFindAll(c echo.Context) error {
@@ -224,11 +224,11 @@ func (ctrl *MenteeController) HandlerFindAll(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentee ", allMentees))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get semua mentee", allMentees))
 }
 
 func (ctrl *MenteeController) HandlerUpdateProfile(c echo.Context) error {
@@ -262,12 +262,14 @@ func (ctrl *MenteeController) HandlerUpdateProfile(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
 		} else if errors.Is(err, pkg.ErrMenteeNotFound) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrMenteeNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUnsupportedImageFile) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
 		} else if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update profile", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update profil mentee", nil))
 }

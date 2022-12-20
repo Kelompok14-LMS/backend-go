@@ -2,6 +2,7 @@ package materials
 
 import (
 	"context"
+	"path/filepath"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
 	"github.com/Kelompok14-LMS/backend-go/helper"
@@ -41,10 +42,16 @@ func (mu materialUsecase) Create(materialDomain *Domain) error {
 
 	defer file.Close()
 
+	extension := filepath.Ext(materialDomain.File.Filename)
+
+	if extension != ".mp4" && extension != ".mkv" {
+		return pkg.ErrUnsupportedVideoFile
+	}
+
 	filename, err := utils.GetFilename(materialDomain.File.Filename)
 
 	if err != nil {
-		return pkg.ErrUnsupportedImageFile
+		return pkg.ErrUnsupportedVideoFile
 	}
 
 	ctx := context.Background()
@@ -110,10 +117,16 @@ func (mu materialUsecase) Update(materialId string, materialDomain *Domain) erro
 
 		defer file.Close()
 
+		extension := filepath.Ext(materialDomain.File.Filename)
+
+		if extension != ".mp4" && extension != ".mkv" {
+			return pkg.ErrUnsupportedVideoFile
+		}
+
 		filename, err := utils.GetFilename(materialDomain.File.Filename)
 
 		if err != nil {
-			return pkg.ErrUnsupportedImageFile
+			return pkg.ErrUnsupportedVideoFile
 		}
 
 		url, err = mu.storage.UploadVideo(ctx, filename, file)

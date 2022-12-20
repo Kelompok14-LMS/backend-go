@@ -5,6 +5,7 @@ import (
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/certificates"
 	"github.com/Kelompok14-LMS/backend-go/helper"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/labstack/echo/v4"
 )
 
@@ -30,7 +31,7 @@ func (ctrl *CertificateController) HandlerGenerateCert(c echo.Context) error {
 	cert, err := ctrl.certificateUsecase.GenerateCert(&data)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	return c.Blob(http.StatusOK, "application/pdf", cert)

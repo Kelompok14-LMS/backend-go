@@ -43,11 +43,11 @@ func (ctrl *MenteeProgressController) HandlerAddProgress(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success add progress", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan progres", nil))
 }
 
 func (ctrl *MenteeProgressController) HandlerFindMaterialEnrolled(c echo.Context) error {
@@ -62,9 +62,9 @@ func (ctrl *MenteeProgressController) HandlerFindMaterialEnrolled(c echo.Context
 		} else if errors.Is(err, pkg.ErrMaterialNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get material", response.DetailMaterialEnrolled(progress)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get materi", response.DetailMaterialEnrolled(progress)))
 }

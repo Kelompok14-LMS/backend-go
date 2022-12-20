@@ -45,12 +45,14 @@ func (ctrl *AssignmentMenteeController) HandlerCreateMenteeAssignment(c echo.Con
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUnsupportedAssignmentFile) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedAssignmentFile.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success create mentee assignments ", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan tugas mentee", nil))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerUpdateMenteeAssignment(c echo.Context) error {
@@ -77,12 +79,14 @@ func (ctrl *AssignmentMenteeController) HandlerUpdateMenteeAssignment(c echo.Con
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
+		} else if errors.Is(err, pkg.ErrUnsupportedAssignmentFile) {
+			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedAssignmentFile.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update mentee assignments", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update tugas mentee", nil))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerUpdateGradeMentee(c echo.Context) error {
@@ -105,10 +109,10 @@ func (ctrl *AssignmentMenteeController) HandlerUpdateGradeMentee(c echo.Context)
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
 		}
 
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update grade", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses Handler nilai", nil))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerFindByIdMenteeAssignment(c echo.Context) error {
@@ -121,10 +125,10 @@ func (ctrl *AssignmentMenteeController) HandlerFindByIdMenteeAssignment(c echo.C
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
 		}
 
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by id", response.FromDomain(assignmentMentee)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get tugas mentee berdasarkan id", response.FromDomain(assignmentMentee)))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerFindByAssignmentId(c echo.Context) error {
@@ -145,7 +149,7 @@ func (ctrl *AssignmentMenteeController) HandlerFindByAssignmentId(c echo.Context
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
 		}
 
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	var menteeAssignmentResponse []response.AssignmentMentee
@@ -158,7 +162,7 @@ func (ctrl *AssignmentMenteeController) HandlerFindByAssignmentId(c echo.Context
 
 	res.Result = menteeAssignmentResponse
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by assignment id", res))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get tugas mentee berdasarkan id tugas", res))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) error {
@@ -172,7 +176,7 @@ func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) er
 		} else if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 	var menteeAssignmentResponse []response.AssignmentMentee
@@ -181,7 +185,7 @@ func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) er
 		menteeAssignmentResponse = append(menteeAssignmentResponse, response.FromDomain(&mentee_assignments))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment mentee by mentee id ", menteeAssignmentResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get tugas mentee berdasarkan id mentee", menteeAssignmentResponse))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerFindMenteeAssignmentEnrolled(c echo.Context) error {
@@ -196,11 +200,11 @@ func (ctrl *AssignmentMenteeController) HandlerFindMenteeAssignmentEnrolled(c ec
 		} else if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get mentee assignments", response.DetailAssignmentEnrolled(menteeAssignment)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get tugas mentee", response.DetailAssignmentEnrolled(menteeAssignment)))
 }
 
 func (ctrl *AssignmentMenteeController) HandlerSoftDeleteMenteeAssignment(c echo.Context) error {
@@ -212,9 +216,9 @@ func (ctrl *AssignmentMenteeController) HandlerSoftDeleteMenteeAssignment(c echo
 		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("assignment mentee deleted", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Tugas mentee dihapus", nil))
 }

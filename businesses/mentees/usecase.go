@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"path/filepath"
 	"time"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/otp"
@@ -293,6 +294,12 @@ func (m menteeUsecase) Update(id string, menteeDomain *Domain) error {
 		}
 
 		defer ProfilePicture.Close()
+
+		extension := filepath.Ext(menteeDomain.ProfilePictureFile.Filename)
+
+		if extension != ".jpg" && extension != ".png" && extension != ".jpeg" {
+			return pkg.ErrUnsupportedImageFile
+		}
 
 		filename, _ := utils.GetFilename(menteeDomain.ProfilePictureFile.Filename)
 
