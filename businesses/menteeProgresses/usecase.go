@@ -71,13 +71,7 @@ func (m menteeProgressUsecase) FindMaterialEnrolled(menteeId string, materialId 
 
 	progress, _ := m.menteeProgressRepository.FindByMaterial(menteeId, materialId)
 
-	var completed bool
-
-	if progress == nil {
-		completed = false
-	} else {
-		completed = true
-	}
+	completed := progress != nil
 
 	menteeProgress := Domain{
 		MenteeId:   menteeId,
