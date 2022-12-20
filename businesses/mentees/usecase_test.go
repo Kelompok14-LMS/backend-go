@@ -35,8 +35,9 @@ var (
 	menteeAuth           mentees.MenteeAuth
 	menteeRegister       mentees.MenteeRegister
 	menteeForgotPassword mentees.MenteeForgotPassword
+	userDomain           users.Domain
 
-	userDomain users.Domain
+	pagination pkg.Pagination
 )
 
 func TestMain(m *testing.M) {
@@ -80,6 +81,15 @@ func TestMain(m *testing.M) {
 		Password:         userDomain.Password,
 		RepeatedPassword: userDomain.Password,
 		OTP:              "0000",
+	}
+
+	jwtConfig = *&utils.JWTConfig{
+		JWTSecret: "secret",
+	}
+
+	pagination = pkg.Pagination{
+		Limit: 10,
+		Page:  1,
 	}
 
 	m.Run()
@@ -167,6 +177,149 @@ func TestVerifyRegister(t *testing.T) {
 	})
 }
 
-// func TestForgotPassword(t *testing.T) {}
+func TestForgotPassword(t *testing.T) {
+	t.Run("Test Forgot Password | Success forgot password", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeForgotPassword.Email).Return(&userDomain, nil).Once()
 
-// func TestLogin(t *testing.T) {}
+		otpRepository.Mock.On("Get", mock.Anything, menteeForgotPassword.Email).Return(menteeForgotPassword.OTP, nil).Once()
+
+		userRepository.Mock.On("Update", userDomain.ID, mock.Anything).Return(nil).Once()
+
+		err := menteeService.ForgotPassword(&menteeForgotPassword)
+
+		assert.NoError(t, err)
+	})
+
+	t.Run("Test Forgot Password | Failed forgot password | User not found", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeForgotPassword.Email).Return(nil, pkg.ErrUserNotFound).Once()
+
+		err := menteeService.ForgotPassword(&menteeForgotPassword)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Forgot Password | Failed forgot password | OTP expired", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeForgotPassword.Email).Return(&userDomain, nil).Once()
+
+		otpRepository.Mock.On("Get", mock.Anything, menteeForgotPassword.Email).Return("", pkg.ErrOTPExpired).Once()
+
+		err := menteeService.ForgotPassword(&menteeForgotPassword)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Forgot Password | Failed forgot password | Error occurred", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeForgotPassword.Email).Return(&userDomain, nil).Once()
+
+		otpRepository.Mock.On("Get", mock.Anything, menteeForgotPassword.Email).Return(menteeForgotPassword.OTP, nil).Once()
+
+		userRepository.Mock.On("Update", userDomain.ID, mock.Anything).Return(errors.New("error occurred"))
+
+		err := menteeService.ForgotPassword(&menteeForgotPassword)
+
+		assert.Error(t, err)
+	})
+}
+
+func TestLogin(t *testing.T) {
+	t.Run("Test Login | Failed login | Invalid password length", func(t *testing.T) {
+		userRepository.Mock.On("FindByEmail", menteeAuth.Email).Return(&userDomain, nil).Once()
+
+		menteeRepository.Mock.On("FindByIdUser", userDomain.ID).Return(&menteeDomain, nil).Once()
+
+		result, err := menteeService.Login(&menteeAuth)
+
+		assert.Error(t, err)
+		assert.Empty(t, result)
+	})
+}
+
+func TestFindAll(t *testing.T) {
+	t.Run("Test Find All | Success find all mentees", func(t *testing.T) {
+		menteeRepository.Mock.On("FindAll").Return(&[]mentees.Domain{menteeDomain}, nil).Once()
+
+		results, err := menteeService.FindAll()
+
+		assert.NoError(t, err)
+		assert.NotEmpty(t, results)
+	})
+
+	t.Run("Test Find All | Failed find all mentees | Mentee not found", func(t *testing.T) {
+		menteeRepository.Mock.On("FindAll").Return(nil, pkg.ErrMenteeNotFound).Once()
+
+		results, err := menteeService.FindAll()
+
+		assert.Error(t, err)
+		assert.Empty(t, results)
+	})
+}
+
+func TestFindById(t *testing.T) {
+	t.Run("Test Find By Id | Success find by id", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(&menteeDomain, nil).Once()
+
+		results, err := menteeService.FindById(menteeDomain.ID)
+
+		assert.NoError(t, err)
+		assert.NotEmpty(t, results)
+	})
+
+	t.Run("Test Find By Id | Failed find by id | Mentee not found", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(nil, pkg.ErrMenteeNotFound).Once()
+
+		results, err := menteeService.FindById(menteeDomain.ID)
+
+		assert.Error(t, err)
+		assert.Empty(t, results)
+	})
+}
+
+func TestFindByCourse(t *testing.T) {
+	t.Run("Test Find By Course | Success find by course", func(t *testing.T) {
+		menteeRepository.Mock.On("FindByCourse", "test", pagination.GetLimit(), pagination.GetOffset()).Return(&[]mentees.Domain{menteeDomain}, 1, nil).Once()
+
+		results, err := menteeService.FindByCourse("test", pagination)
+
+		assert.NoError(t, err)
+		assert.NotEmpty(t, results)
+	})
+
+	t.Run("Test Find By Course | Failed find by course | Error occurred", func(t *testing.T) {
+		menteeRepository.Mock.On("FindByCourse", "test", pagination.GetLimit(), pagination.GetOffset()).Return(&[]mentees.Domain{}, 0, errors.New("error occurred")).Once()
+
+		results, err := menteeService.FindByCourse("test", pagination)
+
+		assert.Error(t, err)
+		assert.Empty(t, results)
+	})
+}
+
+func TestUpdate(t *testing.T) {
+	t.Run("Test Update | Success update", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(&menteeDomain, nil).Once()
+
+		menteeRepository.Mock.On("Update", menteeDomain.ID, mock.Anything).Return(nil).Once()
+
+		err := menteeService.Update(menteeDomain.ID, &menteeDomain)
+
+		assert.NoError(t, err)
+	})
+
+	t.Run("Test Update | Failed update | Mentee not found", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(nil, pkg.ErrMenteeNotFound).Once()
+
+		err := menteeService.Update(menteeDomain.ID, &menteeDomain)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("Test Update | Failed update | Mentee not found", func(t *testing.T) {
+		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(&menteeDomain, nil).Once()
+
+		menteeRepository.Mock.On("Update", menteeDomain.ID, mock.Anything).Return(errors.New("error occurred")).Once()
+
+		err := menteeService.Update(menteeDomain.ID, &menteeDomain)
+
+		assert.Error(t, err)
+	})
+}
