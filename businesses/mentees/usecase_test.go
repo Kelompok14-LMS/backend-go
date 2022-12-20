@@ -83,7 +83,7 @@ func TestMain(m *testing.M) {
 		OTP:              "0000",
 	}
 
-	jwtConfig = *&utils.JWTConfig{
+	jwtConfig = utils.JWTConfig{
 		JWTSecret: "secret",
 	}
 
