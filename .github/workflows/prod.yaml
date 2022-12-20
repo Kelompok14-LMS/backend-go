@@ -75,8 +75,7 @@ jobs:
             docker container rm eduworld-app
             docker pull ${{ env.IMAGE }}:${{ env.RELEASE_VERSION }}
             cd eduworld
-            docker container create --name eduworld-app -p 80:8080 -e GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GCP_KEY }} ${{ env.IMAGE }}:${{ env.RELEASE_VERSION }}
+            docker container create --name eduworld-app -p 8080:8080 -e GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GCP_KEY }} ${{ env.IMAGE }}:${{ env.RELEASE_VERSION }}
             docker cp $PWD/.env eduworld-app:/.env
             docker cp $PWD/gcp_key.json eduworld-app:/gcp_key.json
-            docker cp /usr/bin/wkhtmltopdf eduworld:/usr/bin/wkhtmltopdf
             docker start eduworld-app
