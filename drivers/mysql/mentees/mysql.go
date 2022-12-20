@@ -93,6 +93,7 @@ func (mr menteeRepository) FindByCourse(courseId string, limit int, offset int) 
 	var rec []Mentee
 
 	err := mr.conn.Model(&Mentee{}).Preload("User").
+		Select("mentees.id, mentees.user_id, mentees.fullname, mentees.phone, mentees.role, mentees.birth_date, mentees.profile_picture, users.email, mentee_courses.created_at, mentee_courses.updated_at").
 		Joins("LEFT JOIN users ON users.id = mentees.user_id").
 		Joins("LEFT JOIN mentee_courses ON mentees.id = mentee_courses.mentee_id").
 		Where("mentee_courses.course_id = ?", courseId).

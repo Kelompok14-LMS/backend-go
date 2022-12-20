@@ -49,7 +49,7 @@ func (ar assignmentRepository) FindById(assignmentId string) (*assignments.Domai
 func (ar assignmentRepository) FindByCourseId(courseId string) (*assignments.Domain, error) {
 	rec := Assignment{}
 
-	err := ar.conn.Model(&Assignment{}).Where("course_id = ?", courseId).Find(&rec).Error
+	err := ar.conn.Model(&Assignment{}).Where("course_id = ?", courseId).First(&rec).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
