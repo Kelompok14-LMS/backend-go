@@ -2,6 +2,7 @@ package courses
 
 import (
 	"context"
+	"path/filepath"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/categories"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
@@ -48,6 +49,12 @@ func (cu courseUsecase) Create(courseDomain *Domain) error {
 	}
 
 	defer file.Close()
+
+	extension := filepath.Ext(courseDomain.File.Filename)
+
+	if extension != ".jpg" && extension != ".png" && extension != ".jpeg" {
+		return pkg.ErrUnsupportedImageFile
+	}
 
 	filename, err := utils.GetFilename(courseDomain.File.Filename)
 
@@ -170,6 +177,12 @@ func (cu courseUsecase) Update(id string, courseDomain *Domain) error {
 		}
 
 		defer file.Close()
+
+		extension := filepath.Ext(courseDomain.File.Filename)
+
+		if extension != ".jpg" && extension != ".png" && extension != ".jpeg" {
+			return pkg.ErrUnsupportedImageFile
+		}
 
 		filename, err := utils.GetFilename(courseDomain.File.Filename)
 
