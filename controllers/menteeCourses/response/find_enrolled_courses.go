@@ -14,6 +14,7 @@ type FindMenteeCourses struct {
 	Thumbnail      string    `json:"thumbnail"`
 	Progress       int64     `json:"progress"`
 	TotalMaterials int64     `json:"total_materials"`
+	Status         string    `json:"status"`
 	Description    string    `json:"description"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
@@ -28,6 +29,7 @@ func MenteeCourses(menteeCourseDomain *menteeCourses.Domain) *FindMenteeCourses 
 		Thumbnail:      menteeCourseDomain.Course.Thumbnail,
 		Progress:       menteeCourseDomain.ProgressCount,
 		TotalMaterials: menteeCourseDomain.TotalMaterials,
+		Status:         menteeCourseDomain.Status,
 		Description:    menteeCourseDomain.Course.Description,
 		CreatedAt:      menteeCourseDomain.CreatedAt,
 		UpdatedAt:      menteeCourseDomain.UpdatedAt,
