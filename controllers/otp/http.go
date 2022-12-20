@@ -38,11 +38,11 @@ func (oc OTPController) HandlerSendOTP(c echo.Context) error {
 		if errors.Is(err, pkg.ErrUserNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success send OTP to email", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses kirim OTP ke email", nil))
 }
 
 func (oc OTPController) HandlerCheckOTP(c echo.Context) error {
@@ -66,7 +66,7 @@ func (oc OTPController) HandlerCheckOTP(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrOTPNotMatch) {
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrOTPNotMatch.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 

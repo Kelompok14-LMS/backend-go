@@ -45,11 +45,11 @@ func (ctrl *CourseController) HandlerCreateCourse(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrUnsupportedImageFile) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success add new course", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan kursus baru", nil))
 }
 
 func (ctrl *CourseController) HandlerFindAllCourses(c echo.Context) error {
@@ -58,7 +58,7 @@ func (ctrl *CourseController) HandlerFindAllCourses(c echo.Context) error {
 	coursesDomain, err := ctrl.courseUsecase.FindAll(title)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	var courseResponse []response.FindCourses
@@ -67,7 +67,7 @@ func (ctrl *CourseController) HandlerFindAllCourses(c echo.Context) error {
 		courseResponse = append(courseResponse, response.AllCourses(&course))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all courses", courseResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get semua kursus", courseResponse))
 }
 
 func (ctrl *CourseController) HandlerFindByIdCourse(c echo.Context) error {
@@ -79,12 +79,12 @@ func (ctrl *CourseController) HandlerFindByIdCourse(c echo.Context) error {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get course by id", response.DetailCourse(courseDomain)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get kursus berdasarkan id", response.DetailCourse(courseDomain)))
 }
 
 func (ctrl *CourseController) HandlerFindByCategory(c echo.Context) error {
@@ -98,7 +98,7 @@ func (ctrl *CourseController) HandlerFindByCategory(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
@@ -108,7 +108,7 @@ func (ctrl *CourseController) HandlerFindByCategory(c echo.Context) error {
 		coursesResponse = append(coursesResponse, response.AllCourses(&course))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get courses by category", coursesResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get kursus berdasarkan kategori", coursesResponse))
 }
 
 func (ctrl *CourseController) HandlerFindByMentor(c echo.Context) error {
@@ -122,7 +122,7 @@ func (ctrl *CourseController) HandlerFindByMentor(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
@@ -132,14 +132,14 @@ func (ctrl *CourseController) HandlerFindByMentor(c echo.Context) error {
 		coursesResponse = append(coursesResponse, response.AllCourses(&course))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get courses by mentor", coursesResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get kursus berdasarkan mentor", coursesResponse))
 }
 
 func (ctrl *CourseController) HandlerFindByPopular(c echo.Context) error {
 	coursesDomain, err := ctrl.courseUsecase.FindByPopular()
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	var coursesResponse []response.FindCourses
@@ -148,7 +148,7 @@ func (ctrl *CourseController) HandlerFindByPopular(c echo.Context) error {
 		coursesResponse = append(coursesResponse, response.AllCourses(&course))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get courses by mentor", coursesResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get kursus berdasarkan paling populer", coursesResponse))
 }
 
 func (ctrl *CourseController) HandlerUpdateCourse(c echo.Context) error {
@@ -185,11 +185,11 @@ func (ctrl *CourseController) HandlerUpdateCourse(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrUnsupportedImageFile) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update course", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update kursus", nil))
 }
 
 func (ctrl *CourseController) HandlerSoftDeleteCourse(c echo.Context) error {
@@ -201,9 +201,9 @@ func (ctrl *CourseController) HandlerSoftDeleteCourse(c echo.Context) error {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Course deleted", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Kursus dihapus", nil))
 }

@@ -42,14 +42,12 @@ func (ctrl *MaterialController) HandlerCreateMaterial(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
 		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
-		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
-			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success create material", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan materi", nil))
 }
 
 func (ctrl *MaterialController) HandlerFindByIdMaterial(c echo.Context) error {
@@ -61,11 +59,11 @@ func (ctrl *MaterialController) HandlerFindByIdMaterial(c echo.Context) error {
 		if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get material by id", response.MaterialDetail(material)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get materi berdasarkan id", response.MaterialDetail(material)))
 }
 
 func (ctrl *MaterialController) HandlerUpdateMaterial(c echo.Context) error {
@@ -103,11 +101,11 @@ func (ctrl *MaterialController) HandlerUpdateMaterial(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update material", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update materi", nil))
 }
 
 func (ctrl *MaterialController) HandlerSoftDeleteMaterial(c echo.Context) error {
@@ -119,11 +117,11 @@ func (ctrl *MaterialController) HandlerSoftDeleteMaterial(c echo.Context) error 
 		if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Material deleted", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Materi dihapus", nil))
 }
 
 func (ctrl *MaterialController) HandlerSoftDeleteMaterialByModule(c echo.Context) error {
@@ -135,9 +133,9 @@ func (ctrl *MaterialController) HandlerSoftDeleteMaterialByModule(c echo.Context
 		if errors.Is(err, pkg.ErrModuleNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Materials deleted", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Materi dihapus", nil))
 }

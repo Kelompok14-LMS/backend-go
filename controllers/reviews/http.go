@@ -36,10 +36,10 @@ func (ctrl *ReviewController) HandlerCreateReview(c echo.Context) error {
 	err := ctrl.reviewUsecase.Create(reviewInput.ToDomain())
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success add review", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan ulasan", nil))
 }
 
 func (ctrl *ReviewController) HandlerFindByMentee(c echo.Context) error {
@@ -52,7 +52,7 @@ func (ctrl *ReviewController) HandlerFindByMentee(c echo.Context) error {
 		if errors.Is(err, pkg.ErrMenteeNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
@@ -62,7 +62,7 @@ func (ctrl *ReviewController) HandlerFindByMentee(c echo.Context) error {
 		reviewResponse = append(reviewResponse, response.ReviewsByMentee(&review))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get mentee reviews", reviewResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukeses get ulasan mentee", reviewResponse))
 }
 
 func (ctrl *ReviewController) HandlerFindByCourse(c echo.Context) error {
@@ -74,7 +74,7 @@ func (ctrl *ReviewController) HandlerFindByCourse(c echo.Context) error {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
@@ -84,5 +84,5 @@ func (ctrl *ReviewController) HandlerFindByCourse(c echo.Context) error {
 		reviewResponse = append(reviewResponse, response.ReviewsByCourse(&review))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get course reviews", reviewResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get ulasan kursus", reviewResponse))
 }

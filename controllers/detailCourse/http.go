@@ -30,11 +30,11 @@ func (ctrl *DetailCourseController) HandlerDetailCourse(c echo.Context) error {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get full detail course", response.FullDetailCourse(course)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get detail kursus", response.FullDetailCourse(course)))
 }
 
 func (ctrl *DetailCourseController) HandlerDetailCourseEnrolled(c echo.Context) error {
@@ -49,9 +49,9 @@ func (ctrl *DetailCourseController) HandlerDetailCourseEnrolled(c echo.Context) 
 		} else if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get full detail course", response.FullDetailCourseEnrolled(course)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get detail kursus yang ter-enroll", response.FullDetailCourseEnrolled(course)))
 }

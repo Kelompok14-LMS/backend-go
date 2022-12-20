@@ -31,7 +31,7 @@ func (ctrl *AssignmentController) HandlerCreateAssignment(c echo.Context) error 
 	}
 
 	if err := assignmentInput.Validate(); err != nil {
-		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
+		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
 	err := ctrl.assignmentUsecase.Create(assignmentInput.ToDomain())
@@ -40,11 +40,11 @@ func (ctrl *AssignmentController) HandlerCreateAssignment(c echo.Context) error 
 		if errors.Is(err, pkg.ErrAssignmentNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success create assignments", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan tugas", nil))
 }
 
 func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) error {
@@ -56,11 +56,11 @@ func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) erro
 		if errors.Is(err, pkg.ErrAssignmentNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by id", response.DetailAssignment(assignment)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get tugas berdasarkan id", response.DetailAssignment(assignment)))
 }
 
 func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
@@ -72,11 +72,11 @@ func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get assignment by course id", *response.DetailAssignment(assignmentCourse)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get tugas berdasarkan id kursus", *response.DetailAssignment(assignmentCourse)))
 }
 
 func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error {
@@ -99,11 +99,11 @@ func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error 
 		} else if errors.Is(err, pkg.ErrAssignmentNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update assignments", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update tugas", nil))
 }
 
 func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error {
@@ -115,9 +115,9 @@ func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error 
 		if errors.Is(err, pkg.ErrAssignmentNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Assignment deleted", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Tugas dihapus", nil))
 }

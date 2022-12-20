@@ -39,11 +39,11 @@ func (ctrl *ModuleController) HandlerCreateModule(c echo.Context) error {
 		if errors.Is(err, pkg.ErrCourseNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success create module", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan modul", nil))
 }
 
 func (ctrl *ModuleController) HandlerFindByIdModule(c echo.Context) error {
@@ -55,11 +55,11 @@ func (ctrl *ModuleController) HandlerFindByIdModule(c echo.Context) error {
 		if errors.Is(err, pkg.ErrModuleNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get module by id", response.DetailModule(module)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get modul berdasarkan id", response.DetailModule(module)))
 }
 
 func (ctrl *ModuleController) HandlerUpdateModule(c echo.Context) error {
@@ -82,11 +82,11 @@ func (ctrl *ModuleController) HandlerUpdateModule(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrModuleNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update module", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update modul", nil))
 }
 
 func (ctrl *ModuleController) HandlerDeleteModule(c echo.Context) error {
@@ -98,9 +98,9 @@ func (ctrl *ModuleController) HandlerDeleteModule(c echo.Context) error {
 		if errors.Is(err, pkg.ErrModuleNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Module deleted", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Modul dihapus", nil))
 }

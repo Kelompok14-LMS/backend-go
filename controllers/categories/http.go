@@ -36,17 +36,17 @@ func (ctrl *CategoryController) HandlerCreateCategory(c echo.Context) error {
 	err := ctrl.categoryUsecase.Create(categoryInput.ToDomain())
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success add category", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan kategori", nil))
 }
 
 func (ctrl *CategoryController) HandlerFindAllCategories(c echo.Context) error {
 	categoriesDomain, err := ctrl.categoryUsecase.FindAll()
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	var categoriesResponse []response.Category
@@ -55,7 +55,7 @@ func (ctrl *CategoryController) HandlerFindAllCategories(c echo.Context) error {
 		categoriesResponse = append(categoriesResponse, response.FromDomain(&category))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all categories", categoriesResponse))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get semua kategori", categoriesResponse))
 }
 
 func (ctrl *CategoryController) HandlerFindByIdCategory(c echo.Context) error {
@@ -68,10 +68,10 @@ func (ctrl *CategoryController) HandlerFindByIdCategory(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
 		}
 
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get category by id", response.FromDomain(category)))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get kategori berdasarkan id", response.FromDomain(category)))
 }
 
 func (ctrl *CategoryController) HandlerUpdateCategory(c echo.Context) error {
@@ -94,8 +94,8 @@ func (ctrl *CategoryController) HandlerUpdateCategory(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
 		}
 
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success update category", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update kategori", nil))
 }

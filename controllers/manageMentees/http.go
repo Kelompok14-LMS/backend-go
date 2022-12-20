@@ -30,9 +30,9 @@ func (ctrl *ManageMenteeController) HandlerDeleteAccessMentee(c echo.Context) er
 		if errors.Is(err, pkg.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success delete access mentee", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses hapus akses kursus mentee", nil))
 }
