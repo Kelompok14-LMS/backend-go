@@ -79,12 +79,6 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 		return nil, err
 	}
 
-	progresses, err := m.menteeProgressRepository.Count(menteeId, title, status)
-
-	if err != nil {
-		return nil, err
-	}
-
 	courseIds := []string{}
 
 	for _, course := range *menteeCourses {
@@ -92,6 +86,12 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 	}
 
 	totalMaterials, err := m.materialRepository.CountByCourse(courseIds)
+
+	if err != nil {
+		return nil, err
+	}
+
+	progresses, err := m.menteeProgressRepository.Count(menteeId, title, status)
 
 	if err != nil {
 		return nil, err
@@ -117,10 +117,12 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 
 	menteeAssignments, _ := m.menteeAssignmentRepository.FindByCourses(menteeId, courseIds)
 
-	for i := range *menteeCourses {
-		for j := range *menteeAssignments {
-			if (*menteeCourses)[i].CourseId == (*menteeAssignments)[j].Assignment.CourseId {
-				(*menteeCourses)[i].ProgressCount += 1
+	if menteeAssignments != nil {
+		for i := range *menteeCourses {
+			for j := range *menteeAssignments {
+				if (*menteeCourses)[i].CourseId == (*menteeAssignments)[j].Assignment.CourseId {
+					(*menteeCourses)[i].ProgressCount += 1
+				}
 			}
 		}
 	}

@@ -61,13 +61,17 @@ func (dc detailCourseUsecase) DetailCourse(courseId string) (*Domain, error) {
 
 	assignment, _ := dc.assignmentsRepository.FindByCourseId(courseId)
 
-	assignmentDomain := Assignment{
-		ID:          assignment.ID,
-		CourseId:    assignment.CourseId,
-		Title:       assignment.Title,
-		Description: assignment.Description,
-		CreatedAt:   assignment.CreatedAt,
-		UpdatedAt:   assignment.UpdatedAt,
+	assignmentDomain := Assignment{}
+
+	if assignment != nil {
+		assignmentDomain = Assignment{
+			ID:          assignment.ID,
+			CourseId:    assignment.CourseId,
+			Title:       assignment.Title,
+			Description: assignment.Description,
+			CreatedAt:   assignment.CreatedAt,
+			UpdatedAt:   assignment.UpdatedAt,
+		}
 	}
 
 	materials, _ := dc.materialRepository.FindByModule(moduleIds)
@@ -136,24 +140,28 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 		return nil, err
 	}
 
+	if _, err := dc.menteeRepository.FindById(menteeId); err != nil {
+		return nil, err
+	}
+
 	assignment, _ := dc.assignmentsRepository.FindByCourseId(courseId)
 
 	menteeAssignment, _ := dc.menteeAssignmentRepository.FindByCourse(menteeId, courseId)
 
 	isCompletingAssignment := menteeAssignment != nil
 
-	assignmentDomain := Assignment{
-		ID:          assignment.ID,
-		CourseId:    assignment.CourseId,
-		Title:       assignment.Title,
-		Description: assignment.Description,
-		Completed:   isCompletingAssignment,
-		CreatedAt:   assignment.CreatedAt,
-		UpdatedAt:   assignment.UpdatedAt,
-	}
+	assignmentDomain := Assignment{}
 
-	if _, err := dc.menteeRepository.FindById(menteeId); err != nil {
-		return nil, err
+	if assignment != nil {
+		assignmentDomain = Assignment{
+			ID:          assignment.ID,
+			CourseId:    assignment.CourseId,
+			Title:       assignment.Title,
+			Description: assignment.Description,
+			Completed:   isCompletingAssignment,
+			CreatedAt:   assignment.CreatedAt,
+			UpdatedAt:   assignment.UpdatedAt,
+		}
 	}
 
 	modules, _ := dc.moduleRepository.FindByCourse(courseId)
