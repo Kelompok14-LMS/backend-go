@@ -73,18 +73,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestCreate(t *testing.T) {
-	// t.Run("Test Create | Success create course", func(t *testing.T) {
-	// 	mentorRepository.Mock.On("FindById", mentorDomain.ID).Return(&mentorDomain, nil).Once()
-
-	// 	categoryRepository.Mock.On("FindById", categoryDomain.ID).Return(&categoryDomain, nil).Once()
-
-	// 	courseRepository.Mock.On("Create", mock.Anything).Return(nil).Once()
-
-	// 	err := courseUsecase.Create(&courseDomain)
-
-	// 	assert.NoError(t, err)
-	// })
-
 	t.Run("Test Create | Failed create course | Mentor not found", func(t *testing.T) {
 		mentorRepository.Mock.On("FindById", mentorDomain.ID).Return(&mentors.Domain{}, pkg.ErrMentorNotFound).Once()
 
@@ -204,6 +192,26 @@ func TestFindByMentor(t *testing.T) {
 		courseRepository.Mock.On("FindByMentor", mentorDomain.ID).Return(&[]courses.Domain{}, errors.New("error occurred")).Once()
 
 		results, err := courseUsecase.FindByMentor(mentorDomain.ID)
+
+		assert.Error(t, err)
+		assert.Empty(t, results)
+	})
+}
+
+func TestFindByPopular(t *testing.T) {
+	t.Run("Test Find By Popular | Success get popular course", func(t *testing.T) {
+		courseRepository.Mock.On("FindByPopular").Return([]courses.Domain{courseDomain}, nil).Once()
+
+		results, err := courseUsecase.FindByPopular()
+
+		assert.NoError(t, err)
+		assert.NotEmpty(t, results)
+	})
+
+	t.Run("Test Find By Popular | Failed get popular course | Error occurred", func(t *testing.T) {
+		courseRepository.Mock.On("FindByPopular").Return(nil, errors.New("error occurred")).Once()
+
+		results, err := courseUsecase.FindByPopular()
 
 		assert.Error(t, err)
 		assert.Empty(t, results)

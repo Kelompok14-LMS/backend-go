@@ -3,6 +3,7 @@ package mentee_assignments
 import (
 	"context"
 	"math"
+	"path/filepath"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
@@ -43,6 +44,12 @@ func (mu assignmentMenteeUsecase) Create(assignmentMenteeDomain *Domain) error {
 	}
 
 	defer PDF.Close()
+
+	extension := filepath.Ext(assignmentMenteeDomain.PDFfile.Filename)
+
+	if extension != ".pdf" {
+		return pkg.ErrUnsupportedAssignmentFile
+	}
 
 	filename, err := utils.GetFilename(assignmentMenteeDomain.PDFfile.Filename)
 
@@ -184,6 +191,12 @@ func (mu assignmentMenteeUsecase) Update(assignmentMenteeId string, assignmentMe
 		}
 
 		defer PDF.Close()
+
+		extension := filepath.Ext(assignmentMentee.PDFfile.Filename)
+
+		if extension != ".pdf" {
+			return pkg.ErrUnsupportedAssignmentFile
+		}
 
 		filename, err := utils.GetFilename(assignmentMenteeDomain.PDFfile.Filename)
 

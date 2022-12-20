@@ -4,56 +4,59 @@ import "errors"
 
 // error message conventions
 var (
+	// ErrAuthenticationFailed error wrong authentication data
+	ErrAuthenticationFailed = errors.New("Email atau kata sandi salah")
+
 	// ErrUserNotFound error user does not exist
-	ErrUserNotFound = errors.New("User not found")
+	ErrUserNotFound = errors.New("Pengguna tidak ditemukan")
 
 	// ErrMenteeNotFound error mentee does not exist
-	ErrMenteeNotFound = errors.New("Mentee not found")
+	ErrMenteeNotFound = errors.New("Mentee tidak ditemukan")
 
 	// ErrMentorNotFound error mentor does not exist
-	ErrMentorNotFound = errors.New("Mentor not found")
+	ErrMentorNotFound = errors.New("Mentor tidak ditemukan")
 
 	// ErrCategoryNotFound error category does not exist
-	ErrCategoryNotFound = errors.New("Category not found")
+	ErrCategoryNotFound = errors.New("Kategori tidak ditemukan")
 
 	// ErrCourseNotFound error course does not exist
-	ErrCourseNotFound = errors.New("Course not found")
+	ErrCourseNotFound = errors.New("Kursus tidak ditemukan")
 
 	// ErrModuleNotFound error module does not exist
-	ErrModuleNotFound = errors.New("Module not found")
+	ErrModuleNotFound = errors.New("Modul tidak ditemukan")
 
 	// ErrMaterialNotFound error material does not exist
-	ErrMaterialNotFound = errors.New("Material not found")
+	ErrMaterialNotFound = errors.New("Materi tidak ditemukan")
 
 	// ErrMaterialAssetNotFound error material asset does not exist
-	ErrMaterialAssetNotFound = errors.New("Material asset not found")
+	ErrMaterialAssetNotFound = errors.New("Aset materi tidak ditemukan")
 
 	// ErrAssignmentNotFound error assignment does not exist
-	ErrAssignmentNotFound = errors.New("Assignment not found")
+	ErrAssignmentNotFound = errors.New("Tugas tidak ditemukan")
 
 	// ErrAssignmentNotFound error assignment does not exist
-	ErrAssignmentMenteeNotFound = errors.New("Assignment mentee not found")
+	ErrAssignmentMenteeNotFound = errors.New("Tugas mentee tidak ditemukan")
 
 	// ErrEmailAlreadyExist error email already exist
-	ErrEmailAlreadyExist = errors.New("Email already exist")
+	ErrEmailAlreadyExist = errors.New("Email telah digunakan")
 
 	// ErrPasswordLengthInvalid error invalid password length
-	ErrPasswordLengthInvalid = errors.New("Password must be min. 6 characters long")
+	ErrPasswordLengthInvalid = errors.New("Panjang password minimal 6 karakter")
 
 	// ErrPasswordNotMatch error both password not match
-	ErrPasswordNotMatch = errors.New("Both password not matched")
+	ErrPasswordNotMatch = errors.New("Kedua password tidak sama")
 
 	// ErrOTPExpired error otp expired
-	ErrOTPExpired = errors.New("OTP has been expired")
+	ErrOTPExpired = errors.New("OTP telah kadaluarsa")
 
 	// ErrOTPNotMatch error OTP not match with server
-	ErrOTPNotMatch = errors.New("OTP not match")
+	ErrOTPNotMatch = errors.New("OTP yang anda masukkan salah")
 
 	// ErrAccessForbidden error access forbidden
-	ErrAccessForbidden = errors.New("Access forbidden")
+	ErrAccessForbidden = errors.New("Akses dilarang")
 
 	// ErrUserUnauthorized error user unauthorized
-	ErrUserUnauthorized = errors.New("User unauthorized")
+	ErrUserUnauthorized = errors.New("User tidak ter-Autentikasi")
 
 	// ErrInvalidRequest error invalid request body
 	ErrInvalidRequest = errors.New("Invalid request body")
@@ -61,26 +64,26 @@ var (
 	// ErrInvalidJWTPayload error invalid JWT payloads
 	ErrInvalidJWTPayload = errors.New("Invalid JWT payloads")
 
-	// error unsupported file upload
-	ErrUnsupportedAssignmentFile = errors.New("Unsupported assignment file. Acceptable file format: .pdf")
+	// ErrUnsupportedAssignmentFile error unsupported file upload
+	ErrUnsupportedAssignmentFile = errors.New("Extensi file tugas tidak didukung. Gunakan file ber-extensi .pdf")
 
-	// error invalid token header
+	// ErrInvalidTokenHeader error invalid token header
 	ErrInvalidTokenHeader = errors.New("Invalid token header")
 
-	// error unsupported video file
-	ErrUnsupportedVideoFile = errors.New("Unsupported video file. Acceptable file format: .mp4 or .mkv")
+	// ErrUnsupportedVideoFile error unsupported video file
+	ErrUnsupportedVideoFile = errors.New("Extensi file video tidak didukung. Gunakan file ber-extensi .mp4 atau .mkv")
 
-	// error unsupported image file
-	ErrUnsupportedImageFile = errors.New("Unsupported image file. Acceptable file format: .jpeg, .jpg, and .png")
+	// ErrUnsupportedImageFile error unsupported image file
+	ErrUnsupportedImageFile = errors.New("Extensi file gambar tidak didukung. Gunakan file ber-extensi .jpeg, .jpg, atau .png")
 
-	// error record not found (cannot specify the error)
-	ErrRecordNotFound = errors.New("Record not found")
+	// ErrRecordNotFound error record not found (cannot specify the error)
+	ErrRecordNotFound = errors.New("Data tidak ditemukan")
 
-	// error already enrolled this course
-	ErrAlreadyEnrolled = errors.New("Already enrolled this course")
+	// ErrAlreadyEnrolled error already enrolled this course
+	ErrAlreadyEnrolled = errors.New("Anda telah mengambil kursus ini")
 
-	// error no enrolled this course
-	ErrNoEnrolled = errors.New("You must enrolled to this course")
+	// ErrNoEnrolled error no enrolled this course
+	ErrNoEnrolled = errors.New("Kamu harus mengambil kursus ini terlebih dahulu")
 
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")

@@ -41,11 +41,11 @@ func (ctrl *MenteeCourseController) HandlerEnrollCourse(c echo.Context) error {
 		} else if errors.Is(err, pkg.ErrMenteeNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Success add course", nil))
+	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan kursus", nil))
 }
 
 func (ctrl *MenteeCourseController) HandlerFindMenteeCourses(c echo.Context) error {
@@ -59,7 +59,7 @@ func (ctrl *MenteeCourseController) HandlerFindMenteeCourses(c echo.Context) err
 		if errors.Is(err, pkg.ErrMenteeNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
@@ -69,7 +69,7 @@ func (ctrl *MenteeCourseController) HandlerFindMenteeCourses(c echo.Context) err
 		menteeCoursesDomain = append(menteeCoursesDomain, *response.MenteeCourses(&course))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success get all mentee courses", menteeCoursesDomain))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get semua kursus mentee", menteeCoursesDomain))
 }
 
 func (ctrl *MenteeCourseController) HandlerCheckEnrollmentCourse(c echo.Context) error {
@@ -79,10 +79,10 @@ func (ctrl *MenteeCourseController) HandlerCheckEnrollmentCourse(c echo.Context)
 	isEnrolled, err := ctrl.menteeCourseUsecase.CheckEnrollment(menteeId, courseId)
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success check enrollment course", map[string]interface{}{
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses ceck status enrollment kursus", map[string]interface{}{
 		"status_enrollment": isEnrolled,
 	}))
 }
@@ -97,9 +97,9 @@ func (ctrl *MenteeCourseController) HandlerCompleteCourse(c echo.Context) error 
 		if errors.Is(err, pkg.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(err.Error()))
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helper.SuccessResponse("Success complete course", nil))
+	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses menyelesaikan kursus", nil))
 }
