@@ -1,6 +1,6 @@
 package templates
 
-import _ "embed"
+import "embed"
 
-// go:embed template-certificate.html
-var Certificate string
+//go:embed template-certificate.html
+var Certificate embed.FS
