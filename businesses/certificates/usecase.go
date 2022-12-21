@@ -23,7 +23,7 @@ func NewCertificateUsecase(menteeRepository mentees.Repository, courseRepository
 }
 
 func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
-	// NOTE: in windows, should be point to wkhtmltopdf executable file
+	// NOTE: in windows, should be point to wkhtmltopdf executable file (binary of wkhtmltopdf)
 	// wkhtmltopdf.SetPath("C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
 
 	mentee, err := cu.menteeRepository.FindById(data.MenteeId)
@@ -38,11 +38,7 @@ func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
 		return nil, err
 	}
 
-	tmpl, err := template.New("").Parse(templates.Certificate)
-
-	if err != nil {
-		return nil, err
-	}
+	tmpl := template.Must(template.ParseFS(templates.Certificate, "template-certificate.html"))
 
 	// prepare data certificate needs
 	certDomain := map[string]string{
