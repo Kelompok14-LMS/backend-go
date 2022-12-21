@@ -33,12 +33,15 @@ services:
       - eduworld-net
 
   app:
-    image: 'eduworld/eduworld:1.0-beta'
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     container_name: 'eduworld-api'
     ports:
       - '8080:8080'
     volumes:
       - ./.env:/.env
+      - ./gcp_key.json:/gcp_key.json
     env_file:
       - /.env
     environment:
@@ -59,6 +62,7 @@ services:
       AUTH_PASSWORD_EMAIL: ${AUTH_PASSWORD_EMAIL}
       APP_PORT: ${APP_PORT}
       JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
     restart: on-failure
     depends_on:
       mysql_db:
