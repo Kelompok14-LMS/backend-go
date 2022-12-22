@@ -1,7 +1,6 @@
 package mentee_progresses
 
 import (
-	"errors"
 	"net/http"
 
 	menteeProgresses "github.com/Kelompok14-LMS/backend-go/businesses/menteeProgresses"
@@ -36,12 +35,12 @@ func (ctrl *MenteeProgressController) HandlerAddProgress(c echo.Context) error {
 	err := ctrl.menteeProgressUsecase.Add(menteeProgressInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMenteeNotFound):
+		switch err {
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
+		case pkg.ErrMaterialAssetNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -58,10 +57,10 @@ func (ctrl *MenteeProgressController) HandlerFindMaterialEnrolled(c echo.Context
 	progress, err := ctrl.menteeProgressUsecase.FindMaterialEnrolled(menteeId, materialId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMenteeNotFound):
+		switch err {
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		case errors.Is(err, pkg.ErrMaterialNotFound):
+		case pkg.ErrMaterialNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))

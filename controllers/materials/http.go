@@ -1,7 +1,6 @@
 package materials
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
@@ -38,10 +37,10 @@ func (ctrl *MaterialController) HandlerCreateMaterial(c echo.Context) error {
 	err := ctrl.materialUsecase.Create(materialInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrModuleNotFound):
+		switch err {
+		case pkg.ErrModuleNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
-		case errors.Is(err, pkg.ErrUnsupportedVideoFile):
+		case pkg.ErrUnsupportedVideoFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -58,8 +57,8 @@ func (ctrl *MaterialController) HandlerFindByIdMaterial(c echo.Context) error {
 	material, err := ctrl.materialUsecase.FindById(materialId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
+		switch err {
+		case pkg.ErrMaterialAssetNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -95,12 +94,12 @@ func (ctrl *MaterialController) HandlerUpdateMaterial(c echo.Context) error {
 	err := ctrl.materialUsecase.Update(materialId, materialInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrModuleNotFound):
+		switch err {
+		case pkg.ErrModuleNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
-		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
+		case pkg.ErrMaterialAssetNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
-		case errors.Is(err, pkg.ErrUnsupportedVideoFile):
+		case pkg.ErrUnsupportedVideoFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -116,8 +115,8 @@ func (ctrl *MaterialController) HandlerSoftDeleteMaterial(c echo.Context) error 
 	err := ctrl.materialUsecase.Delete(materialId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
+		switch err {
+		case pkg.ErrMaterialAssetNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -133,8 +132,8 @@ func (ctrl *MaterialController) HandlerSoftDeleteMaterialByModule(c echo.Context
 	err := ctrl.materialUsecase.Deletes(moduleId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrModuleNotFound):
+		switch err {
+		case pkg.ErrModuleNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))

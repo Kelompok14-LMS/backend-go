@@ -1,7 +1,6 @@
 package courses
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
@@ -38,14 +37,14 @@ func (ctrl *CourseController) HandlerCreateCourse(c echo.Context) error {
 	err := ctrl.courseUsecase.Create(courseInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		switch err {
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrCategoryNotFound):
+		case pkg.ErrCategoryNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		case errors.Is(err, pkg.ErrUnsupportedImageFile):
+		case pkg.ErrUnsupportedImageFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -79,9 +78,10 @@ func (ctrl *CourseController) HandlerFindByIdCourse(c echo.Context) error {
 	courseDomain, err := ctrl.courseUsecase.FindById(courseId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 
@@ -96,10 +96,10 @@ func (ctrl *CourseController) HandlerFindByCategory(c echo.Context) error {
 	coursesDomain, err := ctrl.courseUsecase.FindByCategory(categoryId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrCategoryNotFound):
+		switch err {
+		case pkg.ErrCategoryNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -121,12 +121,12 @@ func (ctrl *CourseController) HandlerFindByMentor(c echo.Context) error {
 	coursesDomain, err := ctrl.courseUsecase.FindByMentor(mentorId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		switch err {
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrCategoryNotFound):
+		case pkg.ErrCategoryNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -186,12 +186,12 @@ func (ctrl *CourseController) HandlerUpdateCourse(c echo.Context) error {
 	err := ctrl.courseUsecase.Update(courseId, courseInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrCategoryNotFound):
+		switch err {
+		case pkg.ErrCategoryNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		case errors.Is(err, pkg.ErrUnsupportedImageFile):
+		case pkg.ErrUnsupportedImageFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -208,8 +208,8 @@ func (ctrl *CourseController) HandlerSoftDeleteCourse(c echo.Context) error {
 	err := ctrl.courseUsecase.Delete(courseId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))

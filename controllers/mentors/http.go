@@ -1,7 +1,6 @@
 package mentors
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentors"
@@ -39,10 +38,10 @@ func (ctrl *MentorController) HandlerRegisterMentor(c echo.Context) error {
 
 	err := ctrl.mentorUsecase.Register(mentorInput.ToDomain())
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrPasswordLengthInvalid):
+		switch err {
+		case pkg.ErrPasswordLengthInvalid:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
-		case errors.Is(err, pkg.ErrEmailAlreadyExist):
+		case pkg.ErrEmailAlreadyExist:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrEmailAlreadyExist.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -66,12 +65,12 @@ func (ctrl *MentorController) HandlerLoginMentor(c echo.Context) error {
 	res, err := ctrl.mentorUsecase.Login(mentorInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrUserNotFound):
+		switch err {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrPasswordLengthInvalid):
+		case pkg.ErrPasswordLengthInvalid:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -97,12 +96,12 @@ func (ctrl *MentorController) HandlerUpdatePassword(c echo.Context) error {
 	err := ctrl.mentorUsecase.UpdatePassword(mentorInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrPasswordLengthInvalid):
+		switch err {
+		case pkg.ErrPasswordLengthInvalid:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
-		case errors.Is(err, pkg.ErrPasswordNotMatch):
+		case pkg.ErrPasswordNotMatch:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordNotMatch.Error()))
-		case errors.Is(err, pkg.ErrUserNotFound):
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -119,10 +118,10 @@ func (ctrl *MentorController) HandlerFindByID(c echo.Context) error {
 	mentor, err := ctrl.mentorUsecase.FindById(id)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		switch err {
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrUserNotFound):
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -138,10 +137,10 @@ func (ctrl *MentorController) HandlerProfileMentor(c echo.Context) error {
 	mentor, err := ctrl.mentorUsecase.FindById(token.MentorId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		switch err {
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrUserNotFound):
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -162,10 +161,10 @@ func (ctrl *MentorController) HandlerFindAll(c echo.Context) error {
 	}
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		switch err {
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrUserNotFound):
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -207,14 +206,14 @@ func (ctrl *MentorController) HandlerUpdateProfile(c echo.Context) error {
 	err := ctrl.mentorUsecase.Update(mentorId, mentorInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrInvalidRequest):
+		switch err {
+		case pkg.ErrInvalidRequest:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
-		case errors.Is(err, pkg.ErrUnsupportedImageFile):
+		case pkg.ErrUnsupportedImageFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrUserNotFound):
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -238,10 +237,10 @@ func (ctrl *MentorController) HandlerForgotPassword(c echo.Context) error {
 	err := ctrl.mentorUsecase.ForgotPassword(mentorInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMentorNotFound):
+		switch err {
+		case pkg.ErrMentorNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMentorNotFound.Error()))
-		case errors.Is(err, pkg.ErrUserNotFound):
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))

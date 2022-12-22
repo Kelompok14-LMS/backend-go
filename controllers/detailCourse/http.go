@@ -1,7 +1,6 @@
 package detail_course
 
 import (
-	"errors"
 	"net/http"
 
 	detailCourse "github.com/Kelompok14-LMS/backend-go/businesses/detailCourse"
@@ -27,8 +26,8 @@ func (ctrl *DetailCourseController) HandlerDetailCourse(c echo.Context) error {
 	course, err := ctrl.detailCourseUsecase.DetailCourse(courseId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -45,10 +44,10 @@ func (ctrl *DetailCourseController) HandlerDetailCourseEnrolled(c echo.Context) 
 	course, err := ctrl.detailCourseUsecase.DetailCourseEnrolled(menteeId, courseId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMenteeNotFound):
+		switch err {
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))

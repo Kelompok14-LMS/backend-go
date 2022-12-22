@@ -1,7 +1,6 @@
 package mentee_courses
 
 import (
-	"errors"
 	"net/http"
 
 	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
@@ -36,10 +35,10 @@ func (ctrl *MenteeCourseController) HandlerEnrollCourse(c echo.Context) error {
 	err := ctrl.menteeCourseUsecase.Enroll(menteeCourseInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		case errors.Is(err, pkg.ErrMenteeNotFound):
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -57,8 +56,8 @@ func (ctrl *MenteeCourseController) HandlerFindMenteeCourses(c echo.Context) err
 	courses, err := ctrl.menteeCourseUsecase.FindMenteeCourses(menteeId, title, status)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrMenteeNotFound):
+		switch err {
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -96,12 +95,12 @@ func (ctrl *MenteeCourseController) HandlerCompleteCourse(c echo.Context) error 
 	err := ctrl.menteeCourseUsecase.CompleteCourse(menteeId, courseId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrRecordNotFound):
+		switch err {
+		case pkg.ErrRecordNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrRecordNotFound.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		case errors.Is(err, pkg.ErrMenteeNotFound):
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))

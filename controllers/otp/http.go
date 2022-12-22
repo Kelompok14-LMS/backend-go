@@ -1,7 +1,6 @@
 package otp
 
 import (
-	"errors"
 	"net/http"
 
 	otpDomain "github.com/Kelompok14-LMS/backend-go/businesses/otp"
@@ -35,8 +34,8 @@ func (oc OTPController) HandlerSendOTP(c echo.Context) error {
 	err := oc.otpUsecase.SendOTP(otpInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrUserNotFound):
+		switch err {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
 
 		default:
@@ -61,12 +60,12 @@ func (oc OTPController) HandlerCheckOTP(c echo.Context) error {
 	err := oc.otpUsecase.CheckOTP(otpInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrUserNotFound):
+		switch err {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		case errors.Is(err, pkg.ErrOTPExpired):
+		case pkg.ErrOTPExpired:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrOTPExpired.Error()))
-		case errors.Is(err, pkg.ErrOTPNotMatch):
+		case pkg.ErrOTPNotMatch:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrOTPNotMatch.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))

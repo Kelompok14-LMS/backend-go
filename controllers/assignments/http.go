@@ -1,7 +1,6 @@
 package assignments
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/assignments"
@@ -37,12 +36,12 @@ func (ctrl *AssignmentController) HandlerCreateAssignment(c echo.Context) error 
 	err := ctrl.assignmentUsecase.Create(assignmentInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrAssignmentAlredyExist):
+		switch err {
+		case pkg.ErrAssignmentAlredyExist:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentAlredyExist.Error()))
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		case errors.Is(err, pkg.ErrAssignmentNotFound):
+		case pkg.ErrAssignmentNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -58,8 +57,8 @@ func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) erro
 	assignment, err := ctrl.assignmentUsecase.FindById(assignmentId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrAssignmentNotFound):
+		switch err {
+		case pkg.ErrAssignmentNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -75,8 +74,8 @@ func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
 	assignmentCourse, err := ctrl.assignmentUsecase.FindByCourseId(courseid)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -101,10 +100,10 @@ func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error 
 	err := ctrl.assignmentUsecase.Update(assignmentId, assignmentInput.ToDomain())
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrCourseNotFound):
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		case errors.Is(err, pkg.ErrAssignmentNotFound):
+		case pkg.ErrAssignmentNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
@@ -120,8 +119,8 @@ func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error 
 	err := ctrl.assignmentUsecase.Delete(assignmentId)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, pkg.ErrAssignmentNotFound):
+		switch err {
+		case pkg.ErrAssignmentNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
 		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
