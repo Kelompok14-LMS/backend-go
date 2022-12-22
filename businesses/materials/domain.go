@@ -31,7 +31,7 @@ type Repository interface {
 	FindByModule(moduleIds []string) ([]Domain, error)
 
 	// CountByCourse repository find total materials by course
-	CountByCourse(courseIds []string) ([]int64, error)
+	FindByCourse(courseIds []string, title string, status string) ([]Domain, []int64, error)
 
 	// Update repository update material
 	Update(materialId string, materialDomain *Domain) error

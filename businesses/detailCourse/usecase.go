@@ -215,7 +215,7 @@ func (dc detailCourseUsecase) DetailCourseEnrolled(menteeId string, courseId str
 		}
 	}
 
-	totalMaterialsArray, _ := dc.materialRepository.CountByCourse([]string{courseId})
+	_, totalMaterialsArray, _ := dc.materialRepository.FindByCourse([]string{courseId}, course.Title, menteeCourse.Status)
 
 	var totalMaterials int64
 
