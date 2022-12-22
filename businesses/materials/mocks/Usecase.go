@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	context "context"
+
 	materials "github.com/Kelompok14-LMS/backend-go/businesses/materials"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -12,13 +14,13 @@ type Usecase struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: materialDomain
-func (_m *Usecase) Create(materialDomain *materials.Domain) error {
-	ret := _m.Called(materialDomain)
+// Create provides a mock function with given fields: ctx, materialDomain
+func (_m *Usecase) Create(ctx context.Context, materialDomain *materials.Domain) error {
+	ret := _m.Called(ctx, materialDomain)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*materials.Domain) error); ok {
-		r0 = rf(materialDomain)
+	if rf, ok := ret.Get(0).(func(context.Context, *materials.Domain) error); ok {
+		r0 = rf(ctx, materialDomain)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -77,13 +79,13 @@ func (_m *Usecase) FindById(materialId string) (*materials.Domain, error) {
 	return r0, r1
 }
 
-// Update provides a mock function with given fields: materialId, materialDomain
-func (_m *Usecase) Update(materialId string, materialDomain *materials.Domain) error {
-	ret := _m.Called(materialId, materialDomain)
+// Update provides a mock function with given fields: ctx, materialId, materialDomain
+func (_m *Usecase) Update(ctx context.Context, materialId string, materialDomain *materials.Domain) error {
+	ret := _m.Called(ctx, materialId, materialDomain)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, *materials.Domain) error); ok {
-		r0 = rf(materialId, materialDomain)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *materials.Domain) error); ok {
+		r0 = rf(ctx, materialId, materialDomain)
 	} else {
 		r0 = ret.Error(0)
 	}
