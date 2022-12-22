@@ -1,6 +1,7 @@
 package mentees_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -38,6 +39,7 @@ var (
 	userDomain           users.Domain
 
 	pagination pkg.Pagination
+	ctx        context.Context
 )
 
 func TestMain(m *testing.M) {
@@ -91,6 +93,8 @@ func TestMain(m *testing.M) {
 		Limit: 10,
 		Page:  1,
 	}
+
+	ctx = context.Background()
 
 	m.Run()
 }
@@ -300,7 +304,7 @@ func TestUpdate(t *testing.T) {
 
 		menteeRepository.Mock.On("Update", menteeDomain.ID, mock.Anything).Return(nil).Once()
 
-		err := menteeService.Update(menteeDomain.ID, &menteeDomain)
+		err := menteeService.Update(ctx, menteeDomain.ID, &menteeDomain)
 
 		assert.NoError(t, err)
 	})
@@ -308,7 +312,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Test Update | Failed update | Mentee not found", func(t *testing.T) {
 		menteeRepository.Mock.On("FindById", menteeDomain.ID).Return(nil, pkg.ErrMenteeNotFound).Once()
 
-		err := menteeService.Update(menteeDomain.ID, &menteeDomain)
+		err := menteeService.Update(ctx, menteeDomain.ID, &menteeDomain)
 
 		assert.Error(t, err)
 	})
@@ -318,7 +322,7 @@ func TestUpdate(t *testing.T) {
 
 		menteeRepository.Mock.On("Update", menteeDomain.ID, mock.Anything).Return(errors.New("error occurred")).Once()
 
-		err := menteeService.Update(menteeDomain.ID, &menteeDomain)
+		err := menteeService.Update(ctx, menteeDomain.ID, &menteeDomain)
 
 		assert.Error(t, err)
 	})

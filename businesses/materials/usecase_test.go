@@ -1,6 +1,7 @@
 package materials_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -27,6 +28,8 @@ var (
 	materialDomain  materials.Domain
 	createdMaterial materials.Domain
 	updatedMaterial materials.Domain
+
+	ctx context.Context
 )
 
 func TestMain(m *testing.M) {
@@ -65,6 +68,8 @@ func TestMain(m *testing.M) {
 		File:        nil,
 	}
 
+	ctx = context.Background()
+
 	m.Run()
 }
 
@@ -72,7 +77,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Test Create | Failed create material | Module not found", func(t *testing.T) {
 		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&modules.Domain{}, pkg.ErrModuleNotFound).Once()
 
-		err := materialService.Create(&createdMaterial)
+		err := materialService.Create(ctx, &createdMaterial)
 
 		assert.Error(t, err)
 	})
@@ -106,7 +111,7 @@ func TestUpdate(t *testing.T) {
 
 		materialRepository.Mock.On("Update", materialDomain.ID, mock.Anything).Return(nil).Once()
 
-		err := materialService.Update(materialDomain.ID, &updatedMaterial)
+		err := materialService.Update(ctx, materialDomain.ID, &updatedMaterial)
 
 		assert.NoError(t, err)
 	})
@@ -114,7 +119,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Test Update | Failed update material | Module not found", func(t *testing.T) {
 		moduleRepository.Mock.On("FindById", moduleDomain.ID).Return(&modules.Domain{}, pkg.ErrModuleNotFound).Once()
 
-		err := materialService.Update(materialDomain.ID, &updatedMaterial)
+		err := materialService.Update(ctx, materialDomain.ID, &updatedMaterial)
 
 		assert.Error(t, err)
 	})
@@ -124,7 +129,7 @@ func TestUpdate(t *testing.T) {
 
 		materialRepository.Mock.On("FindById", materialDomain.ID).Return(&materials.Domain{}, pkg.ErrMaterialNotFound).Once()
 
-		err := materialService.Update(materialDomain.ID, &updatedMaterial)
+		err := materialService.Update(ctx, materialDomain.ID, &updatedMaterial)
 
 		assert.Error(t, err)
 	})
@@ -136,7 +141,7 @@ func TestUpdate(t *testing.T) {
 
 		materialRepository.Mock.On("Update", materialDomain.ID, mock.Anything).Return(errors.New("error occurred"))
 
-		err := materialService.Update(materialDomain.ID, &updatedMaterial)
+		err := materialService.Update(ctx, materialDomain.ID, &updatedMaterial)
 
 		assert.Error(t, err)
 	})

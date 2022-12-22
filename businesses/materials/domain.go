@@ -1,6 +1,7 @@
 package materials
 
 import (
+	"context"
 	"mime/multipart"
 	"time"
 
@@ -31,7 +32,7 @@ type Repository interface {
 	FindByModule(moduleIds []string) ([]Domain, error)
 
 	// CountByCourse repository find total materials by course
-	CountByCourse(courseIds []string) ([]int64, error)
+	FindByCourse(courseIds []string, title string, status string) ([]Domain, []int64, error)
 
 	// Update repository update material
 	Update(materialId string, materialDomain *Domain) error
@@ -45,13 +46,13 @@ type Repository interface {
 
 type Usecase interface {
 	// Create usecase create material
-	Create(materialDomain *Domain) error
+	Create(ctx context.Context, materialDomain *Domain) error
 
 	// FindById usecase find material by id
 	FindById(materialId string) (*Domain, error)
 
 	// Update usecase update material
-	Update(materialId string, materialDomain *Domain) error
+	Update(ctx context.Context, materialId string, materialDomain *Domain) error
 
 	// Delete usecase detele material by id material
 	Delete(materialId string) error

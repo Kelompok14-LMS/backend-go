@@ -270,7 +270,7 @@ func (m menteeUsecase) FindByCourse(courseId string, pagination pkg.Pagination) 
 	return &pagination, nil
 }
 
-func (m menteeUsecase) Update(id string, menteeDomain *Domain) error {
+func (m menteeUsecase) Update(ctx context.Context, id string, menteeDomain *Domain) error {
 	mentee, err := m.menteeRepository.FindById(id)
 
 	if err != nil {
@@ -280,8 +280,6 @@ func (m menteeUsecase) Update(id string, menteeDomain *Domain) error {
 	var ProfilePictureURL string
 
 	if menteeDomain.ProfilePictureFile != nil {
-		ctx := context.Background()
-
 		if mentee.ProfilePicture != "" {
 			if err := m.storage.DeleteObject(ctx, mentee.ProfilePicture); err != nil {
 				return err

@@ -1,6 +1,8 @@
 package materials
 
 import (
+
+	"context"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
@@ -34,7 +36,9 @@ func (ctrl *MaterialController) HandlerCreateMaterial(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.materialUsecase.Create(materialInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.materialUsecase.Create(ctx, materialInput.ToDomain())
 
 	if err != nil {
 		switch err {
@@ -91,7 +95,9 @@ func (ctrl *MaterialController) HandlerUpdateMaterial(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.materialUsecase.Update(materialId, materialInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.materialUsecase.Update(ctx, materialId, materialInput.ToDomain())
 
 	if err != nil {
 		switch err {
