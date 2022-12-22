@@ -20,8 +20,7 @@ func NewAuthMiddleware(jwtConfig *utils.JWTConfig) *AuthMiddleware {
 	}
 }
 
-// IsMentor custom middleware to check user role is mentor
-func (mid *AuthMiddleware) IsMentor(next echo.HandlerFunc) echo.HandlerFunc {
+func (mid *AuthMiddleware) CheckRole(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		payloads, err := mid.jwtConfig.ExtractToken(c)
 
@@ -29,28 +28,14 @@ func (mid *AuthMiddleware) IsMentor(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, helper.UnauthorizedResponse(err.Error()))
 		}
 
-		if payloads.Role != "mentor" {
+		switch payloads.Role {
+		case "mentee":
+			return next(c)
+		case "mentor":
+			return next(c)
+		default:
 			return c.JSON(http.StatusForbidden, helper.ForbiddenResponse(pkg.ErrAccessForbidden.Error()))
 		}
-
-		return next(c)
-	}
-}
-
-// custom middleware to check user role is mentee
-func (mid *AuthMiddleware) IsMentee(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		payloads, err := mid.jwtConfig.ExtractToken(c)
-
-		if err != nil {
-			return c.JSON(http.StatusUnauthorized, helper.UnauthorizedResponse(err.Error()))
-		}
-
-		if payloads.Role != "mentee" {
-			return c.JSON(http.StatusForbidden, helper.ForbiddenResponse(pkg.ErrAccessForbidden.Error()))
-		}
-
-		return next(c)
 	}
 }
 
