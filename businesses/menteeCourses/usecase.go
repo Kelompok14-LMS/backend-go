@@ -85,7 +85,7 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 		courseIds = append(courseIds, course.CourseId)
 	}
 
-	totalMaterials, err := m.materialRepository.CountByCourse(courseIds)
+	materials, totalMaterials, err := m.materialRepository.FindByCourse(courseIds, title, status)
 
 	if err != nil {
 		return nil, err
@@ -101,8 +101,12 @@ func (m menteeCourseUsecase) FindMenteeCourses(menteeId string, title string, st
 		(*menteeCourses)[i].ProgressCount = progress
 	}
 
-	for i, material := range totalMaterials {
-		(*menteeCourses)[i].TotalMaterials = material
+	for i := range totalMaterials {
+		for j := range *menteeCourses {
+			if (*menteeCourses)[j].CourseId == materials[i].CourseId {
+				(*menteeCourses)[j].TotalMaterials = totalMaterials[i]
+			}
+		}
 	}
 
 	assignments, _ := m.assignmentRepository.FindByCourses(courseIds)

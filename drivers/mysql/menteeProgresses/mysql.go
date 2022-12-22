@@ -43,7 +43,12 @@ func (m menteeProgressRepository) FindByMaterial(menteeId string, materialId str
 func (m menteeProgressRepository) FindByMentee(menteeId string, courseId string) ([]menteeProgresses.Domain, error) {
 	var rec []MenteeProgress
 
-	err := m.conn.Model(&MenteeProgress{}).Where("mentee_id = ? AND course_id = ?", menteeId, courseId).Find(&rec).Error
+	err := m.conn.Model(&MenteeProgress{}).
+		Joins("LEFT JOIN courses ON courses.id = mentee_progresses.course_id").
+		Joins("LEFT JOIN materials ON materials.id = mentee_progresses.material_id").
+		Joins("LEFT JOIN modules ON modules.id = materials.id").
+		Where("mentee_progresses.mentee_id = ? AND mentee_progresses.course_id = ? AND courses.deleted_at IS NULL AND modules.deleted_at IS NULL AND materials.deleted_at IS NULL", menteeId, courseId).
+		Find(&rec).Error
 
 	if err != nil {
 		return nil, err
@@ -63,8 +68,10 @@ func (m menteeProgressRepository) Count(menteeId string, title string, status st
 
 	err := m.conn.Model(&MenteeProgress{}).Select("COUNT(DISTINCT mentee_progresses.material_id)").
 		Joins("LEFT JOIN courses ON courses.id = mentee_progresses.course_id").
+		Joins("LEFT JOIN materials ON materials.id = mentee_progresses.material_id").
+		Joins("LEFT JOIN modules ON modules.id = materials.id").
 		Joins("LEFT JOIN mentee_courses ON courses.id = mentee_courses.course_id").
-		Where("mentee_progresses.mentee_id = ? AND courses.title LIKE ? AND mentee_courses.status LIKE ?", menteeId, "%"+title+"%", "%"+status+"%").
+		Where("mentee_progresses.mentee_id = ? AND courses.title LIKE ? AND mentee_courses.status LIKE ? AND courses.deleted_at IS NULL AND modules.deleted_at IS NULL AND materials.deleted_at IS NULL", menteeId, "%"+title+"%", "%"+status+"%").
 		Group("mentee_progresses.mentee_id").Group("mentee_progresses.course_id").
 		Find(&rec).Error
 
