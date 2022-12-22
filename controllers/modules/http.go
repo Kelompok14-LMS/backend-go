@@ -1,7 +1,6 @@
 package modules
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/modules"
@@ -36,9 +35,10 @@ func (ctrl *ModuleController) HandlerCreateModule(c echo.Context) error {
 	err := ctrl.moduleUsecase.Create(moduleInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -52,9 +52,10 @@ func (ctrl *ModuleController) HandlerFindByIdModule(c echo.Context) error {
 	module, err := ctrl.moduleUsecase.FindById(moduleId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrModuleNotFound) {
+		switch err {
+		case pkg.ErrModuleNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -77,11 +78,12 @@ func (ctrl *ModuleController) HandlerUpdateModule(c echo.Context) error {
 	err := ctrl.moduleUsecase.Update(moduleId, moduleInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
+		switch err {
+		case pkg.ErrCourseNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrModuleNotFound) {
+		case pkg.ErrModuleNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -95,9 +97,10 @@ func (ctrl *ModuleController) HandlerDeleteModule(c echo.Context) error {
 	err := ctrl.moduleUsecase.Delete(moduleId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrModuleNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else {
+		switch err {
+		case pkg.ErrModuleNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

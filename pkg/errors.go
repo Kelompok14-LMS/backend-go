@@ -34,6 +34,9 @@ var (
 	// ErrAssignmentNotFound error assignment does not exist
 	ErrAssignmentNotFound = errors.New("Tugas tidak ditemukan")
 
+	// ErrAssignmentAlredyExist error assignment  exist
+	ErrAssignmentAlredyExist = errors.New("Tugas telah dibuat")
+
 	// ErrAssignmentNotFound error assignment does not exist
 	ErrAssignmentMenteeNotFound = errors.New("Tugas mentee tidak ditemukan")
 
