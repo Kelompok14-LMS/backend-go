@@ -1,6 +1,7 @@
 package mentees
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strconv"
@@ -255,7 +256,9 @@ func (ctrl *MenteeController) HandlerUpdateProfile(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.menteeUsecase.Update(menteeId, menteeInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.menteeUsecase.Update(ctx, menteeId, menteeInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrInvalidRequest) {

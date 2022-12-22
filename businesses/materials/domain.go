@@ -1,6 +1,7 @@
 package materials
 
 import (
+	"context"
 	"mime/multipart"
 	"time"
 
@@ -45,13 +46,13 @@ type Repository interface {
 
 type Usecase interface {
 	// Create usecase create material
-	Create(materialDomain *Domain) error
+	Create(ctx context.Context, materialDomain *Domain) error
 
 	// FindById usecase find material by id
 	FindById(materialId string) (*Domain, error)
 
 	// Update usecase update material
-	Update(materialId string, materialDomain *Domain) error
+	Update(ctx context.Context, materialId string, materialDomain *Domain) error
 
 	// Delete usecase detele material by id material
 	Delete(materialId string) error

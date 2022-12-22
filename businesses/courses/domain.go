@@ -1,6 +1,7 @@
 package courses
 
 import (
+	"context"
 	"mime/multipart"
 	"time"
 
@@ -54,7 +55,7 @@ type Repository interface {
 
 type Usecase interface {
 	// Create usecase create new course
-	Create(courseDomain *Domain) error
+	Create(ctx context.Context, courseDomain *Domain) error
 
 	// FindAll usecase find all courses by course title and category
 	FindAll(keyword string) (*[]Domain, error)
@@ -72,7 +73,7 @@ type Usecase interface {
 	FindByPopular() ([]Domain, error)
 
 	// Update usecase update
-	Update(courseId string, courseDomain *Domain) error
+	Update(ctx context.Context, courseId string, courseDomain *Domain) error
 
 	// Delete usecase delete
 	Delete(courseId string) error

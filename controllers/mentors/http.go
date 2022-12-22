@@ -1,6 +1,7 @@
 package mentors
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -197,7 +198,9 @@ func (ctrl *MentorController) HandlerUpdateProfile(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.mentorUsecase.Update(mentorId, mentorInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.mentorUsecase.Update(ctx, mentorId, mentorInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrInvalidRequest) {

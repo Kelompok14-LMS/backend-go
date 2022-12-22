@@ -1,6 +1,7 @@
 package mentee_assignments
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -40,7 +41,9 @@ func (ctrl *AssignmentMenteeController) HandlerCreateMenteeAssignment(c echo.Con
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
 	}
 
-	err := ctrl.assignmentMenteeUsecase.Create(assignmentMenteeInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Create(ctx, assignmentMenteeInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentNotFound) {
@@ -74,7 +77,9 @@ func (ctrl *AssignmentMenteeController) HandlerUpdateMenteeAssignment(c echo.Con
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.assignmentMenteeUsecase.Update(assignmentMenteeId, menteeAssignmentInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Update(ctx, assignmentMenteeId, menteeAssignmentInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
@@ -102,7 +107,9 @@ func (ctrl *AssignmentMenteeController) HandlerUpdateGradeMentee(c echo.Context)
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.assignmentMenteeUsecase.Update(id, menteeAssignmentInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Update(ctx, id, menteeAssignmentInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
@@ -210,7 +217,9 @@ func (ctrl *AssignmentMenteeController) HandlerFindMenteeAssignmentEnrolled(c ec
 func (ctrl *AssignmentMenteeController) HandlerSoftDeleteMenteeAssignment(c echo.Context) error {
 	id := c.Param("menteeAssignmentId")
 
-	err := ctrl.assignmentMenteeUsecase.Delete(id)
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Delete(ctx, id)
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {

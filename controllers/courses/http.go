@@ -1,6 +1,7 @@
 package courses
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -35,7 +36,9 @@ func (ctrl *CourseController) HandlerCreateCourse(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.courseUsecase.Create(courseInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.courseUsecase.Create(ctx, courseInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrMentorNotFound) {
@@ -175,7 +178,9 @@ func (ctrl *CourseController) HandlerUpdateCourse(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.courseUsecase.Update(courseId, courseInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.courseUsecase.Update(ctx, courseId, courseInput.ToDomain())
 
 	if err != nil {
 		if errors.Is(err, pkg.ErrCategoryNotFound) {

@@ -29,7 +29,7 @@ func NewMaterialUsecase(
 	}
 }
 
-func (mu materialUsecase) Create(materialDomain *Domain) error {
+func (mu materialUsecase) Create(ctx context.Context, materialDomain *Domain) error {
 	if _, err := mu.moduleRepository.FindById(materialDomain.ModuleId); err != nil {
 		return err
 	}
@@ -53,8 +53,6 @@ func (mu materialUsecase) Create(materialDomain *Domain) error {
 	if err != nil {
 		return pkg.ErrUnsupportedVideoFile
 	}
-
-	ctx := context.Background()
 
 	url, err := mu.storage.UploadVideo(ctx, filename, file)
 
@@ -87,7 +85,7 @@ func (mu materialUsecase) FindById(materialId string) (*Domain, error) {
 	return material, nil
 }
 
-func (mu materialUsecase) Update(materialId string, materialDomain *Domain) error {
+func (mu materialUsecase) Update(ctx context.Context, materialId string, materialDomain *Domain) error {
 	if _, err := mu.moduleRepository.FindById(materialDomain.ModuleId); err != nil {
 		return err
 	}
@@ -101,8 +99,6 @@ func (mu materialUsecase) Update(materialId string, materialDomain *Domain) erro
 	var url string
 
 	if materialDomain.File != nil {
-		ctx := context.Background()
-
 		err := mu.storage.DeleteObject(ctx, material.URL)
 
 		if err != nil {

@@ -1,6 +1,7 @@
 package mentee_assignments
 
 import (
+	"context"
 	"mime/multipart"
 	"time"
 
@@ -56,7 +57,7 @@ type Repository interface {
 
 type Usecase interface {
 	// Create usecase create new assignment
-	Create(assignmentDomain *Domain) error
+	Create(ctx context.Context, assignmentDomain *Domain) error
 
 	// FindById usecase findfind assignment by id
 	FindById(assignmentId string) (*Domain, error)
@@ -71,8 +72,8 @@ type Usecase interface {
 	FindByMenteeId(menteeId string) ([]Domain, error)
 
 	// Update usecase update assignment
-	Update(assignmentId string, assignmentDomain *Domain) error
+	Update(ctx context.Context, assignmentId string, assignmentDomain *Domain) error
 
 	// Delete usecase delete assignment
-	Delete(assignmentId string) error
+	Delete(ctx context.Context, assignmentId string) error
 }

@@ -1,6 +1,7 @@
 package mentees
 
 import (
+	"context"
 	"mime/multipart"
 	"time"
 
@@ -92,5 +93,5 @@ type Usecase interface {
 	FindByCourse(courseId string, pagination pkg.Pagination) (*pkg.Pagination, error)
 
 	// Update usecase edit data mentee
-	Update(id string, menteeDomain *Domain) error
+	Update(ctx context.Context, id string, menteeDomain *Domain) error
 }
