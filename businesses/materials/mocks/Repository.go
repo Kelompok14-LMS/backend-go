@@ -12,29 +12,6 @@ type Repository struct {
 	mock.Mock
 }
 
-// CountByCourse provides a mock function with given fields: courseIds
-func (_m *Repository) CountByCourse(courseIds []string) ([]int64, error) {
-	ret := _m.Called(courseIds)
-
-	var r0 []int64
-	if rf, ok := ret.Get(0).(func([]string) []int64); ok {
-		r0 = rf(courseIds)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]int64)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func([]string) error); ok {
-		r1 = rf(courseIds)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // Create provides a mock function with given fields: materialDomain
 func (_m *Repository) Create(materialDomain *materials.Domain) error {
 	ret := _m.Called(materialDomain)
@@ -75,6 +52,38 @@ func (_m *Repository) Deletes(moduleId string) error {
 	}
 
 	return r0
+}
+
+// FindByCourse provides a mock function with given fields: courseIds, title, status
+func (_m *Repository) FindByCourse(courseIds []string, title string, status string) ([]materials.Domain, []int64, error) {
+	ret := _m.Called(courseIds, title, status)
+
+	var r0 []materials.Domain
+	if rf, ok := ret.Get(0).(func([]string, string, string) []materials.Domain); ok {
+		r0 = rf(courseIds, title, status)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]materials.Domain)
+		}
+	}
+
+	var r1 []int64
+	if rf, ok := ret.Get(1).(func([]string, string, string) []int64); ok {
+		r1 = rf(courseIds, title, status)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).([]int64)
+		}
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func([]string, string, string) error); ok {
+		r2 = rf(courseIds, title, status)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // FindById provides a mock function with given fields: materialId
