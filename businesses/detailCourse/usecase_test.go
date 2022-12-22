@@ -180,7 +180,7 @@ func TestDetailCourseEnrolled(t *testing.T) {
 
 		menteeProgressRepository.Mock.On("FindByMentee", menteeDomain.ID, courseDomain.ID).Return([]menteeProgresses.Domain{menteeProgressDomain}, nil).Once()
 
-		materialRepository.Mock.On("CountByCourse", []string{courseDomain.ID}).Return([]int64{menteeCourseDomain.TotalMaterials}, nil).Once()
+		materialRepository.Mock.On("FindByCourse", []string{courseDomain.ID}, courseDomain.Title, menteeCourseDomain.Status).Return([]materials.Domain{materialDomain}, []int64{menteeCourseDomain.TotalMaterials}, nil).Once()
 
 		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return([]int64{menteeCourseDomain.ProgressCount}, nil).Once()
 

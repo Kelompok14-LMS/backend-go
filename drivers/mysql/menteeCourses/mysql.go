@@ -34,9 +34,14 @@ func (m menteeCourseRepository) FindCoursesByMentee(menteeId string, title strin
 	var rec []MenteeCourse
 
 	err := m.conn.Model(&MenteeCourse{}).Preload("Course.Mentor").
-		Joins("INNER JOIN courses ON courses.id = mentee_courses.course_id").
+		Joins("LEFT JOIN courses ON courses.id = mentee_courses.course_id").
+		Joins("LEFT JOIN mentors ON courses.mentor_id = mentors.id").
+		Joins("LEFT JOIN modules ON courses.id = modules.course_id").
+		Joins("LEFT JOIN materials ON modules.id = materials.module_id").
 		Where("mentee_courses.mentee_id = ? AND courses.title LIKE ? AND mentee_courses.status LIKE ? AND courses.deleted_at IS NULL", menteeId, "%"+title+"%", "%"+status+"%").
-		Order("mentee_courses.course_id ASC").
+		Group("mentee_courses.course_id").
+		Having("COUNT(materials.id) >= 1").
+		Order("COUNT(materials.id) DESC").
 		Find(&rec).Error
 
 	if err != nil {
