@@ -36,13 +36,14 @@ func (ctrl *MenteeProgressController) HandlerAddProgress(c echo.Context) error {
 	err := ctrl.menteeProgressUsecase.Add(menteeProgressInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrMenteeNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrCourseNotFound) {
+		case errors.Is(err, pkg.ErrCourseNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
+		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -57,11 +58,12 @@ func (ctrl *MenteeProgressController) HandlerFindMaterialEnrolled(c echo.Context
 	progress, err := ctrl.menteeProgressUsecase.FindMaterialEnrolled(menteeId, materialId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else if errors.Is(err, pkg.ErrMaterialNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch {
+		case errors.Is(err, pkg.ErrMenteeNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		case errors.Is(err, pkg.ErrMaterialNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

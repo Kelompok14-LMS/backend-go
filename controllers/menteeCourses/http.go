@@ -36,11 +36,12 @@ func (ctrl *MenteeCourseController) HandlerEnrollCourse(c echo.Context) error {
 	err := ctrl.menteeCourseUsecase.Enroll(menteeCourseInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrCourseNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrMenteeNotFound) {
+		case errors.Is(err, pkg.ErrMenteeNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -56,9 +57,10 @@ func (ctrl *MenteeCourseController) HandlerFindMenteeCourses(c echo.Context) err
 	courses, err := ctrl.menteeCourseUsecase.FindMenteeCourses(menteeId, title, status)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrMenteeNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -94,9 +96,14 @@ func (ctrl *MenteeCourseController) HandlerCompleteCourse(c echo.Context) error 
 	err := ctrl.menteeCourseUsecase.CompleteCourse(menteeId, courseId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch {
+		case errors.Is(err, pkg.ErrRecordNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrRecordNotFound.Error()))
+		case errors.Is(err, pkg.ErrCourseNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		case errors.Is(err, pkg.ErrMenteeNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

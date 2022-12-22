@@ -38,13 +38,15 @@ func (ctrl *MaterialController) HandlerCreateMaterial(c echo.Context) error {
 	err := ctrl.materialUsecase.Create(materialInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrModuleNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrModuleNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
+		case errors.Is(err, pkg.ErrUnsupportedVideoFile):
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
+
 	}
 
 	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Sukses menambahkan materi", nil))
@@ -56,9 +58,10 @@ func (ctrl *MaterialController) HandlerFindByIdMaterial(c echo.Context) error {
 	material, err := ctrl.materialUsecase.FindById(materialId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -92,15 +95,14 @@ func (ctrl *MaterialController) HandlerUpdateMaterial(c echo.Context) error {
 	err := ctrl.materialUsecase.Update(materialId, materialInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrModuleNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrModuleNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
+		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
+		case errors.Is(err, pkg.ErrUnsupportedVideoFile):
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
-		} else if errors.Is(err, pkg.ErrUnsupportedVideoFile) {
-			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedVideoFile.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -114,9 +116,10 @@ func (ctrl *MaterialController) HandlerSoftDeleteMaterial(c echo.Context) error 
 	err := ctrl.materialUsecase.Delete(materialId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMaterialAssetNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrMaterialAssetNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMaterialAssetNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -130,9 +133,10 @@ func (ctrl *MaterialController) HandlerSoftDeleteMaterialByModule(c echo.Context
 	err := ctrl.materialUsecase.Deletes(moduleId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrModuleNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrModuleNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrModuleNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

@@ -208,9 +208,10 @@ func (ctrl *CourseController) HandlerSoftDeleteCourse(c echo.Context) error {
 	err := ctrl.courseUsecase.Delete(courseId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrCourseNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

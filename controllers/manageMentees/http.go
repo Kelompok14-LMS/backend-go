@@ -27,9 +27,14 @@ func (ctrl *ManageMenteeController) HandlerDeleteAccessMentee(c echo.Context) er
 	err := ctrl.manageMenteeUsecase.DeleteAccess(menteeId, courseId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch {
+		case errors.Is(err, pkg.ErrRecordNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrRecordNotFound.Error()))
+		case errors.Is(err, pkg.ErrCourseNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		case errors.Is(err, pkg.ErrMenteeNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
