@@ -152,7 +152,7 @@ func (routeConfig *RouteConfig) New() {
 	reviewUsecase := _reviewUsecase.NewReviewUsecase(reviewRepository, menteeCourseRepository, menteeRepository, courseRepository)
 	reviewController := _reviewController.NewReviewController(reviewUsecase)
 
-	certificateUsecase := _certificateUsecase.NewCertificateUsecase(menteeRepository, courseRepository)
+	certificateUsecase := _certificateUsecase.NewCertificateUsecase(menteeRepository, courseRepository, menteeCourseRepository)
 	certificateController := _certificateController.NewCertificateController(certificateUsecase)
 
 	// authentication routes
@@ -168,7 +168,7 @@ func (routeConfig *RouteConfig) New() {
 	auth.POST("/mentor/forgot-password", mentorController.HandlerForgotPassword)
 
 	// mentor routes
-	mentor := v1.Group("/mentors", authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	mentor := v1.Group("/mentors", authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	mentor.GET("", mentorController.HandlerFindAll)
 	mentor.GET("/profile", mentorController.HandlerProfileMentor)
 	mentor.PUT("/:mentorId/update-password", mentorController.HandlerUpdatePassword)
@@ -176,80 +176,86 @@ func (routeConfig *RouteConfig) New() {
 	mentor.PUT("/:mentorId", mentorController.HandlerUpdateProfile)
 
 	// mentee routes
-	mentee := v1.Group("/mentees", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	mentee := v1.Group("/mentees", authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	mentee.GET("", menteeController.HandlerFindAll)
 	mentee.POST("/progress", menteeProgressController.HandlerAddProgress)
 	mentee.GET("/profile", menteeController.HandlerProfileMentee)
-	mentee.GET("/:menteeId", menteeController.HandlerFindByID)
-	mentee.PUT("/:menteeId", menteeController.HandlerUpdateProfile)
-	mentee.GET("/:menteeId/reviews", reviewController.HandlerFindByMentee)
-	mentee.GET("/:menteeId/courses", menteeCourseController.HandlerFindMenteeCourses)
-	mentee.GET("/:menteeId/courses/:courseId/certificate", certificateController.HandlerGenerateCert)
-	mentee.GET("/:menteeId/courses/:courseId/details", detailCourseController.HandlerDetailCourseEnrolled)
-	mentee.PUT("/:menteeId/courses/:courseId/complete", menteeCourseController.HandlerCompleteCourse)
-	mentee.GET("/:menteeId/courses/:courseId", menteeCourseController.HandlerCheckEnrollmentCourse)
-	mentee.GET("/:menteeId/materials/:materialId", menteeProgressController.HandlerFindMaterialEnrolled)
+
+	menteeDetail := mentee.Group("/:menteeId")
+	menteeDetail.GET("", menteeController.HandlerFindByID)
+	menteeDetail.PUT("", menteeController.HandlerUpdateProfile)
+	menteeDetail.GET("/reviews", reviewController.HandlerFindByMentee)
+	menteeDetail.GET("/courses", menteeCourseController.HandlerFindMenteeCourses)
+	menteeDetail.GET("/materials/:materialId", menteeProgressController.HandlerFindMaterialEnrolled)
+
+	menteeCourse := menteeDetail.Group("/courses/:courseId")
+	menteeCourse.GET("/certificate", certificateController.HandlerGenerateCert)
+	menteeCourse.GET("/details", detailCourseController.HandlerDetailCourseEnrolled)
+	menteeCourse.PUT("/complete", menteeCourseController.HandlerCompleteCourse)
+	menteeCourse.GET("", menteeCourseController.HandlerCheckEnrollmentCourse)
 
 	//	category routes
 	cat := v1.Group("/categories")
-	cat.POST("", categoryController.HandlerCreateCategory, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	cat.POST("", categoryController.HandlerCreateCategory, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	cat.GET("", categoryController.HandlerFindAllCategories)
 	cat.GET("/:categoryId", categoryController.HandlerFindByIdCategory)
-	cat.PUT("/:categoryId", categoryController.HandlerUpdateCategory, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	cat.PUT("/:categoryId", categoryController.HandlerUpdateCategory, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 
 	// course routes
 	course := v1.Group("/courses")
-	course.POST("", courseController.HandlerCreateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	course.POST("", courseController.HandlerCreateCourse, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	course.GET("", courseController.HandlerFindAllCourses)
 	course.GET("/popular", courseController.HandlerFindByPopular)
 	course.POST("/enroll-course", menteeCourseController.HandlerEnrollCourse, authMiddleware.IsAuthenticated())
 	course.GET("/categories/:categoryId", courseController.HandlerFindByCategory)
 	course.GET("/mentors/:mentorId", courseController.HandlerFindByMentor)
-	course.GET("/:courseId/reviews", reviewController.HandlerFindByCourse)
-	course.GET("/:courseId/mentees", menteeController.HandlerFindMenteesByCourse)
-	course.DELETE("/:courseId/mentees/:menteeId/delete-access", manageMenteeController.HandlerDeleteAccessMentee)
-	course.GET("/:courseId/details", detailCourseController.HandlerDetailCourse)
-	course.GET("/:courseId", courseController.HandlerFindByIdCourse)
-	course.PUT("/:courseId", courseController.HandlerUpdateCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	course.DELETE("/:courseId", courseController.HandlerSoftDeleteCourse, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+
+	courseDetail := course.Group("/:courseId")
+	courseDetail.GET("", courseController.HandlerFindByIdCourse)
+	courseDetail.PUT("", courseController.HandlerUpdateCourse, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	courseDetail.DELETE("", courseController.HandlerSoftDeleteCourse, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	courseDetail.GET("/reviews", reviewController.HandlerFindByCourse)
+	courseDetail.GET("/mentees", menteeController.HandlerFindMenteesByCourse)
+	courseDetail.GET("/details", detailCourseController.HandlerDetailCourse)
+	courseDetail.DELETE("/mentees/:menteeId/delete-access", manageMenteeController.HandlerDeleteAccessMentee)
 
 	// module routes
 	module := v1.Group("/modules")
-	module.POST("", moduleController.HandlerCreateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	module.POST("", moduleController.HandlerCreateModule, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	module.GET("/:moduleId", moduleController.HandlerFindByIdModule)
 	module.PUT("/:moduleId", moduleController.HandlerUpdateModule)
 	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule)
-	module.PUT("/:moduleId", moduleController.HandlerUpdateModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	module.PUT("/:moduleId", moduleController.HandlerUpdateModule, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	module.DELETE("/:moduleId", moduleController.HandlerDeleteModule, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 
 	// assignment routes
 	assignment := v1.Group("/assignments")
-	assignment.POST("", assignmentController.HandlerCreateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	assignment.POST("", assignmentController.HandlerCreateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	assignment.GET("/:assignmentId", assignmentController.HandlerFindByIdAssignment)
 	assignment.GET("/courses/:courseid", assignmentController.HandlerFindByCourse)
-	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	assignment.PUT("/:assignmentId", assignmentController.HandlerUpdateAssignment, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	assignment.DELETE("/:assignmentId", assignmentController.HandlerDeleteAssignment, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 
 	// material routes
 	material := v1.Group("/materials")
-	material.POST("", materialController.HandlerCreateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	material.DELETE("/modules/:moduleId", materialController.HandlerSoftDeleteMaterialByModule, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	material.POST("", materialController.HandlerCreateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	material.DELETE("/modules/:moduleId", materialController.HandlerSoftDeleteMaterialByModule, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	material.GET("/:materialId", materialController.HandlerFindByIdMaterial)
-	material.PUT("/:materialId", materialController.HandlerUpdateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	material.DELETE("/:materialId", materialController.HandlerSoftDeleteMaterial, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
+	material.PUT("/:materialId", materialController.HandlerUpdateMaterial, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	material.DELETE("/:materialId", materialController.HandlerSoftDeleteMaterial, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 
 	// Mentee assignment routes
 	menteeAssignment := v1.Group("/mentee-assignments")
-	menteeAssignment.POST("", menteeAssignmentController.HandlerCreateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
-	menteeAssignment.PUT("/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.POST("", menteeAssignmentController.HandlerCreateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	menteeAssignment.PUT("/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	menteeAssignment.GET("/:menteeAssignmentId", menteeAssignmentController.HandlerFindByIdMenteeAssignment, authMiddleware.IsAuthenticated())
-	menteeAssignment.PUT("/grade/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateGradeMentee, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	menteeAssignment.DELETE("/:menteeAssignmentId", menteeAssignmentController.HandlerSoftDeleteMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
-	menteeAssignment.GET("/assignments/:assignmentId", menteeAssignmentController.HandlerFindByAssignmentId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentor)
-	menteeAssignment.GET("/mentee", menteeAssignmentController.HandlerFindByMenteeId, authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	menteeAssignment.PUT("/grade/:menteeAssignmentId", menteeAssignmentController.HandlerUpdateGradeMentee, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	menteeAssignment.DELETE("/:menteeAssignmentId", menteeAssignmentController.HandlerSoftDeleteMenteeAssignment, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	menteeAssignment.GET("/assignments/:assignmentId", menteeAssignmentController.HandlerFindByAssignmentId, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
+	menteeAssignment.GET("/mentee", menteeAssignmentController.HandlerFindByMenteeId, authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	menteeAssignment.GET("/:menteeId/assignments/:assignmentId", menteeAssignmentController.HandlerFindMenteeAssignmentEnrolled, authMiddleware.IsAuthenticated())
 
 	// reviews routes
-	review := v1.Group("/reviews", authMiddleware.IsAuthenticated(), authMiddleware.IsMentee)
+	review := v1.Group("/reviews", authMiddleware.IsAuthenticated(), authMiddleware.CheckRole)
 	review.POST("", reviewController.HandlerCreateReview)
 }
