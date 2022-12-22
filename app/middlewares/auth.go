@@ -20,21 +20,21 @@ func NewAuthMiddleware(jwtConfig *utils.JWTConfig) *AuthMiddleware {
 	}
 }
 
-func (mid *AuthMiddleware) CheckRole(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		payloads, err := mid.jwtConfig.ExtractToken(c)
+func (mid *AuthMiddleware) CheckRole(role string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			payloads, err := mid.jwtConfig.ExtractToken(c)
 
-		if err != nil {
-			return c.JSON(http.StatusUnauthorized, helper.UnauthorizedResponse(err.Error()))
-		}
+			if err != nil {
+				return c.JSON(http.StatusUnauthorized, helper.UnauthorizedResponse(err.Error()))
+			}
 
-		switch payloads.Role {
-		case "mentee":
-			return next(c)
-		case "mentor":
-			return next(c)
-		default:
-			return c.JSON(http.StatusForbidden, helper.ForbiddenResponse(pkg.ErrAccessForbidden.Error()))
+			switch {
+			case payloads.Role == role:
+				return next(c)
+			default:
+				return c.JSON(http.StatusForbidden, helper.ForbiddenResponse(pkg.ErrAccessForbidden.Error()))
+			}
 		}
 	}
 }
