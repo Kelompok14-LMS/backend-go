@@ -23,6 +23,11 @@ func (au assignmentUsecase) Create(assignmentDomain *Domain) error {
 		return err
 	}
 
+	course, err := au.assignmentRepository.FindByCourseId(assignmentDomain.CourseId)
+	if course != nil {
+		return pkg.ErrAssignmentAlredyExist
+	}
+
 	id := uuid.NewString()
 
 	assignment := Domain{
@@ -32,7 +37,7 @@ func (au assignmentUsecase) Create(assignmentDomain *Domain) error {
 		Description: assignmentDomain.Description,
 	}
 
-	err := au.assignmentRepository.Create(&assignment)
+	err = au.assignmentRepository.Create(&assignment)
 
 	if err != nil {
 		return err
@@ -71,12 +76,6 @@ func (au assignmentUsecase) Update(assignmentId string, assignmentDomain *Domain
 	if err != nil {
 		return pkg.ErrAssignmentNotFound
 	}
-
-	// updatedAssignment := Domain{
-	// 	CourseId:    assignmentDomain.CourseId,
-	// 	Title:       assignmentDomain.Title,
-	// 	Description: assignmentDomain.Description,
-	// }
 
 	err = au.assignmentRepository.Update(assignmentId, assignmentDomain)
 

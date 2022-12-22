@@ -37,9 +37,14 @@ func (ctrl *AssignmentController) HandlerCreateAssignment(c echo.Context) error 
 	err := ctrl.assignmentUsecase.Create(assignmentInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrAssignmentAlredyExist):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentAlredyExist.Error()))
+		case errors.Is(err, pkg.ErrCourseNotFound):
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		case errors.Is(err, pkg.ErrAssignmentNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -53,9 +58,10 @@ func (ctrl *AssignmentController) HandlerFindByIdAssignment(c echo.Context) erro
 	assignment, err := ctrl.assignmentUsecase.FindById(assignmentId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrAssignmentNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -69,9 +75,10 @@ func (ctrl *AssignmentController) HandlerFindByCourse(c echo.Context) error {
 	assignmentCourse, err := ctrl.assignmentUsecase.FindByCourseId(courseid)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrCourseNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -94,11 +101,12 @@ func (ctrl *AssignmentController) HandlerUpdateAssignment(c echo.Context) error 
 	err := ctrl.assignmentUsecase.Update(assignmentId, assignmentInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrCourseNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrAssignmentNotFound) {
+		case errors.Is(err, pkg.ErrAssignmentNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -112,9 +120,10 @@ func (ctrl *AssignmentController) HandlerDeleteAssignment(c echo.Context) error 
 	err := ctrl.assignmentUsecase.Delete(assignmentId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentNotFound) {
+		switch {
+		case errors.Is(err, pkg.ErrAssignmentNotFound):
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
