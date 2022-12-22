@@ -8,6 +8,7 @@ import (
 	_assignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/assignments/mocks"
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	_courseMock "github.com/Kelompok14-LMS/backend-go/businesses/courses/mocks"
+	"github.com/Kelompok14-LMS/backend-go/businesses/materials"
 	_materialMock "github.com/Kelompok14-LMS/backend-go/businesses/materials/mocks"
 	menteeAssignments "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments"
 	_menteeAssignmentMock "github.com/Kelompok14-LMS/backend-go/businesses/menteeAssignments/mocks"
@@ -38,6 +39,7 @@ var (
 	menteeDomain           mentees.Domain
 	assignmentDomain       assignments.Domain
 	menteeAssignmentDomain menteeAssignments.Domain
+	materialDomain         materials.Domain
 	progresses             []int64
 	totalMaterials         []int64
 )
@@ -90,6 +92,15 @@ func TestMain(m *testing.M) {
 		ID:          uuid.NewString(),
 		CourseId:    courseDomain.ID,
 		Title:       "test",
+		Description: "test",
+	}
+
+	materialDomain = materials.Domain{
+		ID:          uuid.NewString(),
+		CourseId:    courseDomain.ID,
+		ModuleId:    uuid.NewString(),
+		Title:       "test",
+		URL:         "test.com",
 		Description: "test",
 	}
 
@@ -167,52 +178,52 @@ func TestEnroll(t *testing.T) {
 
 func TestFindMenteeCourses(t *testing.T) {
 	t.Run("Test Find Mentee Courses | Success get mentee courses", func(t *testing.T) {
-		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, "test", "test").Return(&[]menteeCourses.Domain{menteeCourseDomain}, nil).Once()
+		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return(&[]menteeCourses.Domain{menteeCourseDomain}, nil).Once()
 
-		materialRepository.Mock.On("CountByCourse", []string{courseDomain.ID}).Return(totalMaterials, nil).Once()
+		materialRepository.Mock.On("FindByCourse", []string{courseDomain.ID}, courseDomain.Title, menteeCourseDomain.Status).Return([]materials.Domain{materialDomain}, totalMaterials, nil).Once()
 
-		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, "test", "test").Return(progresses, nil).Once()
+		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return(progresses, nil).Once()
 
 		assignmentRepository.Mock.On("FindByCourses", []string{courseDomain.ID}).Return(&[]assignments.Domain{assignmentDomain}, nil).Once()
 
 		menteeAssignmentRepository.Mock.On("FindByCourses", menteeDomain.ID, []string{courseDomain.ID}).Return(&[]menteeAssignments.Domain{menteeAssignmentDomain}, nil).Once()
 
-		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, "test", "test")
+		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, results)
 	})
 
 	t.Run("Test Find Mentee Courses | Failed get mentee courses | Course not found", func(t *testing.T) {
-		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, "test", "test").Return(&[]menteeCourses.Domain{}, pkg.ErrCourseNotFound).Once()
+		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return(&[]menteeCourses.Domain{}, pkg.ErrCourseNotFound).Once()
 
-		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, "test", "test")
+		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status)
 
 		assert.Error(t, err)
 		assert.Empty(t, results)
 	})
 
 	t.Run("Test Find Mentee Courses | Failed get mentee courses | error occurred on menteeProgressRepository", func(t *testing.T) {
-		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, "test", "test").Return(&[]menteeCourses.Domain{menteeCourseDomain}, nil).Once()
+		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return(&[]menteeCourses.Domain{menteeCourseDomain}, nil).Once()
 
-		materialRepository.Mock.On("CountByCourse", []string{courseDomain.ID}).Return(totalMaterials, nil).Once()
+		materialRepository.Mock.On("FindByCourse", []string{courseDomain.ID}, courseDomain.Title, menteeCourseDomain.Status).Return([]materials.Domain{materialDomain}, totalMaterials, nil).Once()
 
-		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, "test", "test").Return(nil, errors.New("error occurred")).Once()
+		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return(nil, errors.New("error occurred")).Once()
 
-		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, "test", "test")
+		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status)
 
 		assert.Error(t, err)
 		assert.Empty(t, results)
 	})
 
 	t.Run("Test Find Mentee Courses | Failed get mentee courses | error occurred on materialRepository", func(t *testing.T) {
-		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, "test", "test").Return(&[]menteeCourses.Domain{menteeCourseDomain}, nil).Once()
+		menteeCourseRepository.Mock.On("FindCoursesByMentee", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return(&[]menteeCourses.Domain{menteeCourseDomain}, nil).Once()
 
-		materialRepository.Mock.On("CountByCourse", []string{courseDomain.ID}).Return([]int64{}, errors.New("error occurred")).Once()
+		materialRepository.Mock.On("FindByCourse", []string{courseDomain.ID}, courseDomain.Title, menteeCourseDomain.Status).Return([]materials.Domain{materialDomain}, []int64{}, errors.New("error occurred")).Once()
 
-		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, "test", "test").Return(progresses, nil).Once()
+		menteeProgressRepository.Mock.On("Count", menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status).Return(progresses, nil).Once()
 
-		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, "test", "test")
+		results, err := menteeCourseService.FindMenteeCourses(menteeDomain.ID, courseDomain.Title, menteeCourseDomain.Status)
 
 		assert.Error(t, err)
 		assert.Empty(t, results)
