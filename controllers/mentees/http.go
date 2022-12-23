@@ -1,10 +1,7 @@
 package mentees
 
 import (
-
-
 	"context"
-	"errors"
 
 	"net/http"
 	"strconv"

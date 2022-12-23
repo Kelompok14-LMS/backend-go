@@ -1,10 +1,7 @@
 package mentors
 
 import (
-
-=======
 	"context"
-	"errors"
 
 	"net/http"
 
