@@ -187,7 +187,7 @@ func (m mentorUsecase) FindById(id string) (*Domain, error) {
 	return mentor, nil
 }
 
-func (m mentorUsecase) Update(id string, updateMentor *MentorUpdateProfile) error {
+func (m mentorUsecase) Update(ctx context.Context, id string, updateMentor *MentorUpdateProfile) error {
 	_, err := m.userRepository.FindById(updateMentor.UserID)
 
 	if err != nil {
@@ -214,8 +214,6 @@ func (m mentorUsecase) Update(id string, updateMentor *MentorUpdateProfile) erro
 	var ProfilePictureURL string
 
 	if updateMentor.ProfilePictureFile != nil {
-		ctx := context.Background()
-
 		if mentor.ProfilePicture != "" {
 			if err := m.storage.DeleteObject(ctx, mentor.ProfilePicture); err != nil {
 				return err

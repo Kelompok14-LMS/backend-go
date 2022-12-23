@@ -1,6 +1,7 @@
 package mentee_assignments_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -30,6 +31,8 @@ var (
 	menteeAssignmentDomain  menteeAssignments.Domain
 	createMenteeAssignment  menteeAssignments.Domain
 	updatedMenteeAssignment menteeAssignments.Domain
+
+	ctx context.Context
 )
 
 func TestMain(m *testing.M) {
@@ -76,6 +79,8 @@ func TestMain(m *testing.M) {
 		PDFfile:       nil,
 	}
 
+	ctx = context.Background()
+
 	m.Run()
 }
 
@@ -83,7 +88,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Test Create | Failed create mentee Assignment | Assignmentnot found", func(t *testing.T) {
 		assignmentRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignments.Domain{}, pkg.ErrAssignmentNotFound).Once()
 
-		err := menteeAssignmentService.Create(&createMenteeAssignment)
+		err := menteeAssignmentService.Create(ctx, &createMenteeAssignment)
 
 		assert.Error(t, err)
 	})
@@ -117,7 +122,7 @@ func TestUpdate(t *testing.T) {
 
 		menteeAssignmentRepository.Mock.On("Update", menteeAssignmentDomain.ID, mock.Anything).Return(nil).Once()
 
-		err := menteeAssignmentService.Update(menteeAssignmentDomain.ID, &updatedMenteeAssignment)
+		err := menteeAssignmentService.Update(ctx, menteeAssignmentDomain.ID, &updatedMenteeAssignment)
 
 		assert.NoError(t, err)
 	})
@@ -125,7 +130,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Test Update | Failed update mentee Assignment | Assignment not found", func(t *testing.T) {
 		assignmentRepository.Mock.On("FindById", assignmentDomain.ID).Return(&assignments.Domain{}, pkg.ErrAssignmentNotFound).Once()
 
-		err := menteeAssignmentService.Update(menteeAssignmentDomain.ID, &updatedMenteeAssignment)
+		err := menteeAssignmentService.Update(ctx, menteeAssignmentDomain.ID, &updatedMenteeAssignment)
 
 		assert.Error(t, err)
 	})
@@ -135,7 +140,7 @@ func TestUpdate(t *testing.T) {
 
 		menteeAssignmentRepository.Mock.On("FindById", menteeAssignmentDomain.ID).Return(&menteeAssignments.Domain{}, pkg.ErrAssignmentMenteeNotFound).Once()
 
-		err := menteeAssignmentService.Update(menteeAssignmentDomain.ID, &updatedMenteeAssignment)
+		err := menteeAssignmentService.Update(ctx, menteeAssignmentDomain.ID, &updatedMenteeAssignment)
 
 		assert.Error(t, err)
 	})
@@ -147,7 +152,7 @@ func TestUpdate(t *testing.T) {
 
 		menteeAssignmentRepository.Mock.On("Update", menteeAssignmentDomain.ID, mock.Anything).Return(errors.New("error occurred"))
 
-		err := menteeAssignmentService.Update(menteeAssignmentDomain.ID, &updatedMenteeAssignment)
+		err := menteeAssignmentService.Update(ctx, menteeAssignmentDomain.ID, &updatedMenteeAssignment)
 
 		assert.Error(t, err)
 	})

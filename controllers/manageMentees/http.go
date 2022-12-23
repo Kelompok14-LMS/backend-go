@@ -1,7 +1,6 @@
 package manage_mentees
 
 import (
-	"errors"
 	"net/http"
 
 	manageMentees "github.com/Kelompok14-LMS/backend-go/businesses/manageMentees"
@@ -27,9 +26,14 @@ func (ctrl *ManageMenteeController) HandlerDeleteAccessMentee(c echo.Context) er
 	err := ctrl.manageMenteeUsecase.DeleteAccess(menteeId, courseId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch err {
+		case pkg.ErrRecordNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrRecordNotFound.Error()))
+		case pkg.ErrCourseNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		case pkg.ErrMenteeNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

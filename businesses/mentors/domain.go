@@ -1,6 +1,7 @@
 package mentors
 
 import (
+	"context"
 	"mime/multipart"
 	"time"
 )
@@ -93,5 +94,5 @@ type Usecase interface {
 	FindById(id string) (*Domain, error)
 
 	// Update usecase edit data mentors
-	Update(id string, updateMentor *MentorUpdateProfile) error
+	Update(ctx context.Context, id string, updateMentor *MentorUpdateProfile) error
 }

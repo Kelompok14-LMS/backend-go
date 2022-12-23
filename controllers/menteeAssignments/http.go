@@ -1,7 +1,10 @@
 package mentee_assignments
 
 import (
-	"errors"
+
+
+	"context"
+	
 	"fmt"
 	"net/http"
 	"strconv"
@@ -40,14 +43,17 @@ func (ctrl *AssignmentMenteeController) HandlerCreateMenteeAssignment(c echo.Con
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
 	}
 
-	err := ctrl.assignmentMenteeUsecase.Create(assignmentMenteeInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Create(ctx, assignmentMenteeInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentNotFound) {
+		switch err {
+		case pkg.ErrAssignmentNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUnsupportedAssignmentFile) {
+		case pkg.ErrUnsupportedAssignmentFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedAssignmentFile.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -74,14 +80,17 @@ func (ctrl *AssignmentMenteeController) HandlerUpdateMenteeAssignment(c echo.Con
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.assignmentMenteeUsecase.Update(assignmentMenteeId, menteeAssignmentInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Update(ctx, assignmentMenteeId, menteeAssignmentInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUnsupportedAssignmentFile) {
+		switch err {
+		case pkg.ErrAssignmentNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		case pkg.ErrUnsupportedAssignmentFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedAssignmentFile.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -102,14 +111,19 @@ func (ctrl *AssignmentMenteeController) HandlerUpdateGradeMentee(c echo.Context)
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.assignmentMenteeUsecase.Update(id, menteeAssignmentInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Update(ctx, id, menteeAssignmentInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+		switch err {
+		case pkg.ErrAssignmentMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
+		case pkg.ErrAssignmentNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		default:
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
-
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses Handler nilai", nil))
@@ -121,11 +135,14 @@ func (ctrl *AssignmentMenteeController) HandlerFindByIdMenteeAssignment(c echo.C
 	assignmentMentee, err := ctrl.assignmentMenteeUsecase.FindById(id)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+		switch err {
+		case pkg.ErrAssignmentMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
+		case pkg.ErrAssignmentNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		default:
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
-
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get tugas mentee berdasarkan id", response.FromDomain(assignmentMentee)))
@@ -145,11 +162,14 @@ func (ctrl *AssignmentMenteeController) HandlerFindByAssignmentId(c echo.Context
 	res, err := ctrl.assignmentMenteeUsecase.FindByAssignmentId(id, pagination)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+		switch err {
+		case pkg.ErrAssignmentMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
+		case pkg.ErrAssignmentNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentNotFound.Error()))
+		default:
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
-
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	var menteeAssignmentResponse []response.AssignmentMentee
@@ -171,11 +191,12 @@ func (ctrl *AssignmentMenteeController) HandlerFindByMenteeId(c echo.Context) er
 	menteeAssignment, err := ctrl.assignmentMenteeUsecase.FindByMenteeId(token.MenteeId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+		switch err {
+		case pkg.ErrAssignmentMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUserNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		} else {
+		case pkg.ErrMenteeNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -195,11 +216,12 @@ func (ctrl *AssignmentMenteeController) HandlerFindMenteeAssignmentEnrolled(c ec
 	menteeAssignment, err := ctrl.assignmentMenteeUsecase.FindMenteeAssignmentEnrolled(menteeId, assignmentId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch err {
+		case pkg.ErrAssignmentMenteeNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
+		case pkg.ErrMenteeNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -210,12 +232,15 @@ func (ctrl *AssignmentMenteeController) HandlerFindMenteeAssignmentEnrolled(c ec
 func (ctrl *AssignmentMenteeController) HandlerSoftDeleteMenteeAssignment(c echo.Context) error {
 	id := c.Param("menteeAssignmentId")
 
-	err := ctrl.assignmentMenteeUsecase.Delete(id)
+	ctx := context.Background()
+
+	err := ctrl.assignmentMenteeUsecase.Delete(ctx, id)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrAssignmentMenteeNotFound) {
+		switch err {
+		case pkg.ErrAssignmentMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrAssignmentMenteeNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

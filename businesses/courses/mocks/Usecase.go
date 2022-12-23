@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	context "context"
+
 	courses "github.com/Kelompok14-LMS/backend-go/businesses/courses"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -12,13 +14,13 @@ type Usecase struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: courseDomain
-func (_m *Usecase) Create(courseDomain *courses.Domain) error {
-	ret := _m.Called(courseDomain)
+// Create provides a mock function with given fields: ctx, courseDomain
+func (_m *Usecase) Create(ctx context.Context, courseDomain *courses.Domain) error {
+	ret := _m.Called(ctx, courseDomain)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*courses.Domain) error); ok {
-		r0 = rf(courseDomain)
+	if rf, ok := ret.Get(0).(func(context.Context, *courses.Domain) error); ok {
+		r0 = rf(ctx, courseDomain)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -155,13 +157,13 @@ func (_m *Usecase) FindByPopular() ([]courses.Domain, error) {
 	return r0, r1
 }
 
-// Update provides a mock function with given fields: courseId, courseDomain
-func (_m *Usecase) Update(courseId string, courseDomain *courses.Domain) error {
-	ret := _m.Called(courseId, courseDomain)
+// Update provides a mock function with given fields: ctx, courseId, courseDomain
+func (_m *Usecase) Update(ctx context.Context, courseId string, courseDomain *courses.Domain) error {
+	ret := _m.Called(ctx, courseId, courseDomain)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, *courses.Domain) error); ok {
-		r0 = rf(courseId, courseDomain)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *courses.Domain) error); ok {
+		r0 = rf(ctx, courseId, courseDomain)
 	} else {
 		r0 = ret.Error(0)
 	}

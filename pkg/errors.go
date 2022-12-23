@@ -34,6 +34,9 @@ var (
 	// ErrAssignmentNotFound error assignment does not exist
 	ErrAssignmentNotFound = errors.New("Tugas tidak ditemukan")
 
+	// ErrAssignmentAlredyExist error assignment  exist
+	ErrAssignmentAlredyExist = errors.New("Tugas telah dibuat")
+
 	// ErrAssignmentNotFound error assignment does not exist
 	ErrAssignmentMenteeNotFound = errors.New("Tugas mentee tidak ditemukan")
 
@@ -84,6 +87,9 @@ var (
 
 	// ErrNoEnrolled error no enrolled this course
 	ErrNoEnrolled = errors.New("Kamu harus mengambil kursus ini terlebih dahulu")
+
+	// error mentee not yet completed the course
+	ErrEnrollNotCompleted = errors.New("Selesaikan course terlebih dahulu")
 
 	// ErrInternalServerError error internal server error
 	ErrInternalServerError = errors.New("Internal server error")
