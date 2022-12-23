@@ -1,6 +1,7 @@
 package courses_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -29,6 +30,8 @@ var (
 	courseDomain   courses.Domain
 	categoryDomain categories.Domain
 	mentorDomain   mentors.Domain
+
+	ctx context.Context
 )
 
 func TestMain(m *testing.M) {
@@ -69,6 +72,8 @@ func TestMain(m *testing.M) {
 		UpdatedAt:   time.Now(),
 	}
 
+	ctx = context.Background()
+
 	m.Run()
 }
 
@@ -76,7 +81,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Test Create | Failed create course | Mentor not found", func(t *testing.T) {
 		mentorRepository.Mock.On("FindById", mentorDomain.ID).Return(&mentors.Domain{}, pkg.ErrMentorNotFound).Once()
 
-		err := courseUsecase.Create(&courseDomain)
+		err := courseUsecase.Create(ctx, &courseDomain)
 
 		assert.Error(t, err)
 	})
@@ -86,7 +91,7 @@ func TestCreate(t *testing.T) {
 
 		categoryRepository.Mock.On("FindById", categoryDomain.ID).Return(&categories.Domain{}, pkg.ErrCategoryNotFound).Once()
 
-		err := courseUsecase.Create(&courseDomain)
+		err := courseUsecase.Create(ctx, &courseDomain)
 
 		assert.Error(t, err)
 	})
@@ -226,7 +231,7 @@ func TestUpdate(t *testing.T) {
 
 		courseRepository.Mock.On("Update", courseDomain.ID, mock.Anything).Return(nil).Once()
 
-		err := courseUsecase.Update(courseDomain.ID, &courseDomain)
+		err := courseUsecase.Update(ctx, courseDomain.ID, &courseDomain)
 
 		assert.NoError(t, err)
 	})
@@ -234,7 +239,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Test Update | Failed update course | Category not found", func(t *testing.T) {
 		categoryRepository.Mock.On("FindById", categoryDomain.ID).Return(&categories.Domain{}, pkg.ErrCategoryNotFound).Once()
 
-		err := courseUsecase.Update(courseDomain.ID, &courseDomain)
+		err := courseUsecase.Update(ctx, courseDomain.ID, &courseDomain)
 
 		assert.Error(t, err)
 	})
@@ -244,7 +249,7 @@ func TestUpdate(t *testing.T) {
 
 		courseRepository.Mock.On("FindById", courseDomain.ID).Return(&courses.Domain{}, pkg.ErrCourseNotFound).Once()
 
-		err := courseUsecase.Update(courseDomain.ID, &courseDomain)
+		err := courseUsecase.Update(ctx, courseDomain.ID, &courseDomain)
 
 		assert.Error(t, err)
 	})
@@ -256,7 +261,7 @@ func TestUpdate(t *testing.T) {
 
 		courseRepository.Mock.On("Update", courseDomain.ID, mock.Anything).Return(errors.New("error occurred")).Once()
 
-		err := courseUsecase.Update(courseDomain.ID, &courseDomain)
+		err := courseUsecase.Update(ctx, courseDomain.ID, &courseDomain)
 
 		assert.Error(t, err)
 	})

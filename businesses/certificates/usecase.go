@@ -5,20 +5,28 @@ import (
 	"html/template"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/courses"
+	menteeCourses "github.com/Kelompok14-LMS/backend-go/businesses/menteeCourses"
 	"github.com/Kelompok14-LMS/backend-go/businesses/mentees"
+	"github.com/Kelompok14-LMS/backend-go/pkg"
 	"github.com/Kelompok14-LMS/backend-go/templates"
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 )
 
 type certificateUsecase struct {
-	menteeRepository mentees.Repository
-	courseRepository courses.Repository
+	menteeRepository       mentees.Repository
+	courseRepository       courses.Repository
+	menteeCourseRepository menteeCourses.Repository
 }
 
-func NewCertificateUsecase(menteeRepository mentees.Repository, courseRepository courses.Repository) Usecase {
+func NewCertificateUsecase(
+	menteeRepository mentees.Repository,
+	courseRepository courses.Repository,
+	menteeCourseRepository menteeCourses.Repository,
+) Usecase {
 	return certificateUsecase{
-		menteeRepository: menteeRepository,
-		courseRepository: courseRepository,
+		menteeRepository:       menteeRepository,
+		courseRepository:       courseRepository,
+		menteeCourseRepository: menteeCourseRepository,
 	}
 }
 
@@ -36,6 +44,16 @@ func (cu certificateUsecase) GenerateCert(data *Domain) ([]byte, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	enrollment, err := cu.menteeCourseRepository.CheckEnrollment(data.MenteeId, data.CourseId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if enrollment.Status != "completed" {
+		return nil, pkg.ErrEnrollNotCompleted
 	}
 
 	tmpl := template.Must(template.ParseFS(templates.Certificate, "template-certificate.html"))

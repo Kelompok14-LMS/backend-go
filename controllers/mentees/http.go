@@ -1,7 +1,11 @@
 package mentees
 
 import (
+
+
+	"context"
 	"errors"
+
 	"net/http"
 	"strconv"
 
@@ -40,13 +44,15 @@ func (ctrl *MenteeController) HandlerRegisterMentee(c echo.Context) error {
 	err := ctrl.menteeUsecase.Register(menteeInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrPasswordLengthInvalid) {
+		switch err {
+		case pkg.ErrPasswordLengthInvalid:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
-		} else if errors.Is(err, pkg.ErrEmailAlreadyExist) {
+		case pkg.ErrEmailAlreadyExist:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrEmailAlreadyExist.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
+
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses mengirim OTP ke email", nil))
@@ -66,13 +72,15 @@ func (ctrl *MenteeController) HandlerVerifyRegisterMentee(c echo.Context) error 
 	err := ctrl.menteeUsecase.VerifyRegister(menteeInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrOTPExpired) {
+		switch err {
+		case pkg.ErrOTPExpired:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrOTPExpired.Error()))
-		} else if errors.Is(err, pkg.ErrOTPNotMatch) {
+		case pkg.ErrOTPNotMatch:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrOTPNotMatch.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
+
 	}
 
 	return c.JSON(http.StatusCreated, helper.SuccessCreatedResponse("Register berhasil", nil))
@@ -92,13 +100,14 @@ func (ctrl *MenteeController) HandlerLoginMentee(c echo.Context) error {
 	res, err := ctrl.menteeUsecase.Login(menteeInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrUserNotFound) {
-			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrAuthenticationFailed.Error()))
-		} else if errors.Is(err, pkg.ErrMenteeNotFound) {
+		switch err {
+		case pkg.ErrUserNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrPasswordLengthInvalid) {
+		case pkg.ErrPasswordLengthInvalid:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -120,17 +129,18 @@ func (ctrl *MenteeController) HandlerForgotPassword(c echo.Context) error {
 	err := ctrl.menteeUsecase.ForgotPassword(menteeInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrPasswordLengthInvalid) {
+		switch err {
+		case pkg.ErrPasswordLengthInvalid:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordLengthInvalid.Error()))
-		} else if errors.Is(err, pkg.ErrUserNotFound) {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrOTPExpired) {
+		case pkg.ErrOTPExpired:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrOTPExpired.Error()))
-		} else if errors.Is(err, pkg.ErrOTPNotMatch) {
+		case pkg.ErrOTPNotMatch:
 			return c.JSON(http.StatusConflict, helper.ConflictResponse(pkg.ErrOTPNotMatch.Error()))
-		} else if errors.Is(err, pkg.ErrPasswordNotMatch) {
+		case pkg.ErrPasswordNotMatch:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrPasswordNotMatch.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -152,9 +162,10 @@ func (ctrl MenteeController) HandlerFindMenteesByCourse(c echo.Context) error {
 	res, err := ctrl.menteeUsecase.FindByCourse(courseId, pagination)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch err {
+		case pkg.ErrCourseNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -178,11 +189,12 @@ func (ctrl *MenteeController) HandlerFindByID(c echo.Context) error {
 	mentee, err := ctrl.menteeUsecase.FindById(id)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
+		switch err {
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUserNotFound) {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -196,11 +208,12 @@ func (ctrl *MenteeController) HandlerProfileMentee(c echo.Context) error {
 	mentee, err := ctrl.menteeUsecase.FindById(token.MenteeId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
+		switch err {
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUserNotFound) {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -219,11 +232,12 @@ func (ctrl *MenteeController) HandlerFindAll(c echo.Context) error {
 	}
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
+		switch err {
+		case pkg.ErrMenteeNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUserNotFound) {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -255,18 +269,21 @@ func (ctrl *MenteeController) HandlerUpdateProfile(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(err.Error()))
 	}
 
-	err := ctrl.menteeUsecase.Update(menteeId, menteeInput.ToDomain())
+	ctx := context.Background()
+
+	err := ctrl.menteeUsecase.Update(ctx, menteeId, menteeInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrInvalidRequest) {
+		switch err {
+		case pkg.ErrInvalidRequest:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrInvalidRequest.Error()))
-		} else if errors.Is(err, pkg.ErrMenteeNotFound) {
-			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrMenteeNotFound.Error()))
-		} else if errors.Is(err, pkg.ErrUnsupportedImageFile) {
+		case pkg.ErrMenteeNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		case pkg.ErrUnsupportedImageFile:
 			return c.JSON(http.StatusBadRequest, helper.BadRequestResponse(pkg.ErrUnsupportedImageFile.Error()))
-		} else if errors.Is(err, pkg.ErrUserNotFound) {
+		case pkg.ErrUserNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrUserNotFound.Error()))
-		} else {
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}

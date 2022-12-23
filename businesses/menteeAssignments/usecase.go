@@ -31,7 +31,7 @@ func NewMenteeAssignmentUsecase(assignmentMenteeRepository Repository,
 	}
 }
 
-func (mu assignmentMenteeUsecase) Create(assignmentMenteeDomain *Domain) error {
+func (mu assignmentMenteeUsecase) Create(ctx context.Context, assignmentMenteeDomain *Domain) error {
 	_, err := mu.assignmentRepository.FindById(assignmentMenteeDomain.AssignmentId)
 	if err != nil {
 		return err
@@ -56,8 +56,6 @@ func (mu assignmentMenteeUsecase) Create(assignmentMenteeDomain *Domain) error {
 	if err != nil {
 		return pkg.ErrUnsupportedAssignmentFile
 	}
-
-	ctx := context.Background()
 
 	pdfUrl, err := mu.storage.UploadAsset(ctx, filename, PDF)
 
@@ -162,7 +160,7 @@ func (mu assignmentMenteeUsecase) FindByAssignmentId(assignmentId string, pagina
 	return &pagination, nil
 }
 
-func (mu assignmentMenteeUsecase) Update(assignmentMenteeId string, assignmentMenteeDomain *Domain) error {
+func (mu assignmentMenteeUsecase) Update(ctx context.Context, assignmentMenteeId string, assignmentMenteeDomain *Domain) error {
 	if _, err := mu.assignmentRepository.FindById(assignmentMenteeDomain.AssignmentId); err != nil {
 		return err
 	}
@@ -176,8 +174,6 @@ func (mu assignmentMenteeUsecase) Update(assignmentMenteeId string, assignmentMe
 	var pdfUrl string
 
 	if assignmentMenteeDomain.PDFfile != nil {
-		ctx := context.Background()
-
 		err = mu.storage.DeleteObject(ctx, assignmentMentee.AssignmentURL)
 
 		if err != nil {
@@ -228,14 +224,12 @@ func (mu assignmentMenteeUsecase) Update(assignmentMenteeId string, assignmentMe
 	return nil
 }
 
-func (mu assignmentMenteeUsecase) Delete(assignmentMenteeId string) error {
+func (mu assignmentMenteeUsecase) Delete(ctx context.Context, assignmentMenteeId string) error {
 	assignmentMentee, err := mu.assignmentMenteeRepository.FindById(assignmentMenteeId)
 
 	if err != nil {
 		return err
 	}
-
-	ctx := context.Background()
 
 	if err := mu.storage.DeleteObject(ctx, assignmentMentee.AssignmentURL); err != nil {
 		return err

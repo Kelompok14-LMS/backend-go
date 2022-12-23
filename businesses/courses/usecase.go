@@ -33,7 +33,7 @@ func NewCourseUsecase(
 	}
 }
 
-func (cu courseUsecase) Create(courseDomain *Domain) error {
+func (cu courseUsecase) Create(ctx context.Context, courseDomain *Domain) error {
 	if _, err := cu.mentorRepository.FindById(courseDomain.MentorId); err != nil {
 		return err
 	}
@@ -61,8 +61,6 @@ func (cu courseUsecase) Create(courseDomain *Domain) error {
 	if err != nil {
 		return pkg.ErrUnsupportedImageFile
 	}
-
-	ctx := context.Background()
 
 	url, err := cu.storage.UploadImage(ctx, filename, file)
 
@@ -146,7 +144,7 @@ func (cu courseUsecase) FindByPopular() ([]Domain, error) {
 	return courses, nil
 }
 
-func (cu courseUsecase) Update(id string, courseDomain *Domain) error {
+func (cu courseUsecase) Update(ctx context.Context, id string, courseDomain *Domain) error {
 	if _, err := cu.categoryRepository.FindById(courseDomain.CategoryId); err != nil {
 		return err
 	}
@@ -164,8 +162,6 @@ func (cu courseUsecase) Update(id string, courseDomain *Domain) error {
 
 	// check if user update the image, do the process
 	if courseDomain.File != nil {
-		ctx := context.Background()
-
 		if err := cu.storage.DeleteObject(ctx, course.Thumbnail); err != nil {
 			return err
 		}

@@ -1,7 +1,6 @@
 package categories
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/categories"
@@ -64,11 +63,12 @@ func (ctrl *CategoryController) HandlerFindByIdCategory(c echo.Context) error {
 	category, err := ctrl.categoryUsecase.FindById(id)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCategoryNotFound) {
+		switch err {
+		case pkg.ErrCategoryNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
+		default:
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
-
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses get kategori berdasarkan id", response.FromDomain(category)))
@@ -90,11 +90,12 @@ func (ctrl *CategoryController) HandlerUpdateCategory(c echo.Context) error {
 	err := ctrl.categoryUsecase.Update(id, categoryInput.ToDomain())
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCategoryNotFound) {
+		switch err {
+		case pkg.ErrCategoryNotFound:
 			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCategoryNotFound.Error()))
+		default:
+			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
-
-		return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 	}
 
 	return c.JSON(http.StatusOK, helper.SuccessResponse("Sukses update kategori", nil))

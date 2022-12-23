@@ -1,7 +1,6 @@
 package reviews
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Kelompok14-LMS/backend-go/businesses/reviews"
@@ -49,9 +48,10 @@ func (ctrl *ReviewController) HandlerFindByMentee(c echo.Context) error {
 	reviews, err := ctrl.reviewUsecase.FindByMentee(menteeId, keyword)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrMenteeNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch err {
+		case pkg.ErrMenteeNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrMenteeNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
@@ -71,9 +71,10 @@ func (ctrl *ReviewController) HandlerFindByCourse(c echo.Context) error {
 	reviews, err := ctrl.reviewUsecase.FindByCourse(courseId)
 
 	if err != nil {
-		if errors.Is(err, pkg.ErrCourseNotFound) {
-			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(err.Error()))
-		} else {
+		switch err {
+		case pkg.ErrCourseNotFound:
+			return c.JSON(http.StatusNotFound, helper.NotFoundResponse(pkg.ErrCourseNotFound.Error()))
+		default:
 			return c.JSON(http.StatusInternalServerError, helper.InternalServerErrorResponse(pkg.ErrInternalServerError.Error()))
 		}
 	}
